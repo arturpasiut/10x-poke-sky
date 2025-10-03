@@ -69,6 +69,7 @@ npm run build
 │   ├── pages/      # Astro pages
 │   │   └── api/    # API endpoints
 │   ├── components/ # UI components (Astro & React)
+│   ├── styles/     # Tailwind entrypoint + design-token notes
 │   └── assets/     # Static assets
 ├── public/         # Public assets
 ```
