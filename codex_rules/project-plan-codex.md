@@ -32,7 +32,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 ## Phase 0 – Foundation Setup
 1. [x] Audit existing repo (layouts, components, configs) and remove demo content while keeping useful utilities.
 2. [x] Create `.env` and `.env.sample` with Supabase, PokeAPI, Gemini placeholders; implement runtime validation via `src/lib/env.ts`.
-3. Provision Supabase project, configure auth settings, and create tables `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` with RLS policies that restrict access to authenticated owners.
+3. [x] Provision Supabase project, configure auth settings, and create tables `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` with RLS policies that restrict access to authenticated owners.
 4. Configure Supabase Edge Functions or REST endpoints for Pokemon data fetches and register them in `supabase/functions`.
 5. Install base tooling (Storybook optional) and align Tailwind config with design tokens delivered by the design team.
 6. Document local setup steps in README and verify `npm run dev` works with placeholder pages only.
