@@ -35,7 +35,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 3. [x] Provision Supabase project, configure auth settings, and create tables `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` with RLS policies that restrict access to authenticated owners.
 4. [x] Configure Supabase Edge Functions or REST endpoints for Pokemon data fetches and register them in `supabase/functions`.
 5. [x] Install base tooling (Storybook optional) and align Tailwind config with design tokens delivered by the design team.
-6. Document local setup steps in README and verify `npm run dev` works with placeholder pages only.
+6. [x] Document local setup steps in README and verify `npm run dev` works with placeholder pages only.
 
 ## Phase 1 – Layout, Routing, Shared UI
 1. Define Astro layouts (`MainLayout`, `AuthLayout`) and wire them to routes `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
