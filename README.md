@@ -29,13 +29,23 @@ cd 10x-astro-starter
 npm install
 ```
 
-3. Run the development server:
+3. Copy the environment template and adjust values if needed:
+
+```bash
+cp .env.sample .env
+```
+
+  - `SUPABASE_URL` / `SUPABASE_KEY` – keep fake credentials locally until Supabase is provisioned.
+  - `POKEAPI_BASE_URL` – defaults to the public PokeAPI (`https://pokeapi.co/api/v2`).
+  - `OPENROUTER_API_KEY` / `GEMINI_API_KEY` – optional for now; AI features remain mocked without real keys.
+
+4. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+5. Build for production:
 
 ```bash
 npm run build
