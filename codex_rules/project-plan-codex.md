@@ -38,7 +38,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. [x] Document local setup steps in README and verify `npm run dev` works with placeholder pages only.
 
 ## Phase 1 – Layout, Routing, Shared UI
-1. Define Astro layouts (`MainLayout`, `AuthLayout`) and wire them to routes `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
+1. [x] Define Astro layouts (`MainLayout`, `AuthLayout`) and wire them to routes `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
 2. Implement global navigation bar, footer, and responsive grid primitives, using Tailwind classes aligned with design tokens.
 3. Introduce Zustand stores: `useSessionStore` for Supabase auth state and `useUiStore` for global UI flags.
 4. Create reusable UI components (buttons, cards, badges, tabs, modal shell) with stories or MDX docs if Storybook is available.
