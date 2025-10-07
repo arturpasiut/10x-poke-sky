@@ -1,0 +1,19 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Ulubione – 10x Poke Sky">
+  <div slot="header" class="space-y-2">
+    <h1 class="text-4xl font-semibold sm:text-5xl">Ulubione</h1>
+    <p class="text-muted-foreground">Twoja kolekcja zapisanych Pokémonów pojawi się tutaj po implementacji fazy 6.</p>
+  </div>
+
+  <section
+    class="rounded-2xl border border-[color:color-mix(in_srgb,var(--color-border)_60%,transparent)] bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-10 text-center shadow-md"
+  >
+    <p class="max-w-xl mx-auto text-lg text-muted-foreground">
+      Zaloguj się, aby dodawać Pokémony do ulubionych. Interfejs i logika zostaną zintegrowane po ukończeniu modułu
+      autoryzacji.
+    </p>
+  </section>
+</MainLayout>

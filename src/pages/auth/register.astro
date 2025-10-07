@@ -1,0 +1,71 @@
+---
+import AuthLayout from "../../layouts/AuthLayout.astro";
+---
+
+<AuthLayout title="Rejestracja – 10x Poke Sky">
+  <form class="relative z-10 flex flex-col gap-5">
+    <header class="space-y-2 text-center">
+      <h1 class="text-3xl font-semibold">Dołącz do drużyny!</h1>
+      <p class="text-sm text-muted-foreground">Utwórz konto, aby zapisywać ulubione Pokémony i śledzić postępy.</p>
+    </header>
+
+    <label class="flex flex-col gap-2">
+      <span class="text-sm font-medium">Adres e-mail</span>
+      <input class="auth-input" type="email" placeholder="ash@paleta.town" required />
+    </label>
+
+    <label class="flex flex-col gap-2">
+      <span class="text-sm font-medium">Hasło</span>
+      <input class="auth-input" type="password" placeholder="••••••••" required />
+    </label>
+
+    <label class="flex flex-col gap-2">
+      <span class="text-sm font-medium">Powtórz hasło</span>
+      <input class="auth-input" type="password" placeholder="••••••••" required />
+    </label>
+
+    <button class="auth-action auth-action--secondary" type="submit">Zarejestruj się</button>
+
+    <p class="text-center text-sm text-muted-foreground">
+      Masz już konto? <a class="text-primary" href="/auth/login">Zaloguj się</a>
+    </p>
+  </form>
+</AuthLayout>
+
+<style lang="postcss">
+.auth-input {
+  border-radius: 1rem;
+  padding: 0.9rem 1.25rem;
+  background: color-mix(in srgb, var(--color-background) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+  color: var(--color-foreground);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary) 25%, transparent);
+}
+
+.auth-action {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #2eb688 0%, #046d4a 100%);
+  box-shadow: 0 18px 40px -22px rgba(9, 15, 11, 0.65);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px -18px rgba(9, 15, 11, 0.7);
+}
+</style>

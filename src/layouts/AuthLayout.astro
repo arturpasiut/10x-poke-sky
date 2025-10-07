@@ -1,0 +1,31 @@
+---
+import Layout from "./Layout.astro";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "10x Poke Sky – Auth" } = Astro.props;
+---
+
+<Layout title={title}>
+  <div
+    class="flex min-h-screen items-center justify-center"
+    style="background-color: var(--color-background); color: var(--color-foreground)"
+  >
+    <div
+      class="relative w-full max-w-md rounded-xl p-8 shadow-floating backdrop-blur"
+      style="
+        background-color: color-mix(in srgb, var(--color-surface) 55%, transparent);
+        border: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
+      "
+    >
+      <div
+        class="pointer-events-none absolute inset-0 rounded-xl"
+        style="border: 1px solid color-mix(in srgb, #ffffff 12%, transparent);"
+      >
+      </div>
+      <slot />
+    </div>
+  </div>
+</Layout>

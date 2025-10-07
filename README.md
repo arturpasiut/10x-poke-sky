@@ -29,13 +29,24 @@ cd 10x-astro-starter
 npm install
 ```
 
-3. Run the development server:
+3. Copy the environment template and adjust values if needed:
+
+```bash
+cp .env.sample .env
+```
+
+  - `SUPABASE_URL` / `SUPABASE_KEY` – keep fake credentials locally until Supabase is provisioned.
+  - `POKEAPI_BASE_URL` – defaults to the public PokeAPI (`https://pokeapi.co/api/v2`).
+  - `USE_POKEAPI_MOCK` – `false` by default; set to `true` only when you want to exercise the edge functions against local fixtures.
+  - `OPENROUTER_API_KEY` / `GEMINI_API_KEY` – optional for now; AI features remain mocked without real keys.
+
+4. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+5. Build for production:
 
 ```bash
 npm run build
@@ -58,9 +69,23 @@ npm run build
 │   ├── pages/      # Astro pages
 │   │   └── api/    # API endpoints
 │   ├── components/ # UI components (Astro & React)
+│   ├── styles/     # Tailwind entrypoint + design-token notes
 │   └── assets/     # Static assets
 ├── public/         # Public assets
 ```
+
+## Local Development
+
+1. **Node version** – repo contains `.nvmrc` (`22.14.0`). Run `nvm use` (or switch manually) before installing dependencies.
+2. **Install packages** – `npm install`.
+3. **Configure environment** – `cp .env.sample .env` and tweak values as needed (see notes above). For live data keep `USE_POKEAPI_MOCK=false`.
+4. **Start Supabase (optional for Phase 0)** – follow `supabase/README.md` if you want the local Postgres/auth stack running.
+5. **Run the dev server** – `npm run dev`. You should see the placeholder homepage with the new design tokens applied.
+
+Useful checks:
+
+- `npm run lint` – verifies code style/ESLint.
+- `supabase functions serve pokemon-list --env-file .env` – smoke test the edge function against either mock fixtures or the live PokeAPI (toggle via `USE_POKEAPI_MOCK`).
 
 ## AI Development Support
 

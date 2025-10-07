@@ -1,0 +1,38 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+const { identifier } = Astro.params;
+---
+
+<MainLayout title={`Pokemon ${identifier} – 10x Poke Sky`}>
+  <div slot="header" class="space-y-2">
+    <a class="text-sm text-primary" href="/pokemon">← Powrót do Pokédexu</a>
+    <h1 class="text-4xl font-semibold capitalize">{identifier}</h1>
+    <p class="text-muted-foreground">Szczegóły pokemona zostaną wypełnione w fazie 4.</p>
+  </div>
+
+  <section class="grid gap-6 sm:grid-cols-[minmax(0,320px)_1fr]">
+    <div
+      class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 text-center shadow-md"
+    >
+      <div class="mb-4 flex items-center justify-center">
+        <div
+          class="aspect-square w-48 rounded-full bg-[color:color-mix(in_srgb,var(--color-background)_30%,transparent)]"
+        >
+        </div>
+      </div>
+      <p class="text-muted-foreground">Artwork / Sprite</p>
+    </div>
+
+    <div class="space-y-4">
+      <div class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 shadow-md">
+        <h2 class="mb-2 text-xl font-semibold">Statystyki</h2>
+        <p class="text-muted-foreground">Placeholder na wykres i tabelę statystyk.</p>
+      </div>
+
+      <div class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 shadow-md">
+        <h2 class="mb-2 text-xl font-semibold">Ewolucje</h2>
+        <p class="text-muted-foreground">Sekcja timeline zostanie dodana w fazie 4.</p>
+      </div>
+    </div>
+  </section>
+</MainLayout>
