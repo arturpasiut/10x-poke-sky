@@ -20,12 +20,15 @@ create index if not exists profiles_created_at_idx on public.profiles (created_a
 alter table public.profiles
   enable row level security;
 
+drop policy if exists "Users can read own profile" on public.profiles;
 create policy "Users can read own profile" on public.profiles
   for select using (auth.uid() = id);
 
+drop policy if exists "Users can update own profile" on public.profiles;
 create policy "Users can update own profile" on public.profiles
   for update using (auth.uid() = id);
 
+drop policy if exists "Service role can manage profiles" on public.profiles;
 create policy "Service role can manage profiles" on public.profiles
   for all using (auth.role() = 'service_role');
 
@@ -58,9 +61,11 @@ create index if not exists favorites_pokemon_idx on public.favorites (pokemon_id
 alter table public.favorites
   enable row level security;
 
+drop policy if exists "Users can manage own favorites" on public.favorites;
 create policy "Users can manage own favorites" on public.favorites
   using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "Service role can manage favorites" on public.favorites;
 create policy "Service role can manage favorites" on public.favorites
   for all using (auth.role() = 'service_role');
 
@@ -81,9 +86,11 @@ create index if not exists pokemon_cache_cached_at_idx on public.pokemon_cache (
 alter table public.pokemon_cache
   enable row level security;
 
+drop policy if exists "Allow read access to pokemon_cache" on public.pokemon_cache;
 create policy "Allow read access to pokemon_cache" on public.pokemon_cache
   for select using (true);
 
+drop policy if exists "Service role updates pokemon_cache" on public.pokemon_cache;
 create policy "Service role updates pokemon_cache" on public.pokemon_cache
   for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
 
@@ -106,9 +113,11 @@ create index if not exists moves_cache_cached_at_idx on public.moves_cache (cach
 alter table public.moves_cache
   enable row level security;
 
+drop policy if exists "Allow read access to moves_cache" on public.moves_cache;
 create policy "Allow read access to moves_cache" on public.moves_cache
   for select using (true);
 
+drop policy if exists "Service role manages moves_cache" on public.moves_cache;
 create policy "Service role manages moves_cache" on public.moves_cache
   for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
 
@@ -129,12 +138,15 @@ create index if not exists ai_queries_user_idx on public.ai_queries (user_id, cr
 alter table public.ai_queries
   enable row level security;
 
+drop policy if exists "Users can read own ai queries" on public.ai_queries;
 create policy "Users can read own ai queries" on public.ai_queries
   for select using (auth.uid() = user_id);
 
+drop policy if exists "Service role logs ai queries" on public.ai_queries;
 create policy "Service role logs ai queries" on public.ai_queries
   for insert with check (auth.role() = 'service_role');
 
+drop policy if exists "Service role can read ai queries" on public.ai_queries;
 create policy "Service role can read ai queries" on public.ai_queries
   for select using (auth.role() = 'service_role');
 
