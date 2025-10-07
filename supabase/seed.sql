@@ -1,0 +1,2 @@
+-- Placeholder seed for local Supabase dev environment.
+-- Add deterministic inserts here when seeding data is required.
