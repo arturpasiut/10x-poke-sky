@@ -1,4 +1,4 @@
--- 0001_init.sql
+-- 20251007082312_init.sql
 -- Schema bootstrap for 10x-poke-sky (Phase 0)
 -- All tables enable Row Level Security and rely on policies defined below.
 
@@ -140,4 +140,3 @@ create policy "Service role can read ai queries" on public.ai_queries
 
 -- helper comment for clarity
 comment on schema public is 'Schema for 10x-poke-sky application data. Managed via supabase/migrations.';
-
