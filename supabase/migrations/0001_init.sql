@@ -133,7 +133,7 @@ create policy "Users can read own ai queries" on public.ai_queries
   for select using (auth.uid() = user_id);
 
 create policy "Service role logs ai queries" on public.ai_queries
-  for insert using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+  for insert with check (auth.role() = 'service_role');
 
 create policy "Service role can read ai queries" on public.ai_queries
   for select using (auth.role() = 'service_role');
