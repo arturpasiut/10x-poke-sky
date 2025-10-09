@@ -192,7 +192,7 @@ function sortCandidateIds(ids: number[], sort: typeof DEFAULT_QUERY_STATE.sort, 
   return sorted
 }
 
-async function fetchPokemonSummary(idOrName: number | string): Promise<PokemonSummaryDto | null> {
+export async function fetchPokemonSummary(idOrName: number | string): Promise<PokemonSummaryDto | null> {
   let detail: any
 
   try {
