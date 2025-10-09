@@ -59,6 +59,9 @@ npm run build
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Fix ESLint issues
+- `npm run test` - Uruchom testy jednostkowe (Vitest + RTL)
+- `npm run test:coverage` - Raport pokrycia kodu
+- `npm run test:e2e` - Testy Playwright (wymaga działającego `npm run dev` oraz `npx playwright install`)
 
 ## Project Structure
 
@@ -85,7 +88,16 @@ npm run build
 Useful checks:
 
 - `npm run lint` – verifies code style/ESLint.
+- `npm run test` – runs component/hook tests (jsdom).
+- `npm run test:e2e` – runs Playwright smoke test against `http://localhost:4321`.
 - `supabase functions serve pokemon-list --env-file .env` – smoke test the edge function against either mock fixtures or the live PokeAPI (toggle via `USE_POKEAPI_MOCK`).
+
+## Widok Pokédex
+
+- `/pokemon` udostępnia interaktywną listę Pokémonów z wyszukiwarką, filtrami (typ, generacja, region) i sortowaniem.
+- Stan widoku synchronizuje się z parametrami URL, co umożliwia udostępnianie linków z aktywnymi filtrami.
+- Obsługiwane są skeletony, komunikaty błędów, puste stany oraz paginacja.
+- Testy jednostkowe pokrywają krytyczne komponenty (`SearchHeader`, `FilterSidePanel`, `PokemonGrid`) i hook `usePokemonListQuery`; smoke test Playwright weryfikuje montaż widoku.
 
 ## AI Development Support
 

@@ -1,0 +1,43 @@
+@layer components {
+  .pokedex-surface {
+    @apply rounded-3xl border border-white/10 bg-[#0e1621]/80;
+  }
+
+  .pokedex-panel {
+    @apply rounded-3xl border border-white/10 bg-[#0d131c]/70;
+  }
+
+  .pokedex-chip {
+    @apply rounded-full border border-white/15 bg-white/5 text-xs font-semibold uppercase tracking-[0.2em] text-white/70 transition hover:border-white/30 focus-visible:outline-none;
+  }
+
+  .pokedex-chip:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-primary) 80%, transparent);
+    outline-offset: 3px;
+  }
+}
+
+@layer utilities {
+  .shadow-card {
+    box-shadow: 0 25px 60px -30px rgba(8, 12, 16, 0.7);
+  }
+
+  .shadow-card-soft {
+    box-shadow: 0 25px 65px -45px rgba(33, 45, 78, 0.8);
+  }
+
+  .bg-pokedex-grid {
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 65%),
+      radial-gradient(circle at bottom right, rgba(12, 18, 28, 0.6), rgba(9, 16, 25, 0.9));
+  }
+
+  .focus-outline:focus {
+    outline: 2px solid color-mix(in srgb, var(--color-primary) 80%, transparent);
+    outline-offset: 3px;
+  }
+
+  .focus-visible-outline:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-primary) 80%, transparent);
+    outline-offset: 3px;
+  }
+}
