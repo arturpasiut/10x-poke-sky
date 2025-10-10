@@ -83,9 +83,16 @@ export function PokemonGrid({ search, types, generation, region }: PokemonGridPr
       </header>
 
       {error ? (
-        <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-destructive">
+        <div className="space-y-2 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-destructive">
           <p>Nie udało się pobrać listy Pokémonów.</p>
           <p className="text-sm opacity-80">{error}</p>
+          <p className="text-sm">
+            W międzyczasie możesz spróbować rozpoznać Pokémona w&nbsp;
+            <a href="/ai" className="font-semibold text-destructive underline-offset-4 hover:underline">
+              czacie AI
+            </a>
+            .
+          </p>
         </div>
       ) : null}
 
@@ -98,8 +105,15 @@ export function PokemonGrid({ search, types, generation, region }: PokemonGridPr
       </div>
 
       {items.length === 0 && !isLoading && !error ? (
-        <div className="rounded-xl border border-border/40 bg-muted/30 p-8 text-center text-sm text-muted-foreground">
-          Brak wyników dla wybranych filtrów.
+        <div className="space-y-3 rounded-xl border border-border/40 bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+          <p>Brak wyników dla wybranych kryteriów wyszukiwania.</p>
+          <p>
+            Spróbuj zmienić filtry lub skorzystaj z&nbsp;
+            <a href="/ai" className="font-semibold text-primary underline-offset-4 hover:underline">
+              czatu AI
+            </a>
+            , opisując Pokémona, którego szukasz.
+          </p>
         </div>
       ) : (
         <footer className="flex justify-center">
