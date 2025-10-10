@@ -1,36 +1,31 @@
-import { create } from "zustand"
-import {
-  createJSONStorage,
-  persist,
-  type StateStorage,
-} from "zustand/middleware"
+import { create } from "zustand";
+import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 
-export type ThemePreference = "system" | "light" | "dark"
+export type ThemePreference = "system" | "light" | "dark";
 
-type UiStoreState = {
-  theme: ThemePreference
-  isMobileNavOpen: boolean
-  isFilterDrawerOpen: boolean
+interface UiStoreState {
+  theme: ThemePreference;
+  isMobileNavOpen: boolean;
+  isFilterDrawerOpen: boolean;
 }
 
-type UiStoreActions = {
-  setTheme: (theme: ThemePreference) => void
-  toggleMobileNav: () => void
-  setMobileNavOpen: (isOpen: boolean) => void
-  setFilterDrawerOpen: (isOpen: boolean) => void
-  closeOverlays: () => void
+interface UiStoreActions {
+  setTheme: (theme: ThemePreference) => void;
+  toggleMobileNav: () => void;
+  setMobileNavOpen: (isOpen: boolean) => void;
+  setFilterDrawerOpen: (isOpen: boolean) => void;
+  closeOverlays: () => void;
 }
 
-export type UiStore = UiStoreState & UiStoreActions
+export type UiStore = UiStoreState & UiStoreActions;
 
 const noopStorage: StateStorage = {
   getItem: () => null,
   setItem: () => undefined,
   removeItem: () => undefined,
-}
+};
 
-const createStorage = () =>
-  typeof window === "undefined" ? noopStorage : window.localStorage
+const createStorage = () => (typeof window === "undefined" ? noopStorage : window.localStorage);
 
 export const useUiStore = create<UiStore>()(
   persist(
@@ -39,8 +34,7 @@ export const useUiStore = create<UiStore>()(
       isMobileNavOpen: false,
       isFilterDrawerOpen: false,
       setTheme: (theme) => set({ theme }),
-      toggleMobileNav: () =>
-        set((state) => ({ isMobileNavOpen: !state.isMobileNavOpen })),
+      toggleMobileNav: () => set((state) => ({ isMobileNavOpen: !state.isMobileNavOpen })),
       setMobileNavOpen: (isOpen) => set({ isMobileNavOpen: isOpen }),
       setFilterDrawerOpen: (isOpen) => set({ isFilterDrawerOpen: isOpen }),
       closeOverlays: () =>
@@ -53,16 +47,13 @@ export const useUiStore = create<UiStore>()(
       name: "ui-preferences",
       storage: createJSONStorage(createStorage),
       partialize: (state) => ({ theme: state.theme }),
-    },
-  ),
-)
+    }
+  )
+);
 
-export const resolveEffectiveTheme = (
-  theme: ThemePreference,
-  systemPrefersDark: boolean,
-): "light" | "dark" => {
+export const resolveEffectiveTheme = (theme: ThemePreference, systemPrefersDark: boolean): "light" | "dark" => {
   if (theme === "system") {
-    return systemPrefersDark ? "dark" : "light"
+    return systemPrefersDark ? "dark" : "light";
   }
-  return theme
-}
+  return theme;
+};
