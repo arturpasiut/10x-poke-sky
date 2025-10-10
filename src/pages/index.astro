@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import { PokemonGrid } from "../components/pokemon/PokemonGrid";
 ---
 
 <MainLayout title="10x Poke Sky">
@@ -54,55 +55,7 @@ import MainLayout from "../layouts/MainLayout.astro";
     </a>
   </section>
 
-  <section class="mt-10 flex flex-col gap-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold">Oglądaj</h2>
-      <a class="text-sm text-primary" href="#">Zobacz wszystkie</a>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {
-        [
-          {
-            title: "Holy Matrimony!",
-            year: "1998",
-            series: "S01 - 48 EP",
-            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
-          },
-          {
-            title: "Espeon, Not Included",
-            year: "2001",
-            series: "S05 - 17 EP",
-            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/196.png",
-          },
-          {
-            title: "Battle of the Badge",
-            year: "1999",
-            series: "S01 - 63 EP",
-            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png",
-          },
-          {
-            title: "Dig Those Diglett!",
-            year: "1998",
-            series: "S01 - 31 EP",
-            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/50.png",
-          },
-        ].map((item) => (
-          <article class="overflow-hidden rounded-lg border border-[color:color-mix(in_srgb,var(--color-border)_70%,transparent)] bg-[color:color-mix(in_srgb,var(--color-surface)_60%,transparent)] shadow-md">
-            <div class="aspect-video w-full overflow-hidden bg-[color:color-mix(in_srgb,var(--color-background)_20%,transparent)]">
-              <img alt={item.title} class="h-full w-full object-cover" loading="lazy" src={item.image} />
-            </div>
-            <div class="space-y-1 px-4 py-3">
-              <h3 class="text-base font-semibold">{item.title}</h3>
-              <p class="text-xs text-muted-foreground">
-                {item.year} | Series | {item.series}
-              </p>
-            </div>
-          </article>
-        ))
-      }
-    </div>
-  </section>
+  <PokemonGrid client:load />
 </MainLayout>
 
 <style lang="postcss">

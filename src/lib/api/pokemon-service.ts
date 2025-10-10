@@ -1,7 +1,4 @@
-import { runtimeConfig } from "@/lib/env";
 import type { PokemonListResponseDto } from "@/types";
-
-const EDGE_FUNCTION_BASE = `${runtimeConfig.supabaseUrl}/functions/v1`;
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -23,14 +20,14 @@ interface PokemonListEdgeResponse {
 }
 
 export async function fetchPokemonListFromEdge(limit: number, offset: number) {
-  const url = new URL(`${EDGE_FUNCTION_BASE}/pokemon-list`);
-  url.searchParams.set("limit", String(limit));
-  url.searchParams.set("offset", String(offset));
+  const params = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+  });
 
-  const response = await fetch(url.toString(), {
+  const response = await fetch(`/api/pokemon/list?${params.toString()}`, {
     method: "GET",
     headers: {
-      apikey: runtimeConfig.supabaseKey,
       "Content-Type": "application/json",
     },
   });

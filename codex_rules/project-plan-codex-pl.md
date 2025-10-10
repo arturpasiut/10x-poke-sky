@@ -50,7 +50,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 7. [x] Przygotuj testy Vitest obejmujące logikę TTL cache i transformatory danych (porównanie z typami).
 
 ## Faza 3 – Odkrywanie Pokemonów (US-001)
-1. Zbuduj widok główny listy korzystający z `fetch-pokemon-list` z paginacją lub „infinite scroll” zgodnie z designem.
+1. [x] Zbuduj widok główny listy korzystający z `fetch-pokemon-list` z paginacją lub „infinite scroll” zgodnie z designem.
 2. Zaimplementuj pole wyszukiwania z debounce, powiązane z parametrami URL; korzystaj z meta danych filtrów przechowywanych w Supabase.
 3. Wyświetlaj kontrolki filtrów (typ, generacja, region) aktualizujące zapytanie listy.
 4. Obsłuż stany pusty/błąd, wyświetlając sugestię przejścia do czatu AI przy braku wyników.
