@@ -47,7 +47,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 4. [x] Zaimplementuj funkcję edge `fetch-pokemon-details` dla pojedynczego Pokemona, ruchów i ewolucji z analogicznym cachingiem.
 5. [x] Dodaj nocny cron Supabase odświeżający najpopularniejszych Pokemonów i ruchy (lista w tabeli konfiguracyjnej).
 6. [x] Wprowadź lokalny cache w przeglądarce (IndexedDB/LocalStorage) dla ostatniej listy i obsługę hydracji w hooku React.
-7. Przygotuj testy Vitest obejmujące logikę TTL cache i transformatory danych (porównanie z typami).
+7. [x] Przygotuj testy Vitest obejmujące logikę TTL cache i transformatory danych (porównanie z typami).
 
 ## Faza 3 – Odkrywanie Pokemonów (US-001)
 1. Zbuduj widok główny listy korzystający z `fetch-pokemon-list` z paginacją lub „infinite scroll” zgodnie z designem.

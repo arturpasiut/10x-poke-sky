@@ -30,7 +30,7 @@ export function getCachedPokemonList(limit: number, offset: number, options?: Po
   if (!entry || isEntryExpired(entry, ttl)) {
     return null;
   }
-  return entry;
+  return entry.value;
 }
 
 export function setCachedPokemonList(limit: number, offset: number, payload: PokemonListResponseDto) {

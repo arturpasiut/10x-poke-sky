@@ -47,7 +47,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 4. [x] Implement Supabase edge function `fetch-pokemon-details` pulling single Pokemon, moves, and evolution chain with identical caching.
 5. [x] Create nightly Supabase cron job to refresh the most popular Pokemon IDs and moves (list maintained in a config table).
 6. [x] Add local browser cache via IndexedDB or LocalStorage for the latest list response and wire hydration logic in a React hook.
-7. Write Vitest suites covering cache TTL logic and data transformers to guarantee schema parity.
+7. [x] Write Vitest suites covering cache TTL logic and data transformers to guarantee schema parity.
 
 ## Phase 3 – Pokemon Discovery (US-001)
 1. Build the homepage list view consuming `fetch-pokemon-list`, showing pagination or infinite scroll according to design.
