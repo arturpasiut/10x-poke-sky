@@ -9,11 +9,6 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 3. Maintain parity between Supabase schema, TypeScript models, and UI contracts.
 4. Guard performance, accessibility, and security requirements continuously instead of deferring.
 
-## Initial Delivery Rule !!!IMPORTANT!!!
-1. During the early phases (0 and 1) implement every external integration behind mocked services and fake credentials only.
-2. Design adapters, configuration seams, and environment validation so production keys can be dropped in later without rewrites; postpone wiring real APIs, auth providers, or webhooks until infrastructure is provisioned.
-3. Never commit real secrets—keep mocks deterministic and document what needs to be swapped when going live.
-
 ## High-Level Milestones
 | Phase | Focus | Complete When |
 | --- | --- | --- |
@@ -48,7 +43,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 ## Phase 2 – Data Integration and Cache Strategy
 1. [x] Generate TypeScript types for PokeAPI responses using OpenAPI or manual typing stored in `src/lib/types/pokemon.ts`.
 2. [x] Build HTTP client wrappers in `src/lib/api/pokeapi.ts` with retry logic, timeout, and error normalization.
-3. Implement Supabase edge function `fetch-pokemon-list` that checks `pokemon_cache`, refreshes entries older than 24h, and returns paginated results.
+3. [x] Implement Supabase edge function `fetch-pokemon-list` that checks `pokemon_cache`, refreshes entries older than 24h, and returns paginated results.
 4. Implement Supabase edge function `fetch-pokemon-details` pulling single Pokemon, moves, and evolution chain with identical caching.
 5. Create nightly Supabase cron job to refresh the most popular Pokemon IDs and moves (list maintained in a config table).
 6. Add local browser cache via IndexedDB or LocalStorage for the latest list response and wire hydration logic in a React hook.

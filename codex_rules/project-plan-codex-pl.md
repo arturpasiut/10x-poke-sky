@@ -9,11 +9,6 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 3. Zachowaj zgodność schematu Supabase, modeli TypeScript i kontraktów UI.
 4. Dbaj o wydajność, dostępność i bezpieczeństwo w trakcie prac, nie odkładaj poprawek na koniec.
 
-## Zasada początkowej implementacji !!!WAŻNE!!!
-1. W fazach 0 i 1 wszystkie integracje zewnętrzne budujemy na mockach i fałszywych poświadczeniach.
-2. Projektuj adaptery, miejsca wstrzyknięcia konfiguracji i walidację środowiska tak, aby klucze produkcyjne dało się podpiąć później bez przepisywania kodu; realne API, auth i webhooki podłączamy dopiero po uruchomieniu infrastruktury.
-3. Nigdy nie commituj prawdziwych sekretów — mocki mają być deterministyczne i opisane, żeby wiadomo było, co podmienić przy wejściu na produkcję.
-
 ## Kamienie milowe
 | Faza | Zakres | Ukończone, gdy |
 | --- | --- | --- |
@@ -48,7 +43,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 ## Faza 2 – Integracja danych i cache
 1. [x] Wygeneruj typy TypeScript dla odpowiedzi PokeAPI (np. przy pomocy OpenAPI) i umieść je w `src/lib/types/pokemon.ts`.
 2. [x] Zbuduj wrapper HTTP w `src/lib/api/pokeapi.ts` z retry, timeoutem i normalizacją błędów.
-3. Napisz funkcję edge `fetch-pokemon-list`, która sprawdza `pokemon_cache`, odświeża wpisy starsze niż 24h i zwraca paginowane wyniki.
+3. [x] Napisz funkcję edge `fetch-pokemon-list`, która sprawdza `pokemon_cache`, odświeża wpisy starsze niż 24h i zwraca paginowane wyniki.
 4. Zaimplementuj funkcję edge `fetch-pokemon-details` dla pojedynczego Pokemona, ruchów i ewolucji z analogicznym cachingiem.
 5. Dodaj nocny cron Supabase odświeżający najpopularniejszych Pokemonów i ruchy (lista w tabeli konfiguracyjnej).
 6. Wprowadź lokalny cache w przeglądarce (IndexedDB/LocalStorage) dla ostatniej listy i obsługę hydracji w hooku React.

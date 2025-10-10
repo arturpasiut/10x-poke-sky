@@ -13,6 +13,40 @@ interface PokemonListResponse {
   results: PokemonListResult[];
 }
 
+interface PokemonType {
+  slot: number;
+  type: {
+    name: string;
+    url: string;
+  };
+}
+
+interface PokemonSprites {
+  front_default: string | null;
+  other?: {
+    ["official-artwork"]?: {
+      front_default: string | null;
+    };
+  };
+}
+
+export interface PokemonDetail {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: PokemonType[];
+  sprites: PokemonSprites;
+}
+
+export interface PokemonSpecies {
+  id: number;
+  name: string;
+  generation?: {
+    name: string;
+  };
+}
+
 export async function fetchPokemonList({
   limit = 20,
   offset = 0,
@@ -65,6 +99,30 @@ export async function fetchPokemonDetails(identifier: string) {
     throw new Error(`PokeAPI detail request failed: ${response.status} ${response.statusText}`);
   }
 
-  const payload = await response.json();
+  const payload = (await response.json()) as PokemonDetail;
+  return payload;
+}
+
+export async function fetchPokemonSpecies(identifier: number | string) {
+  if (config.useMock) {
+    return {
+      id: Number(identifier),
+      name: String(identifier),
+      generation: { name: "generation-i" },
+    } as PokemonSpecies;
+  }
+
+  const url = withBase(`/pokemon-species/${identifier}`);
+  const response = await fetch(url, {
+    headers: {
+      "user-agent": "10x-poke-sky-edge-function/0.1",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`PokeAPI species request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const payload = (await response.json()) as PokemonSpecies;
   return payload;
 }
