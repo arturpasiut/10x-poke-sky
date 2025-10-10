@@ -30,19 +30,19 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 | 10 | Release i przekazanie | CI/CD, dokumentacja, checklist launchowa ukończone |
 
 ## Faza 0 – Przygotowanie fundamentów
-1. Przejrzyj repo (layouty, komponenty, konfiguracje) i usuń treści demo, zostawiając przydatne utility.
-2. Utwórz `.env` oraz `.env.sample` z danymi Supabase, PokeAPI i Gemini; dodaj walidację środowiska w `src/lib/env.ts`.
-3. Załóż projekt Supabase, ustaw parametry auth i utwórz tabele `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` wraz z politykami RLS ograniczającymi dostęp do właściciela rekordu.
-4. Skonfiguruj Edge Functions Supabase (lub REST) do pobierania danych o Pokemonach i umieść je w `supabase/functions`.
-5. Dostosuj tooling (opcjonalnie Storybook) i skonfiguruj Tailwind zgodnie z tokenami projektowymi z zespołu designu.
-6. Zaktualizuj README o kroki uruchomienia lokalnego i upewnij się, że `npm run dev` działa z placeholderami.
-
+1. [x] Przejrzyj repo (layouty, komponenty, konfiguracje) i usuń treści demo, zostawiając przydatne utility.
+2. [x] Utwórz `.env` oraz `.env.sample` z danymi Supabase, PokeAPI i Gemini; dodaj walidację środowiska w `src/lib/env.ts`.
+3. [x] Załóż projekt Supabase, ustaw parametry auth i utwórz tabele `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` wraz z politykami RLS ograniczającymi dostęp do właściciela rekordu.
+4. [x] Skonfiguruj Edge Functions Supabase (lub REST) do pobierania danych o Pokemonach i umieść je w `supabase/functions`.
+5. [x] Dostosuj tooling (opcjonalnie Storybook) i skonfiguruj Tailwind zgodnie z tokenami projektowymi z zespołu designu.
+6. [x] Zaktualizuj README o kroki uruchomienia lokalnego i upewnij się, że `npm run dev` działa z placeholderami.
+ 
 ## Faza 1 – Layout, routing, komponenty współdzielone
-1. Zdefiniuj layouty Astro (`MainLayout`, `AuthLayout`) i podepnij trasy `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
-2. Zaimplementuj globalną nawigację, stopkę oraz responsywne siatki zgodne z tokenami Tailwind.
+1. [x] Zdefiniuj layouty Astro (`MainLayout`, `AuthLayout`) i podepnij trasy `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
+2. [x] Zaimplementuj globalną nawigację, stopkę oraz responsywne siatki zgodne z tokenami Tailwind.
 3. Dodaj sklepy Zustand: `useSessionStore` (stan Supabase) i `useUiStore` (flag UI).
 4. Utwórz komponenty UI wielokrotnego użytku (przyciski, karty, badge, zakładki, modal) oraz, jeśli to możliwe, dokumentację w Storybook/MDX.
-5. Dopnij automaty `npm run lint` i formatowanie (Husky, lint-staged) oraz potwierdź, że przechodzą lokalnie.
+5. [x] Dopnij automaty `npm run lint` i formatowanie (Husky, lint-staged) oraz potwierdź, że przechodzą lokalnie.
 6. Przygotuj zrzuty ekranów layoutu lub testy wizualne Playwright do akceptacji designu.
 
 ## Faza 2 – Integracja danych i cache
