@@ -33,6 +33,33 @@ function formatDexNumber(id: number) {
   return `#${id.toString().padStart(3, "0")}`;
 }
 
+const GENERATION_LABELS: Record<string, string> = {
+  "generation-i": "I",
+  "generation-ii": "II",
+  "generation-iii": "III",
+  "generation-iv": "IV",
+  "generation-v": "V",
+  "generation-vi": "VI",
+  "generation-vii": "VII",
+  "generation-viii": "VIII",
+  "generation-ix": "IX",
+};
+
+function formatGeneration(value: string | null | undefined) {
+  if (!value) return "?";
+  return GENERATION_LABELS[value] ?? value.replace("generation-", "").toUpperCase();
+}
+
+function formatRegion(value: string | null | undefined) {
+  if (!value) return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatTypeLabel(value: string) {
+  if (!value) return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export interface PokemonCardProps {
   pokemon: PokemonSummaryDto;
 }
@@ -43,19 +70,19 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden border border-border/40 bg-gradient-to-br transition-transform hover:-translate-y-1 hover:shadow-floating",
+        "group relative flex h-full flex-col overflow-hidden border border-border/40 bg-gradient-to-br transition-transform hover:-translate-y-1 hover:shadow-floating",
         gradient
       )}
     >
-      <CardHeader className="relative pb-4">
-        <div className="flex items-start justify-between text-sm text-muted-foreground">
+      <CardHeader className="relative pb-3">
+        <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wider text-muted-foreground">
           <span>{formatDexNumber(pokemon.pokemonId)}</span>
-          <span className="font-medium capitalize text-foreground">{pokemon.region ?? ""}</span>
+          <span>{formatRegion(pokemon.region)}</span>
         </div>
-        <CardTitle className="text-2xl font-semibold capitalize text-foreground">{pokemon.name}</CardTitle>
+        <CardTitle className="text-2xl font-semibold capitalize text-foreground sm:text-3xl">{pokemon.name}</CardTitle>
       </CardHeader>
-      <CardContent className="relative flex flex-col items-center gap-4">
-        <div className="relative flex h-32 w-32 items-center justify-center rounded-3xl bg-white/40 p-4 backdrop-blur-sm shadow-inner shadow-black/10 dark:bg-white/10">
+      <CardContent className="flex flex-1 flex-col items-center gap-4">
+        <div className="relative flex h-32 w-32 items-center justify-center rounded-3xl bg-white/40 p-4 backdrop-blur-sm shadow-inner shadow-black/10 transition group-hover:scale-105 dark:bg-white/10">
           {pokemon.spriteUrl ? (
             <img
               src={pokemon.spriteUrl}
@@ -70,16 +97,16 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
         <div className="flex flex-wrap justify-center gap-2">
           {pokemon.types?.map((type) => (
             <Badge key={type} tone={type.toLowerCase() as BadgeTone} variant="surface">
-              {type}
+              {formatTypeLabel(type)}
             </Badge>
           ))}
         </div>
       </CardContent>
-      <CardFooter className="flex items-center justify-between border-t border-border/40 pt-4 text-sm text-muted-foreground">
-        <span>Generacja {pokemon.generation?.replace("generation-", "").toUpperCase() ?? "?"}</span>
+      <CardFooter className="mt-auto flex items-center justify-between border-t border-border/30 bg-background/60 px-4 pt-4 text-sm text-muted-foreground">
+        <span className="whitespace-nowrap">Generacja {formatGeneration(pokemon.generation)}</span>
         <a
           href={`/pokemon/${pokemon.pokemonId}`}
-          className="rounded-full bg-primary/80 px-3 py-1 text-xs font-semibold text-primary-foreground transition hover:bg-primary"
+          className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground transition hover:bg-primary/90"
         >
           Szczegóły
         </a>
