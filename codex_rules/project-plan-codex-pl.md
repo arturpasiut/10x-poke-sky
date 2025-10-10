@@ -53,7 +53,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 1. [x] Zbuduj widok główny listy korzystający z `fetch-pokemon-list` z paginacją lub „infinite scroll” zgodnie z designem.
 2. [x] Zaimplementuj pole wyszukiwania z debounce, powiązane z parametrami URL; korzystaj z meta danych filtrów przechowywanych w Supabase.
 3. [x] Wyświetlaj kontrolki filtrów (typ, generacja, region) aktualizujące zapytanie listy.
-4. Obsłuż stany pusty/błąd, wyświetlając sugestię przejścia do czatu AI przy braku wyników.
+4. [x] Obsłuż stany pusty/błąd, wyświetlając sugestię przejścia do czatu AI przy braku wyników.
 5. Dodaj testy Vitest + RTL dla paska wyszukiwania, reduktora filtrów i renderowania kart.
 6. Napisz scenariusz Playwright obejmujący wyszukiwanie, kombinacje filtrów i wyświetlanie komunikatu „brak wyników”.
 

@@ -92,14 +92,23 @@ export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListR
   }, [limit, offset, search, typesKey, generation, region, normalizedTypes]);
 
   const refresh = async () => {
-    const { data } = await fetchPokemonListFromEdge(limit, offset, {
-      search,
-      types: normalizedTypes,
-      generation,
-      region,
-    });
-    setCachedPokemonList(limit, offset, search, normalizedTypes, generation, region, data);
-    setState({ data, isLoading: false, error: null, fromCache: false });
+    setState((prev) => ({ ...prev, isLoading: true, error: null, fromCache: false }));
+    try {
+      const { data } = await fetchPokemonListFromEdge(limit, offset, {
+        search,
+        types: normalizedTypes,
+        generation,
+        region,
+      });
+      setCachedPokemonList(limit, offset, search, normalizedTypes, generation, region, data);
+      setState({ data, isLoading: false, error: null, fromCache: false });
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      }));
+    }
   };
 
   return {
