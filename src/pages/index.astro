@@ -9,18 +9,21 @@ import MainLayout from "../layouts/MainLayout.astro";
       <h1 class="text-4xl font-semibold sm:text-5xl">Jakiego Pokémona szukasz?</h1>
     </div>
 
-    <div class="relative w-full">
+    <form class="relative w-full" method="get" action="/pokemon">
       <input
-        class="w-full rounded-full border border-transparent bg-[color:color-mix(in_srgb,var(--color-muted)_70%,transparent)] px-6 py-4 pr-14 text-base text-foreground shadow-inner outline-none transition focus:border-primary focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--color-primary)_35%,transparent)]"
+        class="w-full rounded-full border border-transparent bg-[color:color-mix(in_srgb,var(--color-muted)_70%,transparent)] px-6 py-4 pr-20 text-base text-foreground shadow-inner outline-none transition focus:border-primary focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--color-primary)_35%,transparent)]"
         type="search"
-        placeholder="Wpisz nazwę pokémona lub filtr"
+        name="q"
+        placeholder="Wpisz nazwę pokémona"
       />
-      <span
-        class="pointer-events-none absolute right-6 top-1/2 flex -translate-y-1/2 items-center text-muted-foreground"
+      <button
+        type="submit"
+        class="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow hover:bg-primary/90"
       >
-        🔍
-      </span>
-    </div>
+        <span>Wyszukaj</span>
+        <span aria-hidden>🔍</span>
+      </button>
+    </form>
   </div>
 
   <section class="grid gap-4 sm:grid-cols-2">

@@ -7,6 +7,10 @@ import type { PokemonListResponseDto } from "@/types";
 export interface UsePokemonListOptions {
   limit?: number;
   offset?: number;
+  search?: string;
+  types?: string[];
+  generation?: string;
+  region?: string;
 }
 
 export interface UsePokemonListResult {
@@ -23,10 +27,21 @@ const DEFAULT_OFFSET = 0;
 export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListResult {
   const limit = options?.limit ?? DEFAULT_LIMIT;
   const offset = options?.offset ?? DEFAULT_OFFSET;
+  const search = options?.search?.trim() ?? "";
 
-  const cacheKey = useMemo(() => ({ limit, offset }), [limit, offset]);
+  const rawTypes = Array.isArray(options?.types) ? options?.types : [];
+  const typesKey = rawTypes
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean)
+    .sort()
+    .join(",");
+  const normalizedTypes = useMemo(() => (typesKey ? typesKey.split(",") : []), [typesKey]);
+
+  const generation = options?.generation?.trim().toLowerCase() ?? "";
+  const region = options?.region?.trim().toLowerCase() ?? "";
+
   const [state, setState] = useState(() => {
-    const cached = getCachedPokemonList(limit, offset);
+    const cached = getCachedPokemonList(limit, offset, search, normalizedTypes, generation, region);
     return {
       data: cached?.data ?? null,
       isLoading: !cached,
@@ -39,7 +54,7 @@ export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListR
     let cancelled = false;
 
     async function load() {
-      const cached = getCachedPokemonList(cacheKey.limit, cacheKey.offset);
+      const cached = getCachedPokemonList(limit, offset, search, normalizedTypes, generation, region);
       if (cached && !cancelled) {
         setState({ data: cached.data, isLoading: false, error: null, fromCache: true });
         return;
@@ -48,8 +63,13 @@ export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListR
       setState((prev) => ({ ...prev, isLoading: true, error: null, fromCache: false }));
 
       try {
-        const { data } = await fetchPokemonListFromEdge(cacheKey.limit, cacheKey.offset);
-        setCachedPokemonList(cacheKey.limit, cacheKey.offset, data);
+        const { data } = await fetchPokemonListFromEdge(limit, offset, {
+          search,
+          types: normalizedTypes,
+          generation,
+          region,
+        });
+        setCachedPokemonList(limit, offset, search, normalizedTypes, generation, region, data);
         if (!cancelled) {
           setState({ data, isLoading: false, error: null, fromCache: false });
         }
@@ -69,12 +89,26 @@ export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListR
     return () => {
       cancelled = true;
     };
-  }, [cacheKey.limit, cacheKey.offset]);
+  }, [limit, offset, search, typesKey, generation, region, normalizedTypes]);
 
   const refresh = async () => {
-    const { data } = await fetchPokemonListFromEdge(cacheKey.limit, cacheKey.offset);
-    setCachedPokemonList(cacheKey.limit, cacheKey.offset, data);
-    setState({ data, isLoading: false, error: null, fromCache: false });
+    setState((prev) => ({ ...prev, isLoading: true, error: null, fromCache: false }));
+    try {
+      const { data } = await fetchPokemonListFromEdge(limit, offset, {
+        search,
+        types: normalizedTypes,
+        generation,
+        region,
+      });
+      setCachedPokemonList(limit, offset, search, normalizedTypes, generation, region, data);
+      setState({ data, isLoading: false, error: null, fromCache: false });
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      }));
+    }
   };
 
   return {

@@ -26,19 +26,19 @@ describe("pokemon list cache", () => {
   });
 
   it("returns null when cache empty", () => {
-    expect(getCachedPokemonList(20, 0)).toBeNull();
+    expect(getCachedPokemonList(20, 0, "", [], "", "")).toBeNull();
   });
 
   it("stores and retrieves cached payload", () => {
-    setCachedPokemonList(20, 0, samplePayload);
-    const cached = getCachedPokemonList(20, 0, { ttlMs: 1000 });
+    setCachedPokemonList(20, 0, "", [], "", "", samplePayload);
+    const cached = getCachedPokemonList(20, 0, "", [], "", "", { ttlMs: 1000 });
     expect(cached?.data).toEqual(samplePayload);
-    expect(cached?.metadata).toEqual({ limit: 20, offset: 0 });
+    expect(cached?.metadata).toEqual({ limit: 20, offset: 0, search: "", typesKey: "", generation: "", region: "" });
   });
 
   it("respects ttl", () => {
-    setCachedPokemonList(20, 0, samplePayload);
-    const cached = getCachedPokemonList(20, 0, { ttlMs: -1 });
+    setCachedPokemonList(20, 0, "", [], "", "", samplePayload);
+    const cached = getCachedPokemonList(20, 0, "", [], "", "", { ttlMs: -1 });
     expect(cached).toBeNull();
   });
 });
