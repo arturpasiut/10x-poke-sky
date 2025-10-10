@@ -1,39 +1,20 @@
 /* eslint-disable no-console -- Logging in edge functions aids observability during development */
 import { config, handleOptions, jsonResponse } from "../_shared/config.ts";
+import { CACHE_TTL_MS } from "../_shared/constants.ts";
 import {
+  extractResourceId,
   fetchPokemonDetails,
   fetchPokemonList,
   fetchPokemonSpecies,
+  getPokemonSprite,
   type PokemonDetail,
   type PokemonSpecies,
 } from "../_shared/pokeapi.ts";
 import { supabaseAdminClient } from "../_shared/supabase-client.ts";
+import type { PokemonCachePayload, PokemonCacheRow } from "../_shared/types.ts";
+import { generationRegionMap } from "../_shared/regions.ts";
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_LIMIT = 100;
-
-interface PokemonCacheRow {
-  id?: number;
-  pokemon_id: number;
-  name: string;
-  types: string[];
-  generation: string | null;
-  region: string | null;
-  payload: unknown;
-  cached_at: string;
-}
-
-const generationRegionMap: Record<string, string> = {
-  "generation-i": "kanto",
-  "generation-ii": "johto",
-  "generation-iii": "hoenn",
-  "generation-iv": "sinnoh",
-  "generation-v": "unova",
-  "generation-vi": "kalos",
-  "generation-vii": "alola",
-  "generation-viii": "galar",
-  "generation-ix": "paldea",
-};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -84,7 +65,7 @@ async function handleMockResponse(limit: number, offset: number) {
   const now = new Date().toISOString();
 
   const items = list.results.map((result, index) => {
-    const pokemonId = extractPokemonId(result.url) ?? offset + index + 1;
+    const pokemonId = extractResourceId(result.url, "pokemon") ?? offset + index + 1;
     return {
       pokemonId,
       name: result.name,
@@ -109,7 +90,9 @@ async function handleMockResponse(limit: number, offset: number) {
 
 async function handleCachedResponse(limit: number, offset: number) {
   const list = await fetchPokemonList({ limit, offset });
-  const ids = list.results.map((item) => extractPokemonId(item.url)).filter((value): value is number => value !== null);
+  const ids = list.results
+    .map((item) => extractResourceId(item.url, "pokemon"))
+    .filter((value): value is number => value !== null);
 
   if (ids.length === 0) {
     return {
@@ -153,7 +136,7 @@ async function handleCachedResponse(limit: number, offset: number) {
 
   let refreshedIds: number[] = [];
   if (toRefresh.length > 0) {
-    const refreshedRecords = await refreshPokemonEntries(toRefresh);
+    const refreshedRecords = await refreshPokemonEntries(toRefresh, cacheMap);
     refreshedIds = refreshedRecords.map((record) => record.pokemon_id);
 
     const upsertPayload = refreshedRecords.map((record) => ({
@@ -195,19 +178,23 @@ async function handleCachedResponse(limit: number, offset: number) {
   };
 }
 
-async function refreshPokemonEntries(ids: number[]) {
+async function refreshPokemonEntries(ids: number[], existing: Map<number, PokemonCacheRow>) {
   const records: PokemonCacheRow[] = [];
 
   for (const id of ids) {
     const [detail, species] = await Promise.all([fetchPokemonDetails(String(id)), fetchPokemonSpecies(String(id))]);
-
-    records.push(buildCacheRecord(detail, species));
+    const previousPayload = parseCachePayload(existing.get(id)?.payload);
+    records.push(buildCacheRecord(detail, species, previousPayload));
   }
 
   return records;
 }
 
-function buildCacheRecord(detail: PokemonDetail, species: PokemonSpecies | null): PokemonCacheRow {
+function buildCacheRecord(
+  detail: PokemonDetail,
+  species: PokemonSpecies | null,
+  previousPayload: PokemonCachePayload | null
+): PokemonCacheRow {
   const generationName = species?.generation?.name ?? null;
   const region = generationName ? (generationRegionMap[generationName] ?? null) : null;
 
@@ -220,6 +207,9 @@ function buildCacheRecord(detail: PokemonDetail, species: PokemonSpecies | null)
     payload: {
       pokemon: detail,
       species,
+      evolutionChain: previousPayload?.evolutionChain ?? null,
+      moves: previousPayload?.moves ?? undefined,
+      enrichedAt: previousPayload?.enrichedAt,
     },
     cached_at: new Date().toISOString(),
   };
@@ -234,23 +224,21 @@ function mapCacheRowToSummary(row: PokemonCacheRow) {
     types: row.types,
     generation: row.generation,
     region: row.region,
-    spriteUrl: detail ? getSpriteUrl(detail) : null,
+    spriteUrl: detail ? getPokemonSprite(detail) : null,
     cachedAt: row.cached_at,
   };
 }
 
 function extractDetailFromPayload(payload: unknown): PokemonDetail | null {
-  if (payload && typeof payload === "object" && "pokemon" in payload) {
-    const candidate = (payload as { pokemon?: PokemonDetail }).pokemon;
-    if (candidate && typeof candidate === "object") {
-      return candidate;
-    }
-  }
-  return null;
+  const parsed = parseCachePayload(payload);
+  return parsed?.pokemon ?? null;
 }
 
-function getSpriteUrl(detail: PokemonDetail) {
-  return detail.sprites.other?.["official-artwork"]?.front_default ?? detail.sprites.front_default ?? null;
+function parseCachePayload(payload: unknown): PokemonCachePayload | null {
+  if (payload && typeof payload === "object" && "pokemon" in payload) {
+    return payload as PokemonCachePayload;
+  }
+  return null;
 }
 
 function buildPaginatedPayload<T>(total: number, limit: number, offset: number, items: T[]) {
@@ -261,11 +249,4 @@ function buildPaginatedPayload<T>(total: number, limit: number, offset: number, 
     total,
     hasNext: offset + limit < total,
   };
-}
-
-function extractPokemonId(url: string | null) {
-  if (!url) return null;
-  const match = url.match(/\/pokemon\/(\d+)\/*$/);
-  if (!match) return null;
-  return Number(match[1]);
 }
