@@ -200,6 +200,11 @@ const AIChatPanel = ({ initialSuggestions, isAuthenticated, preferredGeneration 
         />
       ) : null}
 
+      <div className="rounded-2xl border border-border/40 bg-[color:color-mix(in_srgb,var(--color-surface)_85%,transparent)] px-4 py-3 text-xs text-muted-foreground shadow-sm">
+        <strong className="font-semibold text-foreground">Uwaga:</strong> Asystent analizuje każdą wiadomość
+        niezależnie. Przy kolejnych próbach powtórz pełny opis Pokémona zamiast odwoływać się do poprzednich odpowiedzi.
+      </div>
+
       <div className="space-y-6 rounded-3xl border border-border/30 bg-[color:color-mix(in_srgb,var(--color-surface)_70%,transparent)] p-6 shadow-sm">
         <SuggestionChips
           items={state.suggestedPrompts}

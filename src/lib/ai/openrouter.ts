@@ -6,7 +6,7 @@ import type { AiIdentifyCommand } from "@/types";
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 // Use an open-source model available on the OpenRouter free tier for initial integration.
-const DEFAULT_MODEL = "meta-llama/llama-3.1-8b-instruct";
+const DEFAULT_MODEL = "deepseek/deepseek-r1-0528-qwen3-8b:free";
 
 const IdentifyPayloadSchema = z
   .object({
