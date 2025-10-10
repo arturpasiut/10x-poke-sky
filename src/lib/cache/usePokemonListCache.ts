@@ -7,6 +7,7 @@ import type { PokemonListResponseDto } from "@/types";
 export interface UsePokemonListOptions {
   limit?: number;
   offset?: number;
+  search?: string;
 }
 
 export interface UsePokemonListResult {
@@ -23,10 +24,11 @@ const DEFAULT_OFFSET = 0;
 export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListResult {
   const limit = options?.limit ?? DEFAULT_LIMIT;
   const offset = options?.offset ?? DEFAULT_OFFSET;
+  const search = options?.search?.trim() ?? "";
 
-  const cacheKey = useMemo(() => ({ limit, offset }), [limit, offset]);
+  const cacheKey = useMemo(() => ({ limit, offset, search }), [limit, offset, search]);
   const [state, setState] = useState(() => {
-    const cached = getCachedPokemonList(limit, offset);
+    const cached = getCachedPokemonList(limit, offset, search);
     return {
       data: cached?.data ?? null,
       isLoading: !cached,
@@ -39,7 +41,7 @@ export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListR
     let cancelled = false;
 
     async function load() {
-      const cached = getCachedPokemonList(cacheKey.limit, cacheKey.offset);
+      const cached = getCachedPokemonList(cacheKey.limit, cacheKey.offset, cacheKey.search);
       if (cached && !cancelled) {
         setState({ data: cached.data, isLoading: false, error: null, fromCache: true });
         return;
@@ -48,8 +50,8 @@ export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListR
       setState((prev) => ({ ...prev, isLoading: true, error: null, fromCache: false }));
 
       try {
-        const { data } = await fetchPokemonListFromEdge(cacheKey.limit, cacheKey.offset);
-        setCachedPokemonList(cacheKey.limit, cacheKey.offset, data);
+        const { data } = await fetchPokemonListFromEdge(cacheKey.limit, cacheKey.offset, cacheKey.search);
+        setCachedPokemonList(cacheKey.limit, cacheKey.offset, cacheKey.search, data);
         if (!cancelled) {
           setState({ data, isLoading: false, error: null, fromCache: false });
         }
@@ -69,11 +71,11 @@ export function usePokemonList(options?: UsePokemonListOptions): UsePokemonListR
     return () => {
       cancelled = true;
     };
-  }, [cacheKey.limit, cacheKey.offset]);
+  }, [cacheKey.limit, cacheKey.offset, cacheKey.search]);
 
   const refresh = async () => {
-    const { data } = await fetchPokemonListFromEdge(cacheKey.limit, cacheKey.offset);
-    setCachedPokemonList(cacheKey.limit, cacheKey.offset, data);
+    const { data } = await fetchPokemonListFromEdge(cacheKey.limit, cacheKey.offset, cacheKey.search);
+    setCachedPokemonList(cacheKey.limit, cacheKey.offset, cacheKey.search, data);
     setState({ data, isLoading: false, error: null, fromCache: false });
   };
 

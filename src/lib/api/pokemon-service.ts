@@ -15,15 +15,19 @@ interface PokemonListEdgeResponse {
     refreshedCount: number;
     refreshedIds: number[];
     cacheTtlMs: number;
+    search?: string;
   };
   source: string;
 }
 
-export async function fetchPokemonListFromEdge(limit: number, offset: number) {
+export async function fetchPokemonListFromEdge(limit: number, offset: number, search?: string) {
   const params = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
   });
+  if (search && search.trim().length > 0) {
+    params.set("search", search.trim());
+  }
 
   const response = await fetch(`/api/pokemon/list?${params.toString()}`, {
     method: "GET",

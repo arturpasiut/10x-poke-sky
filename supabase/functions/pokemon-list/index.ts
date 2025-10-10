@@ -1,7 +1,7 @@
 /* eslint-disable no-console -- Logging in edge functions aids observability during development */
 import { config, handleOptions, jsonResponse } from "../_shared/config.ts";
 import { CACHE_TTL_MS } from "../_shared/constants.ts";
-import { fetchPokemonList } from "../_shared/pokeapi.ts";
+import { fetchPokemonDetails, fetchPokemonList } from "../_shared/pokeapi.ts";
 import { supabaseAdminClient } from "../_shared/supabase-client.ts";
 import type { PokemonCacheRow } from "../_shared/types.ts";
 import {
@@ -25,13 +25,16 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   const limit = sanitizeLimit(url.searchParams.get("limit"));
   const offset = sanitizeOffset(url.searchParams.get("offset"));
+  const search = sanitizeSearch(url.searchParams.get("search"));
 
   try {
     if (config.useMock) {
       return handleMockResponse(limit, offset);
     }
 
-    const response = await handleCachedResponse(limit, offset);
+    const response = search
+      ? await handleSearchResponse(limit, offset, search)
+      : await handleCachedResponse(limit, offset);
     return jsonResponse(response);
   } catch (error) {
     console.error("pokemon-list error", error);
@@ -55,6 +58,11 @@ function sanitizeOffset(value: string | null) {
   const parsed = Number(value ?? "0");
   if (Number.isNaN(parsed) || parsed < 0) return 0;
   return parsed;
+}
+
+function sanitizeSearch(value: string | null) {
+  if (!value) return "";
+  return value.trim().toLowerCase().slice(0, 100);
 }
 
 async function handleMockResponse(limit: number, offset: number) {
@@ -154,6 +162,60 @@ async function handleCachedResponse(limit: number, offset: number) {
       cacheTtlMs: CACHE_TTL_MS,
     },
     data: buildPaginatedPayload(list.count, limit, offset, items),
+  };
+}
+
+async function handleSearchResponse(limit: number, offset: number, search: string) {
+  const from = offset;
+  const to = Math.max(offset + limit - 1, offset);
+
+  const { data: rows, error, count } = await supabaseAdminClient
+    .from("pokemon_cache")
+    .select("*", { count: "exact" })
+    .ilike("name", `%${search}%`)
+    .order("pokemon_id", { ascending: true })
+    .range(from, to);
+
+  if (error) {
+    throw error;
+  }
+
+  let results = rows ?? [];
+  const staleCutoff = Date.now() - CACHE_TTL_MS;
+  const toRefresh = results
+    .filter((row) => new Date(row.cached_at).getTime() < staleCutoff)
+    .map((row) => row.pokemon_id);
+
+  if (toRefresh.length > 0) {
+    const refreshed = await fetchAndRefreshPokemonSummaries(toRefresh);
+    const refreshedMap = new Map(refreshed.map((row) => [row.pokemon_id, row]));
+    results = results.map((row) => refreshedMap.get(row.pokemon_id) ?? row);
+  }
+
+  let total = count ?? results.length;
+
+  if (results.length === 0 && offset === 0) {
+    try {
+      const detail = await fetchPokemonDetails(search);
+      const refreshed = await fetchAndRefreshPokemonSummaries([detail.id]);
+      results = refreshed;
+      total = refreshed.length;
+    } catch (fallbackError) {
+      console.warn("pokemon-list search fallback failed", fallbackError);
+    }
+  }
+
+  const items = results.map((row) => mapCacheRowToSummary(row));
+
+  return {
+    source: "cache",
+    meta: {
+      refreshedCount: toRefresh.length,
+      refreshedIds: toRefresh,
+      cacheTtlMs: CACHE_TTL_MS,
+      search,
+    },
+    data: buildPaginatedPayload(total, limit, offset, items),
   };
 }
 

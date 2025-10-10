@@ -6,10 +6,14 @@ export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
   const limit = url.searchParams.get("limit") ?? "20";
   const offset = url.searchParams.get("offset") ?? "0";
+  const search = url.searchParams.get("search") ?? "";
 
   const targetUrl = new URL("/functions/v1/pokemon-list", runtimeConfig.supabaseUrl);
   targetUrl.searchParams.set("limit", limit);
   targetUrl.searchParams.set("offset", offset);
+  if (search) {
+    targetUrl.searchParams.set("search", search);
+  }
 
   try {
     const response = await fetch(targetUrl, {

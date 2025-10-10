@@ -11,6 +11,7 @@ export interface PokemonListCacheOptions {
 interface CacheMetadata {
   limit: number;
   offset: number;
+  search: string;
 }
 
 export interface CachedPokemonList {
@@ -19,13 +20,14 @@ export interface CachedPokemonList {
   timestamp: number;
 }
 
-export function buildListCacheKey(limit: number, offset: number) {
-  return normalizeKey([LIST_CACHE_PREFIX, limit, offset]);
+export function buildListCacheKey(limit: number, offset: number, search: string) {
+  const normalizedSearch = search.trim().toLowerCase();
+  return normalizeKey([LIST_CACHE_PREFIX, limit, offset, normalizedSearch]);
 }
 
-export function getCachedPokemonList(limit: number, offset: number, options?: PokemonListCacheOptions) {
+export function getCachedPokemonList(limit: number, offset: number, search: string, options?: PokemonListCacheOptions) {
   const ttl = options?.ttlMs ?? DEFAULT_TTL_MS;
-  const key = buildListCacheKey(limit, offset);
+  const key = buildListCacheKey(limit, offset, search);
   const entry = readCache<CachedPokemonList>(key);
   if (!entry || isEntryExpired(entry, ttl)) {
     return null;
@@ -33,11 +35,11 @@ export function getCachedPokemonList(limit: number, offset: number, options?: Po
   return entry.value;
 }
 
-export function setCachedPokemonList(limit: number, offset: number, payload: PokemonListResponseDto) {
-  const key = buildListCacheKey(limit, offset);
+export function setCachedPokemonList(limit: number, offset: number, search: string, payload: PokemonListResponseDto) {
+  const key = buildListCacheKey(limit, offset, search);
   writeCache<CachedPokemonList>(key, {
     data: payload,
-    metadata: { limit, offset },
+    metadata: { limit, offset, search },
     timestamp: Date.now(),
   });
 }

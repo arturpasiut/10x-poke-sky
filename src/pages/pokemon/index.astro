@@ -1,21 +1,15 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
+import { PokemonExplorer } from "../../components/pokemon/PokemonExplorer";
+
+const initialSearch = Astro.url.searchParams.get("q") ?? "";
 ---
 
 <MainLayout title="Pokédex – 10x Poke Sky">
   <div slot="header" class="space-y-2">
     <h1 class="text-4xl font-semibold sm:text-5xl">Pokédex</h1>
-    <p class="text-muted-foreground">
-      Lista wszystkich Pokémonów z możliwością filtrowania i wyszukiwania (już wkrótce).
-    </p>
+    <p class="text-muted-foreground">Przeglądaj, wyszukuj i filtruj Pokémony w czasie rzeczywistym.</p>
   </div>
 
-  <section
-    class="grid place-items-center rounded-2xl border border-[color:color-mix(in_srgb,var(--color-border)_60%,transparent)] bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-12 text-center shadow-md"
-  >
-    <p class="max-w-xl text-lg text-muted-foreground">
-      Moduł Pokédex jest jeszcze w budowie. W kolejnych iteracjach pojawi się wyszukiwarka Pokémonów, filtry oraz
-      szczegółowe karty z danymi.
-    </p>
-  </section>
+  <PokemonExplorer client:load initialSearch={initialSearch} />
 </MainLayout>

@@ -7,12 +7,21 @@ import type { PokemonSummaryDto } from "@/types";
 
 const PAGE_SIZE = 20;
 
-export function PokemonGrid() {
+export interface PokemonGridProps {
+  search: string;
+}
+
+export function PokemonGrid({ search }: PokemonGridProps) {
   const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<PokemonSummaryDto[]>([]);
   const [hasNext, setHasNext] = useState(true);
 
-  const { data, isLoading, error, fromCache, refresh } = usePokemonList({ limit: PAGE_SIZE, offset });
+  const { data, isLoading, error, fromCache, refresh } = usePokemonList({ limit: PAGE_SIZE, offset, search });
+
+  useEffect(() => {
+    setOffset(0);
+    setItems([]);
+  }, [search]);
 
   useEffect(() => {
     if (!data) {
