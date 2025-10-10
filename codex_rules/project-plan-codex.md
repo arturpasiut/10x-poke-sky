@@ -55,7 +55,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 3. [x] Render filter controls (type, generation, region) and ensure they update the list request payload.
 4. [x] Handle empty and error states with messaging that suggests the AI chat when no match is found.
 5. [x] Add Vitest + React Testing Library coverage for the search bar, filters reducer, and card rendering.
-6. Create Playwright scenario covering search, filter combination, and empty-state display.
+6. [x] Create Playwright scenario covering search, filter combination, and empty-state display.
 
 ## Phase 4 – Pokemon Details (US-002)
 1. Configure Astro dynamic route `pokemon/[identifier]` to fetch details server-side using the cache layer built in Phase 2.
