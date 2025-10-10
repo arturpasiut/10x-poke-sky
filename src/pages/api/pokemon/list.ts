@@ -7,12 +7,22 @@ export const GET: APIRoute = async ({ request }) => {
   const limit = url.searchParams.get("limit") ?? "20";
   const offset = url.searchParams.get("offset") ?? "0";
   const search = url.searchParams.get("search") ?? "";
+  const types = url.searchParams.getAll("type");
+  const generation = url.searchParams.get("generation");
+  const region = url.searchParams.get("region");
 
   const targetUrl = new URL("/functions/v1/pokemon-list", runtimeConfig.supabaseUrl);
   targetUrl.searchParams.set("limit", limit);
   targetUrl.searchParams.set("offset", offset);
   if (search) {
     targetUrl.searchParams.set("search", search);
+  }
+  types.forEach((type) => targetUrl.searchParams.append("type", type));
+  if (generation) {
+    targetUrl.searchParams.set("generation", generation);
+  }
+  if (region) {
+    targetUrl.searchParams.set("region", region);
   }
 
   try {

@@ -9,19 +9,29 @@ const PAGE_SIZE = 20;
 
 export interface PokemonGridProps {
   search: string;
+  types: string[];
+  generation: string;
+  region: string;
 }
 
-export function PokemonGrid({ search }: PokemonGridProps) {
+export function PokemonGrid({ search, types, generation, region }: PokemonGridProps) {
   const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<PokemonSummaryDto[]>([]);
   const [hasNext, setHasNext] = useState(true);
 
-  const { data, isLoading, error, fromCache, refresh } = usePokemonList({ limit: PAGE_SIZE, offset, search });
+  const { data, isLoading, error, fromCache, refresh } = usePokemonList({
+    limit: PAGE_SIZE,
+    offset,
+    search,
+    types,
+    generation,
+    region,
+  });
 
   useEffect(() => {
     setOffset(0);
     setItems([]);
-  }, [search]);
+  }, [search, types, generation, region]);
 
   useEffect(() => {
     if (!data) {
@@ -51,11 +61,10 @@ export function PokemonGrid({ search }: PokemonGridProps) {
   }, [hasNext, isLoading]);
 
   const handleRefresh = useCallback(async () => {
-    if (offset !== 0) {
-      setOffset(0);
-    }
+    setOffset(0);
+    setItems([]);
     await refresh();
-  }, [offset, refresh]);
+  }, [refresh]);
 
   return (
     <section className="mt-10 space-y-6">
@@ -88,15 +97,21 @@ export function PokemonGrid({ search }: PokemonGridProps) {
         {isLoading && items.length === 0 ? <SkeletonGrid /> : null}
       </div>
 
-      <footer className="flex justify-center">
-        {hasNext ? (
-          <Button onClick={handleLoadMore} disabled={isLoading} variant="secondary">
-            {isLoading ? "Ładowanie..." : "Pokaż więcej"}
-          </Button>
-        ) : (
-          <p className="text-sm text-muted-foreground">To wszystkie wyniki dla tej sekcji.</p>
-        )}
-      </footer>
+      {items.length === 0 && !isLoading && !error ? (
+        <div className="rounded-xl border border-border/40 bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+          Brak wyników dla wybranych filtrów.
+        </div>
+      ) : (
+        <footer className="flex justify-center">
+          {hasNext ? (
+            <Button onClick={handleLoadMore} disabled={isLoading} variant="secondary">
+              {isLoading ? "Ładowanie..." : "Pokaż więcej"}
+            </Button>
+          ) : (
+            <p className="text-sm text-muted-foreground">To wszystkie wyniki dla tej sekcji.</p>
+          )}
+        </footer>
+      )}
     </section>
   );
 }

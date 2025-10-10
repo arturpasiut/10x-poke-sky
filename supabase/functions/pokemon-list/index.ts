@@ -26,14 +26,19 @@ Deno.serve(async (req) => {
   const limit = sanitizeLimit(url.searchParams.get("limit"));
   const offset = sanitizeOffset(url.searchParams.get("offset"));
   const search = sanitizeSearch(url.searchParams.get("search"));
+  const types = sanitizeMulti(url.searchParams.getAll("type"));
+  const generation = sanitizeSingle(url.searchParams.get("generation"));
+  const region = sanitizeSingle(url.searchParams.get("region"));
 
   try {
     if (config.useMock) {
       return handleMockResponse(limit, offset);
     }
 
-    const response = search
-      ? await handleSearchResponse(limit, offset, search)
+    const hasFilters = Boolean(search || types.length > 0 || generation || region);
+
+    const response = hasFilters
+      ? await handleFilteredResponse({ limit, offset, search, types, generation, region })
       : await handleCachedResponse(limit, offset);
     return jsonResponse(response);
   } catch (error) {
@@ -63,6 +68,20 @@ function sanitizeOffset(value: string | null) {
 function sanitizeSearch(value: string | null) {
   if (!value) return "";
   return value.trim().toLowerCase().slice(0, 100);
+}
+
+function sanitizeSingle(value: string | null) {
+  if (!value) return "";
+  const trimmed = value.trim().toLowerCase();
+  if (!trimmed || trimmed === "all") return "";
+  return trimmed.slice(0, 60);
+}
+
+function sanitizeMulti(values: string[]) {
+  return values
+    .map((value) => value.trim().toLowerCase())
+    .filter((value) => value && value !== "all")
+    .map((value) => value.slice(0, 40));
 }
 
 async function handleMockResponse(limit: number, offset: number) {
@@ -165,16 +184,47 @@ async function handleCachedResponse(limit: number, offset: number) {
   };
 }
 
-async function handleSearchResponse(limit: number, offset: number, search: string) {
+async function handleFilteredResponse({
+  limit,
+  offset,
+  search,
+  types,
+  generation,
+  region,
+}: {
+  limit: number;
+  offset: number;
+  search: string;
+  types: string[];
+  generation: string;
+  region: string;
+}) {
   const from = offset;
   const to = Math.max(offset + limit - 1, offset);
 
-  const { data: rows, error, count } = await supabaseAdminClient
+  let query = supabaseAdminClient
     .from("pokemon_cache")
     .select("*", { count: "exact" })
-    .ilike("name", `%${search}%`)
     .order("pokemon_id", { ascending: true })
     .range(from, to);
+
+  if (search) {
+    query = query.ilike("name", `%${search}%`);
+  }
+
+  if (types.length > 0) {
+    query = query.contains("types", types);
+  }
+
+  if (generation) {
+    query = query.eq("generation", generation);
+  }
+
+  if (region) {
+    query = query.eq("region", region);
+  }
+
+  const { data: rows, error, count } = await query;
 
   if (error) {
     throw error;
@@ -194,7 +244,7 @@ async function handleSearchResponse(limit: number, offset: number, search: strin
 
   let total = count ?? results.length;
 
-  if (results.length === 0 && offset === 0) {
+  if (results.length === 0 && offset === 0 && search) {
     try {
       const detail = await fetchPokemonDetails(search);
       const refreshed = await fetchAndRefreshPokemonSummaries([detail.id]);
@@ -214,6 +264,11 @@ async function handleSearchResponse(limit: number, offset: number, search: strin
       refreshedIds: toRefresh,
       cacheTtlMs: CACHE_TTL_MS,
       search,
+      filters: {
+        types,
+        generation,
+        region,
+      },
     },
     data: buildPaginatedPayload(total, limit, offset, items),
   };

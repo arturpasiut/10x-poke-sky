@@ -3,6 +3,11 @@ import MainLayout from "../../layouts/MainLayout.astro";
 import { PokemonExplorer } from "../../components/pokemon/PokemonExplorer";
 
 const initialSearch = Astro.url.searchParams.get("q") ?? "";
+const initialFilters = {
+  types: Astro.url.searchParams.getAll("type").map((value) => value.trim().toLowerCase()),
+  generation: Astro.url.searchParams.get("generation") ?? "",
+  region: Astro.url.searchParams.get("region") ?? "",
+};
 ---
 
 <MainLayout title="Pokédex – 10x Poke Sky">
@@ -11,5 +16,5 @@ const initialSearch = Astro.url.searchParams.get("q") ?? "";
     <p class="text-muted-foreground">Przeglądaj, wyszukuj i filtruj Pokémony w czasie rzeczywistym.</p>
   </div>
 
-  <PokemonExplorer client:load initialSearch={initialSearch} />
+  <PokemonExplorer client:load initialSearch={initialSearch} initialFilters={initialFilters} />
 </MainLayout>

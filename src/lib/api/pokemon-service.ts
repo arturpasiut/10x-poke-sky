@@ -20,16 +20,44 @@ interface PokemonListEdgeResponse {
   source: string;
 }
 
-export async function fetchPokemonListFromEdge(limit: number, offset: number, search?: string) {
-  const params = new URLSearchParams({
+export interface PokemonListQueryParams {
+  search?: string;
+  types?: string[];
+  generation?: string;
+  region?: string;
+}
+
+export async function fetchPokemonListFromEdge(
+  limit: number,
+  offset: number,
+  queryParams: PokemonListQueryParams = {}
+) {
+  const query = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
   });
-  if (search && search.trim().length > 0) {
-    params.set("search", search.trim());
+  if (queryParams.search && queryParams.search.trim().length > 0) {
+    query.set("search", queryParams.search.trim());
+  }
+  query.delete("type");
+  query.delete("generation");
+  query.delete("region");
+
+  queryParams.types?.forEach((type) => {
+    if (type.trim()) {
+      query.append("type", type.trim().toLowerCase());
+    }
+  });
+
+  if (queryParams.generation && queryParams.generation !== "all") {
+    query.set("generation", queryParams.generation);
   }
 
-  const response = await fetch(`/api/pokemon/list?${params.toString()}`, {
+  if (queryParams.region && queryParams.region !== "all") {
+    query.set("region", queryParams.region);
+  }
+
+  const response = await fetch(`/api/pokemon/list?${query.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
