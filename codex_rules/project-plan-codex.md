@@ -43,10 +43,10 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 3. [x] Introduce Zustand stores: `useSessionStore` for Supabase auth state and `useUiStore` for global UI flags.
 4. [x] Create reusable UI components (buttons, cards, badges, tabs, modal shell) with stories or MDX docs if Storybook is available.
 5. [x] Add automated lint and formatting scripts to Git hooks (Husky, lint-staged already present) and ensure `npm run lint` passes.
-6. Snapshot layout using Playwright visual regression or manual screenshots for design approval.
+6. [-] Snapshot layout using Playwright visual regression or manual screenshots for design approval.
 
 ## Phase 2 – Data Integration and Cache Strategy
-1. Generate TypeScript types for PokeAPI responses using OpenAPI or manual typing stored in `src/lib/types/pokemon.ts`.
+1. [x] Generate TypeScript types for PokeAPI responses using OpenAPI or manual typing stored in `src/lib/types/pokemon.ts`.
 2. Build HTTP client wrappers in `src/lib/api/pokeapi.ts` with retry logic, timeout, and error normalization.
 3. Implement Supabase edge function `fetch-pokemon-list` that checks `pokemon_cache`, refreshes entries older than 24h, and returns paginated results.
 4. Implement Supabase edge function `fetch-pokemon-details` pulling single Pokemon, moves, and evolution chain with identical caching.

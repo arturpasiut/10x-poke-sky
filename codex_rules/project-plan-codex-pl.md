@@ -43,10 +43,10 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 3. [x] Dodaj sklepy Zustand: `useSessionStore` (stan Supabase) i `useUiStore` (flag UI).
 4. [x] Utwórz komponenty UI wielokrotnego użytku (przyciski, karty, badge, zakładki, modal) oraz, jeśli to możliwe, dokumentację w Storybook/MDX.
 5. [x] Dopnij automaty `npm run lint` i formatowanie (Husky, lint-staged) oraz potwierdź, że przechodzą lokalnie.
-6. Przygotuj zrzuty ekranów layoutu lub testy wizualne Playwright do akceptacji designu.
+6. [-] Przygotuj zrzuty ekranów layoutu lub testy wizualne Playwright do akceptacji designu.
 
 ## Faza 2 – Integracja danych i cache
-1. Wygeneruj typy TypeScript dla odpowiedzi PokeAPI (np. przy pomocy OpenAPI) i umieść je w `src/lib/types/pokemon.ts`.
+1. [x] Wygeneruj typy TypeScript dla odpowiedzi PokeAPI (np. przy pomocy OpenAPI) i umieść je w `src/lib/types/pokemon.ts`.
 2. Zbuduj wrapper HTTP w `src/lib/api/pokeapi.ts` z retry, timeoutem i normalizacją błędów.
 3. Napisz funkcję edge `fetch-pokemon-list`, która sprawdza `pokemon_cache`, odświeża wpisy starsze niż 24h i zwraca paginowane wyniki.
 4. Zaimplementuj funkcję edge `fetch-pokemon-details` dla pojedynczego Pokemona, ruchów i ewolucji z analogicznym cachingiem.
