@@ -47,7 +47,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 
 ## Phase 2 – Data Integration and Cache Strategy
 1. [x] Generate TypeScript types for PokeAPI responses using OpenAPI or manual typing stored in `src/lib/types/pokemon.ts`.
-2. Build HTTP client wrappers in `src/lib/api/pokeapi.ts` with retry logic, timeout, and error normalization.
+2. [x] Build HTTP client wrappers in `src/lib/api/pokeapi.ts` with retry logic, timeout, and error normalization.
 3. Implement Supabase edge function `fetch-pokemon-list` that checks `pokemon_cache`, refreshes entries older than 24h, and returns paginated results.
 4. Implement Supabase edge function `fetch-pokemon-details` pulling single Pokemon, moves, and evolution chain with identical caching.
 5. Create nightly Supabase cron job to refresh the most popular Pokemon IDs and moves (list maintained in a config table).
