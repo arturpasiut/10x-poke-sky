@@ -40,7 +40,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 ## Faza 1 – Layout, routing, komponenty współdzielone
 1. [x] Zdefiniuj layouty Astro (`MainLayout`, `AuthLayout`) i podepnij trasy `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
 2. [x] Zaimplementuj globalną nawigację, stopkę oraz responsywne siatki zgodne z tokenami Tailwind.
-3. Dodaj sklepy Zustand: `useSessionStore` (stan Supabase) i `useUiStore` (flag UI).
+3. [x] Dodaj sklepy Zustand: `useSessionStore` (stan Supabase) i `useUiStore` (flag UI).
 4. Utwórz komponenty UI wielokrotnego użytku (przyciski, karty, badge, zakładki, modal) oraz, jeśli to możliwe, dokumentację w Storybook/MDX.
 5. [x] Dopnij automaty `npm run lint` i formatowanie (Husky, lint-staged) oraz potwierdź, że przechodzą lokalnie.
 6. Przygotuj zrzuty ekranów layoutu lub testy wizualne Playwright do akceptacji designu.
