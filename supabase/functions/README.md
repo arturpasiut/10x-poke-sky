@@ -18,7 +18,9 @@ supabase/functions/
 │   └── pokeapi.ts        # Fetch helpers used by functions
 ├── pokemon-details/
 │   └── index.ts
-└── pokemon-list/
+├── pokemon-list/
+│   └── index.ts
+└── cache-refresh/
     └── index.ts
 ```
 
@@ -44,6 +46,7 @@ supabase/functions/
    ```bash
    supabase functions deploy pokemon-list
    supabase functions deploy pokemon-details
+   supabase functions deploy cache-refresh
    ```
 
    Remember to set `POKEAPI_BASE_URL` and `USE_POKEAPI_MOCK` in the function environment panel if you rely on mocked-data fallback.
@@ -52,4 +55,4 @@ supabase/functions/
 
 - Anonymous/public requests can call these functions because they only proxy/cache public PokeAPI data.
 - When the caching logic is added (Phase 2) the functions will use the Supabase service role key (stored as `SUPABASE_SERVICE_ROLE_KEY` in function secrets) to read/write the cache tables.
-
+- The scheduled refresh function requires `CACHE_REFRESH_TOKEN`; the cron job should include an Authorization header (`Bearer <token>`) or `x-cache-refresh-token`.

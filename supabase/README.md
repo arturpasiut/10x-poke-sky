@@ -76,3 +76,19 @@ RLS policies ensure that:
 - When provisioning a real Supabase project, copy these migrations and re-run `supabase db push` to replicate the structure.
 - Store real service role/anon keys in deployment secrets, never in the repo.
 
+## Scheduled Cache Refresh (Phase 2)
+
+- Table `cache_refresh_targets` lists Pokémon and moves to refresh nightly. Each row stores `target_type` (`pokemon` / `move`), `target_id`, and `priority`.
+- Edge function `cache-refresh` reads active targets, hydrates `pokemon_cache` / `moves_cache`, and updates `last_refreshed`.
+- Required secrets for the function:
+  - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+  - `CACHE_REFRESH_TOKEN` (shared with the Supabase Scheduler job)
+- Example cron setup (Supabase Dashboard → Edge Functions → Schedule):
+
+  ```
+  POST /functions/v1/cache-refresh
+  Header: Authorization: Bearer <CACHE_REFRESH_TOKEN>
+  Schedule: 0 3 * * *  (every day at 03:00 UTC)
+  ```
+
+- Adjust the entries in `cache_refresh_targets` to control which Pokémon/moves stay warm in the cache.

@@ -9,11 +9,6 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 3. Zachowaj zgodność schematu Supabase, modeli TypeScript i kontraktów UI.
 4. Dbaj o wydajność, dostępność i bezpieczeństwo w trakcie prac, nie odkładaj poprawek na koniec.
 
-## Zasada początkowej implementacji !!!WAŻNE!!!
-1. W fazach 0 i 1 wszystkie integracje zewnętrzne budujemy na mockach i fałszywych poświadczeniach.
-2. Projektuj adaptery, miejsca wstrzyknięcia konfiguracji i walidację środowiska tak, aby klucze produkcyjne dało się podpiąć później bez przepisywania kodu; realne API, auth i webhooki podłączamy dopiero po uruchomieniu infrastruktury.
-3. Nigdy nie commituj prawdziwych sekretów — mocki mają być deterministyczne i opisane, żeby wiadomo było, co podmienić przy wejściu na produkcję.
-
 ## Kamienie milowe
 | Faza | Zakres | Ukończone, gdy |
 | --- | --- | --- |
@@ -30,29 +25,29 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 | 10 | Release i przekazanie | CI/CD, dokumentacja, checklist launchowa ukończone |
 
 ## Faza 0 – Przygotowanie fundamentów
-1. Przejrzyj repo (layouty, komponenty, konfiguracje) i usuń treści demo, zostawiając przydatne utility.
-2. Utwórz `.env` oraz `.env.sample` z danymi Supabase, PokeAPI i Gemini; dodaj walidację środowiska w `src/lib/env.ts`.
-3. Załóż projekt Supabase, ustaw parametry auth i utwórz tabele `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` wraz z politykami RLS ograniczającymi dostęp do właściciela rekordu.
-4. Skonfiguruj Edge Functions Supabase (lub REST) do pobierania danych o Pokemonach i umieść je w `supabase/functions`.
-5. Dostosuj tooling (opcjonalnie Storybook) i skonfiguruj Tailwind zgodnie z tokenami projektowymi z zespołu designu.
-6. Zaktualizuj README o kroki uruchomienia lokalnego i upewnij się, że `npm run dev` działa z placeholderami.
-
+1. [x] Przejrzyj repo (layouty, komponenty, konfiguracje) i usuń treści demo, zostawiając przydatne utility.
+2. [x] Utwórz `.env` oraz `.env.sample` z danymi Supabase, PokeAPI i Gemini; dodaj walidację środowiska w `src/lib/env.ts`.
+3. [x] Załóż projekt Supabase, ustaw parametry auth i utwórz tabele `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` wraz z politykami RLS ograniczającymi dostęp do właściciela rekordu.
+4. [x] Skonfiguruj Edge Functions Supabase (lub REST) do pobierania danych o Pokemonach i umieść je w `supabase/functions`.
+5. [x] Dostosuj tooling (opcjonalnie Storybook) i skonfiguruj Tailwind zgodnie z tokenami projektowymi z zespołu designu.
+6. [x] Zaktualizuj README o kroki uruchomienia lokalnego i upewnij się, że `npm run dev` działa z placeholderami.
+ 
 ## Faza 1 – Layout, routing, komponenty współdzielone
-1. Zdefiniuj layouty Astro (`MainLayout`, `AuthLayout`) i podepnij trasy `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
-2. Zaimplementuj globalną nawigację, stopkę oraz responsywne siatki zgodne z tokenami Tailwind.
-3. Dodaj sklepy Zustand: `useSessionStore` (stan Supabase) i `useUiStore` (flag UI).
-4. Utwórz komponenty UI wielokrotnego użytku (przyciski, karty, badge, zakładki, modal) oraz, jeśli to możliwe, dokumentację w Storybook/MDX.
-5. Dopnij automaty `npm run lint` i formatowanie (Husky, lint-staged) oraz potwierdź, że przechodzą lokalnie.
-6. Przygotuj zrzuty ekranów layoutu lub testy wizualne Playwright do akceptacji designu.
+1. [x] Zdefiniuj layouty Astro (`MainLayout`, `AuthLayout`) i podepnij trasy `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
+2. [x] Zaimplementuj globalną nawigację, stopkę oraz responsywne siatki zgodne z tokenami Tailwind.
+3. [x] Dodaj sklepy Zustand: `useSessionStore` (stan Supabase) i `useUiStore` (flag UI).
+4. [x] Utwórz komponenty UI wielokrotnego użytku (przyciski, karty, badge, zakładki, modal) oraz, jeśli to możliwe, dokumentację w Storybook/MDX.
+5. [x] Dopnij automaty `npm run lint` i formatowanie (Husky, lint-staged) oraz potwierdź, że przechodzą lokalnie.
+6. [-] Przygotuj zrzuty ekranów layoutu lub testy wizualne Playwright do akceptacji designu.
 
 ## Faza 2 – Integracja danych i cache
-1. Wygeneruj typy TypeScript dla odpowiedzi PokeAPI (np. przy pomocy OpenAPI) i umieść je w `src/lib/types/pokemon.ts`.
-2. Zbuduj wrapper HTTP w `src/lib/api/pokeapi.ts` z retry, timeoutem i normalizacją błędów.
-3. Napisz funkcję edge `fetch-pokemon-list`, która sprawdza `pokemon_cache`, odświeża wpisy starsze niż 24h i zwraca paginowane wyniki.
-4. Zaimplementuj funkcję edge `fetch-pokemon-details` dla pojedynczego Pokemona, ruchów i ewolucji z analogicznym cachingiem.
-5. Dodaj nocny cron Supabase odświeżający najpopularniejszych Pokemonów i ruchy (lista w tabeli konfiguracyjnej).
-6. Wprowadź lokalny cache w przeglądarce (IndexedDB/LocalStorage) dla ostatniej listy i obsługę hydracji w hooku React.
-7. Przygotuj testy Vitest obejmujące logikę TTL cache i transformatory danych (porównanie z typami).
+1. [x] Wygeneruj typy TypeScript dla odpowiedzi PokeAPI (np. przy pomocy OpenAPI) i umieść je w `src/lib/types/pokemon.ts`.
+2. [x] Zbuduj wrapper HTTP w `src/lib/api/pokeapi.ts` z retry, timeoutem i normalizacją błędów.
+3. [x] Napisz funkcję edge `fetch-pokemon-list`, która sprawdza `pokemon_cache`, odświeża wpisy starsze niż 24h i zwraca paginowane wyniki.
+4. [x] Zaimplementuj funkcję edge `fetch-pokemon-details` dla pojedynczego Pokemona, ruchów i ewolucji z analogicznym cachingiem.
+5. [x] Dodaj nocny cron Supabase odświeżający najpopularniejszych Pokemonów i ruchy (lista w tabeli konfiguracyjnej).
+6. [x] Wprowadź lokalny cache w przeglądarce (IndexedDB/LocalStorage) dla ostatniej listy i obsługę hydracji w hooku React.
+7. [x] Przygotuj testy Vitest obejmujące logikę TTL cache i transformatory danych (porównanie z typami).
 
 ## Faza 3 – Odkrywanie Pokemonów (US-001)
 1. Zbuduj widok główny listy korzystający z `fetch-pokemon-list` z paginacją lub „infinite scroll” zgodnie z designem.
