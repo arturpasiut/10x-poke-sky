@@ -1,18 +1,15 @@
 /* eslint-disable no-console -- Logging in edge functions aids observability during development */
 import { config, handleOptions, jsonResponse } from "../_shared/config.ts";
 import { CACHE_TTL_MS } from "../_shared/constants.ts";
-import {
-  extractResourceId,
-  fetchPokemonDetails,
-  fetchPokemonList,
-  fetchPokemonSpecies,
-  getPokemonSprite,
-  type PokemonDetail,
-  type PokemonSpecies,
-} from "../_shared/pokeapi.ts";
+import { fetchPokemonList } from "../_shared/pokeapi.ts";
 import { supabaseAdminClient } from "../_shared/supabase-client.ts";
-import type { PokemonCachePayload, PokemonCacheRow } from "../_shared/types.ts";
-import { generationRegionMap } from "../_shared/regions.ts";
+import type { PokemonCacheRow } from "../_shared/types.ts";
+import {
+  fetchAndRefreshPokemonSummaries,
+  mapCacheRowToSummary,
+  parsePokemonPayload,
+} from "../_shared/pokemon-cache.ts";
+import { extractResourceId } from "../_shared/pokeapi.ts";
 
 const MAX_LIMIT = 100;
 
@@ -136,26 +133,8 @@ async function handleCachedResponse(limit: number, offset: number) {
 
   let refreshedIds: number[] = [];
   if (toRefresh.length > 0) {
-    const refreshedRecords = await refreshPokemonEntries(toRefresh, cacheMap);
+    const refreshedRecords = await fetchAndRefreshPokemonSummaries(toRefresh, cacheMap);
     refreshedIds = refreshedRecords.map((record) => record.pokemon_id);
-
-    const upsertPayload = refreshedRecords.map((record) => ({
-      pokemon_id: record.pokemon_id,
-      name: record.name,
-      types: record.types,
-      generation: record.generation,
-      region: record.region,
-      payload: record.payload,
-      cached_at: record.cached_at,
-    }));
-
-    const { error: upsertError } = await supabaseAdminClient.from("pokemon_cache").upsert(upsertPayload, {
-      onConflict: "pokemon_id",
-    });
-
-    if (upsertError) {
-      throw upsertError;
-    }
 
     refreshedRecords.forEach((record) => {
       cacheMap.set(record.pokemon_id, record);
@@ -176,69 +155,6 @@ async function handleCachedResponse(limit: number, offset: number) {
     },
     data: buildPaginatedPayload(list.count, limit, offset, items),
   };
-}
-
-async function refreshPokemonEntries(ids: number[], existing: Map<number, PokemonCacheRow>) {
-  const records: PokemonCacheRow[] = [];
-
-  for (const id of ids) {
-    const [detail, species] = await Promise.all([fetchPokemonDetails(String(id)), fetchPokemonSpecies(String(id))]);
-    const previousPayload = parseCachePayload(existing.get(id)?.payload);
-    records.push(buildCacheRecord(detail, species, previousPayload));
-  }
-
-  return records;
-}
-
-function buildCacheRecord(
-  detail: PokemonDetail,
-  species: PokemonSpecies | null,
-  previousPayload: PokemonCachePayload | null
-): PokemonCacheRow {
-  const generationName = species?.generation?.name ?? null;
-  const region = generationName ? (generationRegionMap[generationName] ?? null) : null;
-
-  return {
-    pokemon_id: detail.id,
-    name: detail.name,
-    types: detail.types.map((entry) => entry.type.name),
-    generation: generationName,
-    region,
-    payload: {
-      pokemon: detail,
-      species,
-      evolutionChain: previousPayload?.evolutionChain ?? null,
-      moves: previousPayload?.moves ?? undefined,
-      enrichedAt: previousPayload?.enrichedAt,
-    },
-    cached_at: new Date().toISOString(),
-  };
-}
-
-function mapCacheRowToSummary(row: PokemonCacheRow) {
-  const detail = extractDetailFromPayload(row.payload);
-
-  return {
-    pokemonId: row.pokemon_id,
-    name: row.name,
-    types: row.types,
-    generation: row.generation,
-    region: row.region,
-    spriteUrl: detail ? getPokemonSprite(detail) : null,
-    cachedAt: row.cached_at,
-  };
-}
-
-function extractDetailFromPayload(payload: unknown): PokemonDetail | null {
-  const parsed = parseCachePayload(payload);
-  return parsed?.pokemon ?? null;
-}
-
-function parseCachePayload(payload: unknown): PokemonCachePayload | null {
-  if (payload && typeof payload === "object" && "pokemon" in payload) {
-    return payload as PokemonCachePayload;
-  }
-  return null;
 }
 
 function buildPaginatedPayload<T>(total: number, limit: number, offset: number, items: T[]) {
