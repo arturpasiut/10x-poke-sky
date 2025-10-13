@@ -1,38 +1,169 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
-const { identifier } = Astro.params;
+import { fetchPokemonDetailFromEdge } from "../../lib/api/pokemon-service";
+import type { PokemonDetailResponseDto } from "@/types";
+
+const { identifier: rawIdentifier } = Astro.params;
+
+if (!rawIdentifier) {
+  Astro.response.status = 404;
+  throw new Error("Brak identyfikatora Pokémona w adresie.");
+}
+
+const normalizeName = (value: string) =>
+  value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
+let detail: PokemonDetailResponseDto | null = null;
+let errorMessage: string | null = null;
+
+try {
+  const response = await fetchPokemonDetailFromEdge(rawIdentifier, { baseUrl: Astro.url });
+  detail = response.data;
+} catch (error) {
+  errorMessage =
+    error instanceof Error ? error.message : "Nie udało się pobrać szczegółów Pokémona. Spróbuj ponownie później.";
+  const lower = errorMessage.toLowerCase();
+  if (lower.includes("404")) {
+    Astro.response.status = 404;
+  } else if (lower.includes("timeout") || lower.includes("failed to fetch")) {
+    Astro.response.status = 504;
+  } else {
+    Astro.response.status = 502;
+  }
+}
+
+const summary = detail?.summary ?? null;
+const formattedName = summary ? normalizeName(summary.name) : normalizeName(rawIdentifier);
+const dexNumber = summary ? `#${String(summary.pokemonId).padStart(3, "0")}` : null;
+const pageTitle = summary ? `${formattedName} – Pokédex – 10x Poke Sky` : `Pokémon – 10x Poke Sky`;
+const types = summary?.types ?? [];
+const formattedTypes = types.map(normalizeName);
+
+const spriteUrl =
+  detail?.pokemon?.sprites?.other?.["official-artwork"]?.front_default ??
+  detail?.pokemon?.sprites?.other?.home?.front_default ??
+  summary?.spriteUrl ??
+  detail?.pokemon?.sprites?.front_default ??
+  null;
+
+const heroGlowStyle =
+  "background: radial-gradient(circle at center, color-mix(in srgb, var(--color-primary) 35%, transparent) 0%, transparent 65%)";
+
+const previewData = detail
+  ? JSON.stringify(
+      {
+        stats: detail.pokemon?.stats ?? [],
+        moves: (detail.moves ?? []).slice(0, 5),
+      },
+      null,
+      2
+    )
+  : "";
 ---
 
-<MainLayout title={`Pokemon ${identifier} – 10x Poke Sky`}>
-  <div slot="header" class="space-y-2">
-    <a class="text-sm text-primary" href="/pokemon">← Powrót do Pokédexu</a>
-    <h1 class="text-4xl font-semibold capitalize">{identifier}</h1>
-    <p class="text-muted-foreground">Szczegóły pokemona zostaną wypełnione w fazie 4.</p>
+<MainLayout title={pageTitle}>
+  <div slot="header" class="space-y-3">
+    <a class="inline-flex items-center gap-2 text-sm text-primary transition hover:text-primary/80" href="/pokemon">
+      <span aria-hidden>←</span>
+      Powrót do Pokédexu
+    </a>
+
+    {
+      errorMessage ? (
+        <div class="space-y-2 rounded-2xl border border-destructive/40 bg-destructive/10 p-6 text-destructive">
+          <h1 class="text-3xl font-semibold">Nie udało się wczytać danych</h1>
+          <p>
+            {errorMessage}. Jeśli problem się powtarza, wróć do listy i wybierz innego Pokémona lub spróbuj ponownie
+            później.
+          </p>
+        </div>
+      ) : (
+        <div class="space-y-1">
+          <p class="text-xs uppercase tracking-[0.35em] text-muted-foreground">Karta Pokémona</p>
+          <h1 class="text-4xl font-semibold capitalize sm:text-5xl">{formattedName}</h1>
+          {dexNumber ? <p class="text-sm text-muted-foreground">{dexNumber}</p> : null}
+        </div>
+      )
+    }
   </div>
 
-  <section class="grid gap-6 sm:grid-cols-[minmax(0,320px)_1fr]">
-    <div
-      class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 text-center shadow-md"
-    >
-      <div class="mb-4 flex items-center justify-center">
+  {
+    !errorMessage && detail ? (
+      <section class="space-y-10">
         <div
-          class="aspect-square w-48 rounded-full bg-[color:color-mix(in_srgb,var(--color-background)_30%,transparent)]"
+          class="relative overflow-hidden rounded-3xl border border-border/40 bg-background/80 p-8 shadow-lg ring-1 ring-border/20 backdrop-blur"
         >
+          <div class="pointer-events-none absolute inset-0 opacity-60" style={heroGlowStyle} />
+          <div class="relative z-10 flex flex-col items-center gap-6 text-center">
+            {spriteUrl ? (
+              <div class="relative flex h-48 w-48 items-center justify-center rounded-[40px] bg-black/10 p-6 backdrop-blur-sm dark:bg-white/5 sm:h-64 sm:w-64">
+                <img
+                  class="h-full w-full object-contain drop-shadow-[0_18px_32px_rgba(0,0,0,0.35)]"
+                  src={spriteUrl}
+                  alt={formattedName}
+                  loading="lazy"
+                />
+              </div>
+            ) : (
+              <div class="flex h-40 w-40 items-center justify-center rounded-full bg-muted/30 text-muted-foreground">
+                Brak grafiki
+              </div>
+            )}
+
+            <div class="flex flex-wrap items-center justify-center gap-3 text-sm uppercase tracking-[0.3em] text-muted-foreground">
+              {types.map((type, index) => (
+                <span class="rounded-full bg-muted/30 px-3 py-1 text-foreground" aria-label={`Typ ${type}`}>
+                  {formattedTypes[index] ?? type}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-      <p class="text-muted-foreground">Artwork / Sprite</p>
-    </div>
 
-    <div class="space-y-4">
-      <div class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 shadow-md">
-        <h2 class="mb-2 text-xl font-semibold">Statystyki</h2>
-        <p class="text-muted-foreground">Placeholder na wykres i tabelę statystyk.</p>
-      </div>
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,320px)_1fr]">
+          <article class="rounded-2xl border border-border/40 bg-surface/80 p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-foreground">Metryki podstawowe</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Dane szczegółowe i wizualizacje pojawią się w kolejnych krokach fazy 4.
+            </p>
+            <dl class="mt-6 space-y-4 text-sm text-muted-foreground">
+              <div class="flex items-center justify-between rounded-xl bg-muted/20 px-4 py-3">
+                <dt>Waga</dt>
+                <dd class="font-medium text-foreground">
+                  {detail.pokemon.weight ? `${detail.pokemon.weight / 10} kg` : "—"}
+                </dd>
+              </div>
+              <div class="flex items-center justify-between rounded-xl bg-muted/20 px-4 py-3">
+                <dt>Wzrost</dt>
+                <dd class="font-medium text-foreground">
+                  {detail.pokemon.height ? `${detail.pokemon.height / 10} m` : "—"}
+                </dd>
+              </div>
+              <div class="flex items-center justify-between rounded-xl bg-muted/20 px-4 py-3">
+                <dt>Typy</dt>
+                <dd class="font-medium text-foreground">
+                  {formattedTypes.length ? formattedTypes.join(", ") : "—"}
+                </dd>
+              </div>
+            </dl>
+          </article>
 
-      <div class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 shadow-md">
-        <h2 class="mb-2 text-xl font-semibold">Ewolucje</h2>
-        <p class="text-muted-foreground">Sekcja timeline zostanie dodana w fazie 4.</p>
-      </div>
-    </div>
-  </section>
+          <article class="rounded-2xl border border-border/40 bg-surface/80 p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-foreground">Podgląd danych szczegółowych</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Sekcje statystyk, ewolucji i ruchów zostaną zbudowane w kolejnych krokach. Aktualnie prezentujemy surowe
+              dane jako potwierdzenie poprawnego pobrania informacji.
+            </p>
+            <pre class="mt-4 max-h-72 overflow-auto rounded-xl bg-muted/20 p-4 text-xs text-muted-foreground">{previewData}</pre>
+          </article>
+        </div>
+      </section>
+    ) : null
+  }
 </MainLayout>
+
+export const prerender = false;

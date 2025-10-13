@@ -39,6 +39,8 @@ export type UpdateUserProfileCommand = {
 
 export type PublicProfileDto = Pick<UserProfileDto, "id" | "displayName" | "avatarUrl">
 
+import type { EvolutionChain, Pokemon as PokemonDetailPayload, PokemonSpecies } from "@/lib/types/pokemon";
+
 export type PokemonSummaryDto = {
   pokemonId: PokemonRow["pokemon_id"]
   name: PokemonRow["name"]
@@ -49,6 +51,7 @@ export type PokemonSummaryDto = {
    * Cached payload may include sprites; expose a single URL derived from that structure.
    */
   spriteUrl: string | null
+  cachedAt?: PokemonRow["cached_at"]
   highlights?: string[]
 }
 
@@ -62,6 +65,18 @@ export type PokemonDetailDto = {
   region: PokemonRow["region"]
   payload: PokemonRow["payload"]
   cachedAt: PokemonRow["cached_at"]
+}
+
+export type PokemonDetailSummaryDto = PokemonSummaryDto & {
+  cachedAt: PokemonRow["cached_at"]
+}
+
+export type PokemonDetailResponseDto = {
+  summary: PokemonDetailSummaryDto
+  pokemon: PokemonDetailPayload
+  species: PokemonSpecies | null
+  evolutionChain: EvolutionChain | null
+  moves: MoveSummaryDto[]
 }
 
 export type MoveSummaryDto = {
