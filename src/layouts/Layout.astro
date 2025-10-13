@@ -6,6 +6,25 @@ interface Props {
 }
 
 const { title = "10x Poke Sky" } = Astro.props;
+const supabase = Astro.locals.supabase;
+
+let userEmail: string | null = null;
+
+try {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (!error && user) {
+    userEmail = user.email ?? null;
+  }
+} catch {
+  userEmail = null;
+}
+
+const currentUrl = new URL(Astro.request.url);
+const flashMessage = currentUrl.searchParams.get("message");
 ---
 
 <!doctype html>
@@ -17,8 +36,45 @@ const { title = "10x Poke Sky" } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body>
-    <slot />
+  <body class="layout-body">
+    <header class="layout-header">
+      <a class="layout-brand" href="/">10x Poke Sky</a>
+      <div class="layout-actions">
+        {
+          userEmail ? (
+            <>
+              <span class="layout-user">{userEmail}</span>
+              <form method="post" action="/api/auth/logout">
+                <button class="layout-button" type="submit">
+                  Wyloguj się
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <a class="layout-link" href="/auth/login">
+                Zaloguj się
+              </a>
+              <a class="layout-button layout-button--primary" href="/auth/register">
+                Zarejestruj się
+              </a>
+            </>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      flashMessage ? (
+        <div class="layout-flash" role="status">
+          {flashMessage}
+        </div>
+      ) : null
+    }
+
+    <main class="layout-main">
+      <slot />
+    </main>
   </body>
 </html>
 
@@ -28,5 +84,93 @@ const { title = "10x Poke Sky" } = Astro.props;
     margin: 0;
     width: 100%;
     height: 100%;
+  }
+
+  .layout-body {
+    min-height: 100%;
+    background-color: var(--color-background, #04070b);
+    color: var(--color-foreground, #f8fafc);
+    font-family: var(--font-sans, system-ui, sans-serif);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    gap: 1rem;
+    background: color-mix(in srgb, var(--color-surface, #0b1019) 85%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border, #1d2637) 55%, transparent);
+  }
+
+  .layout-brand {
+    color: var(--color-primary, #f33736);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .layout-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .layout-user {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--color-foreground, #f8fafc) 75%, transparent);
+  }
+
+  .layout-link,
+  .layout-button {
+    font-size: 0.875rem;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+    background: transparent;
+    color: var(--color-foreground, #f8fafc);
+  }
+
+  .layout-link:hover {
+    transform: translateY(-1px);
+  }
+
+  .layout-button {
+    background: linear-gradient(135deg, #f33736 0%, #9c2221 100%);
+    box-shadow: 0 16px 32px -20px rgba(9, 15, 11, 0.6);
+  }
+
+  .layout-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 20px 36px -18px rgba(9, 15, 11, 0.65);
+  }
+
+  .layout-button--primary {
+    background: linear-gradient(135deg, #54b1df 0%, #1e3da8 100%);
+  }
+
+  .layout-flash {
+    margin: 1rem 1.5rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--color-primary, #f33736) 50%, transparent);
+    background: color-mix(in srgb, var(--color-primary, #f33736) 12%, transparent);
+    color: var(--color-foreground, #f8fafc);
+    font-size: 0.875rem;
+  }
+
+  .layout-main {
+    flex: 1 1 auto;
   }
 </style>
