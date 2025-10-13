@@ -4,6 +4,8 @@ import { Badge, type BadgeTone } from "@/components/ui/badge";
 
 import MainLayout from "../../layouts/MainLayout.astro";
 import { PokemonFavoriteAction } from "../../components/pokemon/PokemonFavoriteAction";
+import { PokemonEvolutionTimeline } from "../../components/pokemon/evolution/PokemonEvolutionTimeline";
+import { PokemonMovesGrid } from "../../components/pokemon/moves/PokemonMovesGrid";
 import { PokemonStatsPanel } from "../../components/pokemon/PokemonStatsPanel";
 import { fetchPokemonDetailFromEdge } from "../../lib/api/pokemon-service";
 
@@ -280,6 +282,29 @@ const previewData = detail
             </dl>
           </article>
         </div>
+
+        <section class="space-y-6">
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+            <h2 class="text-lg font-semibold text-foreground">Łańcuch ewolucji</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Śledź jak {formattedName} zmienia się w kolejnych formach. Wskazujemy wymagane warunki w skrócie.
+            </p>
+            <div class="mt-6">
+              <PokemonEvolutionTimeline client:load chain={detail.evolutionChain ?? null} />
+            </div>
+          </article>
+
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+            <h2 class="text-lg font-semibold text-foreground">Wybrane ruchy</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Lista obejmuje pierwsze {detail.moves?.length ? Math.min(12, detail.moves.length) : 0} ruchów dostępnych
+              dla Pokémona. Pełny katalog będzie dostępny w sekcji ruchów.
+            </p>
+            <div class="mt-6">
+              <PokemonMovesGrid client:load moves={detail.moves ?? []} />
+            </div>
+          </article>
+        </section>
       </section>
     ) : null
   }
