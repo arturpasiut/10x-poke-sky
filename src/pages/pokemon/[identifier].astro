@@ -4,6 +4,7 @@ import { Badge, type BadgeTone } from "@/components/ui/badge";
 
 import MainLayout from "../../layouts/MainLayout.astro";
 import { PokemonFavoriteAction } from "../../components/pokemon/PokemonFavoriteAction";
+import { PokemonStatsPanel } from "../../components/pokemon/PokemonStatsPanel";
 import { fetchPokemonDetailFromEdge } from "../../lib/api/pokemon-service";
 
 const { identifier: rawIdentifier } = Astro.params;
@@ -241,8 +242,18 @@ const previewData = detail
           </div>
         </div>
 
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]">
-          <article class="rounded-2xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,360px)_1fr]">
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+            <h2 class="text-lg font-semibold text-foreground">Statystyki bazowe</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Wartości bazowe pochodzą z PokeAPI i pozwalają szybko porównać Pokémona z innymi w drużynie.
+            </p>
+            <div class="mt-6">
+              <PokemonStatsPanel client:load stats={detail.pokemon.stats ?? []} />
+            </div>
+          </article>
+
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
             <h2 class="text-lg font-semibold text-foreground">Metryki podstawowe</h2>
             <p class="mt-2 text-sm text-muted-foreground">
               Dane szczegółowe i wizualizacje pojawią się w kolejnych krokach fazy 4.
@@ -267,17 +278,6 @@ const previewData = detail
                 </dd>
               </div>
             </dl>
-          </article>
-
-          <article class="rounded-2xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
-            <h2 class="text-lg font-semibold text-foreground">Podgląd danych szczegółowych</h2>
-            <p class="mt-2 text-sm text-muted-foreground">
-              Sekcje statystyk, ewolucji i ruchów zostaną zbudowane w kolejnych krokach. Aktualnie prezentujemy surowe
-              dane jako potwierdzenie poprawnego pobrania informacji.
-            </p>
-            <div class="mt-4 max-h-72 overflow-auto rounded-xl bg-muted/20 p-4">
-              <pre class="text-xs text-muted-foreground">{previewData}</pre>
-            </div>
           </article>
         </div>
       </section>
