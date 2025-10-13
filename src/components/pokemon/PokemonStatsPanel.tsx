@@ -36,18 +36,19 @@ export function PokemonStatsPanel({ stats }: PokemonStatsPanelProps) {
         const percentage = Math.max(2, Math.min(100, Math.round((value / maxValue) * 100)));
 
         return (
-          <div aria-label={`${label} ${value}`} className="space-y-2" key={key}>
+          <div aria-label={`${label} ${value}`} className="space-y-2" data-testid={`stat-${key}`} key={key}>
             <div className="flex items-center justify-between text-sm font-medium text-foreground">
               <span>{label}</span>
               <span className="tabular-nums text-muted-foreground">{value}</span>
             </div>
-            <div className="h-2 w-full rounded-full bg-border/40">
+            <div className="h-2 w-full rounded-full bg-border/40" data-testid={`stat-track-${key}`}>
               <div
                 className="h-full rounded-full transition-[width]"
                 style={{
                   width: `${percentage}%`,
                   background: `linear-gradient(90deg, color-mix(in srgb, ${PRIMARY_COLOR} 65%, transparent) 0%, ${PRIMARY_COLOR} 100%)`,
                 }}
+                data-testid={`stat-bar-${key}`}
               />
             </div>
           </div>

@@ -15,7 +15,7 @@ export function PokemonEvolutionTimeline({ chain }: PokemonEvolutionTimelineProp
     );
   }
 
-  const flattened = flattenChain(chain.chain);
+  const flattened = flattenEvolutionChain(chain.chain);
 
   if (!flattened.length) {
     return (
@@ -47,7 +47,7 @@ type FlattenedStep = {
   triggers: string[];
 };
 
-const flattenChain = (node: ChainLink | null, acc: FlattenedStep[] = []): FlattenedStep[] => {
+export const flattenEvolutionChain = (node: ChainLink | null, acc: FlattenedStep[] = []): FlattenedStep[] => {
   if (!node) return acc;
 
   const triggers = (node.evolution_details ?? []).map((detail) => {
@@ -65,6 +65,6 @@ const flattenChain = (node: ChainLink | null, acc: FlattenedStep[] = []): Flatte
     triggers: triggers.filter(Boolean),
   });
 
-  node.evolves_to?.forEach((child) => flattenChain(child, acc));
+  node.evolves_to?.forEach((child) => flattenEvolutionChain(child, acc));
   return acc;
 };

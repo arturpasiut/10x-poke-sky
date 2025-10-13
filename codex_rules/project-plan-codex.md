@@ -63,7 +63,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 3. [x] Implement stats section using either CSS bars or a React chart component; cross-verify values with PokeAPI schema.
 4. [x] Render evolution chain timeline and moves list referencing cached move data for display efficiency.
 5. [x] Provide navigation breadcrumbs or back button to return to the previous search context.
-6. Add unit tests for data transformation (stat normalization, evolution parsing) and Playwright coverage for hitting the detail page from search results.
+6. [x] Add unit tests for data transformation (stat normalization, evolution parsing) and Playwright coverage for hitting the detail page from search results.
 
 ## Phase 5 – Authentication (US-005)
 1. Wire Supabase client in Astro server and React contexts, enabling SSR awareness of sessions.

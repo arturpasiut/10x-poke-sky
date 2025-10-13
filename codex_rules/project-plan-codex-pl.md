@@ -63,7 +63,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 3. [x] Zaimplementuj sekcję statystyk (paski lub wykres radarowy) z weryfikacją wartości względem PokeAPI.
 4. [x] Wyświetl linię ewolucji i listę ruchów, korzystając z cache ruchów dla wydajności.
 5. [x] Dodaj breadcrumbs lub przycisk powrotu do ostatnich wyników wyszukiwania.
-6. Przygotuj testy jednostkowe transformacji (normalizacja statystyk, parsowanie ewolucji) i scenariusz Playwright od wyszukiwarki do detalu.
+6. [x] Przygotuj testy jednostkowe transformacji (normalizacja statystyk, parsowanie ewolucji) i scenariusz Playwright od wyszukiwarki do detalu.
 
 ## Faza 5 – Autoryzacja (US-005)
 1. Podłącz klienta Supabase w warstwie Astro (SSR) oraz w kontekście React, aby śledzić sesję.
