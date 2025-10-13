@@ -14,6 +14,17 @@ const INITIAL_VALUES: RegisterInput = {
   confirmPassword: "",
 };
 
+interface RegisterResponseBody {
+  message?: string;
+  fieldErrors?: FieldErrors<typeof registerSchema>;
+  details?: unknown;
+  user?: {
+    id: string;
+    email: string | null;
+  } | null;
+  profileInitialized?: boolean;
+}
+
 const passwordHints = [
   "Minimum 12 znaków",
   "Przynajmniej jedna wielka i mała litera",
@@ -59,13 +70,63 @@ export default function RegisterForm({ message }: RegisterFormProps) {
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setStatus({
-        variant: "success",
-        content:
-          "Rejestracja przejdzie do dalszego etapu po podłączeniu backendu. Na razie formularz przeszedł pozytywną walidację.",
-      });
-      setIsSubmitting(false);
+      try {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(result.data),
+          credentials: "same-origin",
+        });
+
+        let payload: RegisterResponseBody | null = null;
+
+        try {
+          payload = (await response.json()) as RegisterResponseBody;
+        } catch {
+          payload = null;
+        }
+
+        if (response.status === 422 && payload?.fieldErrors) {
+          setFieldErrors(payload.fieldErrors ?? {});
+          setStatus({
+            variant: "error",
+            content: payload.message ?? "Sprawdź wymagania dotyczące hasła i popraw formularz.",
+          });
+          return;
+        }
+
+        if (response.status === 409) {
+          setStatus({
+            variant: "error",
+            content: payload?.message ?? "Taki użytkownik już istnieje. Zaloguj się lub użyj innego adresu e-mail.",
+          });
+          return;
+        }
+
+        if (!response.ok) {
+          setStatus({
+            variant: "error",
+            content: payload?.message ?? "Nie udało się utworzyć konta. Spróbuj ponownie później.",
+          });
+          return;
+        }
+
+        setStatus({
+          variant: "success",
+          content: payload?.message ?? "Konto utworzone pomyślnie! Przenosimy Cię dalej...",
+        });
+
+        window.location.assign("/");
+      } catch {
+        setStatus({
+          variant: "error",
+          content: "Nie udało się utworzyć konta. Spróbuj ponownie później.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     },
     [values]
   );
