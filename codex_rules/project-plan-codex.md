@@ -66,7 +66,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. [x] Add unit tests for data transformation (stat normalization, evolution parsing) and Playwright coverage for hitting the detail page from search results.
 
 ## Phase 5 – Authentication (US-005)
-1. Wire Supabase client in Astro server and React contexts, enabling SSR awareness of sessions.
+1. [x] Wire Supabase client in Astro server and React contexts, enabling SSR awareness of sessions.
 2. Implement registration form using React Hook Form + Zod, with client-side and server-side validation.
 3. Implement login form with remember-me option and secure redirect handling.
 4. Provide sign-out flow accessible from the global nav with optimistic UI feedback.
