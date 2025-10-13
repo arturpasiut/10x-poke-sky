@@ -17,6 +17,12 @@ const INITIAL_VALUES: ForgotPasswordInput = {
   email: "",
 };
 
+interface ForgotPasswordResponseBody {
+  message?: string;
+  fieldErrors?: FieldErrors<typeof forgotPasswordSchema>;
+  details?: unknown;
+}
+
 export default function ForgotPasswordForm({ message }: ForgotPasswordFormProps) {
   const emailId = useId();
 
@@ -52,12 +58,56 @@ export default function ForgotPasswordForm({ message }: ForgotPasswordFormProps)
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setStatus({
-        variant: "success",
-        content: "Jeśli konto istnieje, wyślemy wiadomość z linkiem resetującym po podłączeniu usług backendowych.",
-      });
-      setIsSubmitting(false);
+      try {
+        const response = await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(result.data),
+          credentials: "same-origin",
+        });
+
+        let payload: ForgotPasswordResponseBody | null = null;
+
+        try {
+          payload = (await response.json()) as ForgotPasswordResponseBody;
+        } catch {
+          payload = null;
+        }
+
+        if (response.status === 422 && payload?.fieldErrors) {
+          setFieldErrors(payload.fieldErrors ?? {});
+          setStatus({
+            variant: "error",
+            content: payload.message ?? "Upewnij się, że adres e-mail jest poprawny.",
+          });
+          return;
+        }
+
+        if (!response.ok) {
+          setStatus({
+            variant: "error",
+            content: payload?.message ?? "Nie udało się zainicjować resetu hasła. Spróbuj ponownie później.",
+          });
+          return;
+        }
+
+        setValues(INITIAL_VALUES);
+        setStatus({
+          variant: "success",
+          content:
+            payload?.message ??
+            "Jeśli konto istnieje, wysłaliśmy link resetujący hasło. W środowisku lokalnym wiadomość może nie dotrzeć, ale proces został uruchomiony.",
+        });
+      } catch {
+        setStatus({
+          variant: "error",
+          content: "Nie udało się zainicjować resetu hasła. Spróbuj ponownie później.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     },
     [values]
   );
