@@ -1,44 +1,17 @@
 ---
 import AuthLayout from "../../layouts/AuthLayout.astro";
+import LoginForm from "../../components/auth/LoginForm";
+
+const currentUrl = new URL(Astro.request.url);
+const redirectTo = currentUrl.searchParams.get("redirectTo");
+const message = currentUrl.searchParams.get("message");
 ---
 
 <AuthLayout title="Logowanie – 10x Poke Sky">
-  <form class="relative z-10 flex flex-col gap-5">
-    <header class="space-y-2 text-center">
-      <h1 class="text-3xl font-semibold">Witaj ponownie!</h1>
-      <p class="text-sm text-muted-foreground">Zaloguj się, aby kontynuować swoją przygodę z Pokédexem.</p>
-    </header>
-
-    <label class="flex flex-col gap-2">
-      <span class="text-sm font-medium">Adres e-mail</span>
-      <input class="auth-input" type="email" placeholder="misty@pokemon.com" required />
-    </label>
-
-    <label class="flex flex-col gap-2">
-      <span class="text-sm font-medium">Hasło</span>
-      <input class="auth-input" type="password" placeholder="••••••••" required />
-    </label>
-
-    <div class="flex items-center justify-between text-sm">
-      <label class="flex items-center gap-2">
-        <input
-          type="checkbox"
-          class="size-4 rounded border border-[color:color-mix(in_srgb,var(--color-border)_60%,transparent)]"
-        />
-        Zapamiętaj mnie
-      </label>
-      <a class="text-primary" href="/auth/forgot">Zapomniałem hasła</a>
-    </div>
-
-    <button class="auth-action" type="submit">Zaloguj się</button>
-
-    <p class="text-center text-sm text-muted-foreground">
-      Nie masz konta? <a class="text-primary" href="/auth/register">Zarejestruj się</a>
-    </p>
-  </form>
+  <LoginForm client:load redirectTo={redirectTo} message={message} />
 </AuthLayout>
 
-<style lang="postcss">
+<style lang="postcss" is:global>
 .auth-input {
   border-radius: 1rem;
   padding: 0.9rem 1.25rem;
