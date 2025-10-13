@@ -67,10 +67,10 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 
 ## Phase 5 – Authentication (US-005)
 1. [x] Wire Supabase client in Astro server and React contexts, enabling SSR awareness of sessions.
-2. Implement registration form using React Hook Form + Zod, with client-side and server-side validation.
-3. Implement login form with remember-me option and secure redirect handling.
-4. Provide sign-out flow accessible from the global nav with optimistic UI feedback.
-5. Replace forgot-password flow with UX message explaining that the feature is unavailable yet and offer contact link if required by product.
+2. [x] Implement registration form using React Hook Form + Zod, with client-side and server-side validation.
+3. [x] Implement login form with remember-me option and secure redirect handling.
+4. [x] Provide sign-out flow accessible from the global nav with optimistic UI feedback.
+5. [x] Replace forgot-password flow with UX message explaining that the feature is unavailable yet and offer contact link if required by product.
 6. Write Cypress or Playwright authentication scenario including register, login, logout, and guard checks for protected routes.
 
 ## Phase 6 – Favorites (US-003)

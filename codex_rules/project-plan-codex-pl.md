@@ -67,10 +67,10 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 
 ## Faza 5 – Autoryzacja (US-005)
 1. [x] Podłącz klienta Supabase w warstwie Astro (SSR) oraz w kontekście React, aby śledzić sesję.
-2. Zbuduj formularz rejestracji (React Hook Form + Zod) z walidacją po obu stronach.
-3. Utwórz formularz logowania z opcją zapamiętania użytkownika i bezpiecznym przekierowaniem.
-4. Dodaj wylogowanie dostępne z globalnej nawigacji z optymistycznym feedbackiem UI.
-5. W `auth/forgot` pokaż jasny komunikat o braku funkcji resetu hasła oraz ewentualny link kontaktowy.
+2. [x] Zbuduj formularz rejestracji (React Hook Form + Zod) z walidacją po obu stronach.
+3. [x] Utwórz formularz logowania z opcją zapamiętania użytkownika i bezpiecznym przekierowaniem.
+4. [x] Dodaj wylogowanie dostępne z globalnej nawigacji z optymistycznym feedbackiem UI.
+5. [x] W `auth/forgot` pokaż jasny komunikat o braku funkcji resetu hasła oraz ewentualny link kontaktowy.
 6. Napisz scenariusze Playwright: rejestracja, logowanie, wylogowanie, próba wejścia na trasę chronioną bez sesji.
 
 ## Faza 6 – Ulubione (US-003)

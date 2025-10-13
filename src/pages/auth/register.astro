@@ -1,38 +1,16 @@
 ---
 import AuthLayout from "../../layouts/AuthLayout.astro";
+import RegisterForm from "../../components/auth/RegisterForm";
+
+const currentUrl = new URL(Astro.request.url);
+const message = currentUrl.searchParams.get("message");
 ---
 
 <AuthLayout title="Rejestracja – 10x Poke Sky">
-  <form class="relative z-10 flex flex-col gap-5">
-    <header class="space-y-2 text-center">
-      <h1 class="text-3xl font-semibold">Dołącz do drużyny!</h1>
-      <p class="text-sm text-muted-foreground">Utwórz konto, aby zapisywać ulubione Pokémony i śledzić postępy.</p>
-    </header>
-
-    <label class="flex flex-col gap-2">
-      <span class="text-sm font-medium">Adres e-mail</span>
-      <input class="auth-input" type="email" placeholder="ash@paleta.town" required />
-    </label>
-
-    <label class="flex flex-col gap-2">
-      <span class="text-sm font-medium">Hasło</span>
-      <input class="auth-input" type="password" placeholder="••••••••" required />
-    </label>
-
-    <label class="flex flex-col gap-2">
-      <span class="text-sm font-medium">Powtórz hasło</span>
-      <input class="auth-input" type="password" placeholder="••••••••" required />
-    </label>
-
-    <button class="auth-action auth-action--secondary" type="submit">Zarejestruj się</button>
-
-    <p class="text-center text-sm text-muted-foreground">
-      Masz już konto? <a class="text-primary" href="/auth/login">Zaloguj się</a>
-    </p>
-  </form>
+  <RegisterForm client:load message={message} />
 </AuthLayout>
 
-<style lang="postcss">
+<style lang="postcss" is:global>
 .auth-input {
   border-radius: 1rem;
   padding: 0.9rem 1.25rem;
