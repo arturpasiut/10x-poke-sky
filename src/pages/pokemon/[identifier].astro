@@ -123,6 +123,16 @@ const metadata = [
   regionLabel ? { label: "Region", value: regionLabel } : null,
 ].filter(Boolean);
 
+const preservedBackParams = new URLSearchParams();
+const allowedBackKeys = ["q", "type", "generation", "region"];
+allowedBackKeys.forEach((key) => {
+  Astro.url.searchParams.getAll(key).forEach((value) => {
+    if (value) preservedBackParams.append(key, value);
+  });
+});
+const backHref = `/pokemon${preservedBackParams.toString() ? `?${preservedBackParams.toString()}` : ""}`;
+const backLabel = preservedBackParams.toString() ? "Wróć do wyników" : "Pokédex";
+
 const spriteUrl =
   detail?.pokemon?.sprites?.other?.["official-artwork"]?.front_default ??
   detail?.pokemon?.sprites?.other?.home?.front_default ??
@@ -147,11 +157,31 @@ const previewData = detail
 ---
 
 <MainLayout title={pageTitle}>
-  <div slot="header" class="space-y-3">
-    <a class="inline-flex items-center gap-2 text-sm text-primary transition hover:text-primary/80" href="/pokemon">
-      <span aria-hidden>←</span>
-      Powrót do Pokédexu
-    </a>
+  <div slot="header" class="space-y-4">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+        <li>
+          <a class="inline-flex items-center gap-1 transition hover:text-foreground" href="/">
+            Strona główna
+          </a>
+        </li>
+        <li aria-hidden class="opacity-50">
+          /
+        </li>
+        <li>
+          <a class="inline-flex items-center gap-2 transition hover:text-foreground" href={backHref}>
+            <span aria-hidden>←</span>
+            {backLabel}
+          </a>
+        </li>
+        <li aria-hidden class="opacity-50">
+          /
+        </li>
+        <li aria-current="page" class="font-medium text-foreground">
+          {formattedName}
+        </li>
+      </ol>
+    </nav>
 
     {
       errorMessage ? (

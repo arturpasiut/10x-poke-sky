@@ -1,4 +1,6 @@
 import type { PokemonSummaryDto } from "@/types";
+import { useEffect, useState } from "react";
+
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -66,6 +68,16 @@ export interface PokemonCardProps {
 
 export function PokemonCard({ pokemon }: PokemonCardProps) {
   const gradient = getGradient(pokemon.types ?? []);
+  const [searchSuffix, setSearchSuffix] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    setSearchSuffix(window.location.search);
+  }, []);
+
+  const detailHref = `/pokemon/${pokemon.pokemonId}${searchSuffix}`;
 
   return (
     <Card
@@ -105,7 +117,7 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
       <CardFooter className="mt-auto flex items-center justify-between border-t border-border/30 bg-background/60 px-4 pt-4 text-sm text-muted-foreground">
         <span className="whitespace-nowrap">Generacja {formatGeneration(pokemon.generation)}</span>
         <a
-          href={`/pokemon/${pokemon.pokemonId}`}
+          href={detailHref}
           className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground transition hover:bg-primary/90"
         >
           Szczegóły

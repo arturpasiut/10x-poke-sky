@@ -62,7 +62,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 2. [x] Zbuduj nagłówek (grafika, nazwa, typy) i dodaj akcje (CTA ulubionych dla zalogowanych albo przekierowanie do logowania).
 3. [x] Zaimplementuj sekcję statystyk (paski lub wykres radarowy) z weryfikacją wartości względem PokeAPI.
 4. [x] Wyświetl linię ewolucji i listę ruchów, korzystając z cache ruchów dla wydajności.
-5. Dodaj breadcrumbs lub przycisk powrotu do ostatnich wyników wyszukiwania.
+5. [x] Dodaj breadcrumbs lub przycisk powrotu do ostatnich wyników wyszukiwania.
 6. Przygotuj testy jednostkowe transformacji (normalizacja statystyk, parsowanie ewolucji) i scenariusz Playwright od wyszukiwarki do detalu.
 
 ## Faza 5 – Autoryzacja (US-005)
