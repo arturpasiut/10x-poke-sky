@@ -59,7 +59,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 
 ## Faza 4 – Szczegóły Pokemona (US-002)
 1. [x] Skonfiguruj dynamiczną trasę `pokemon/[identifier]` w Astro, pobierając dane po stronie serwera przez warstwę cache.
-2. Zbuduj nagłówek (grafika, nazwa, typy) i dodaj akcje (CTA ulubionych dla zalogowanych albo przekierowanie do logowania).
+2. [x] Zbuduj nagłówek (grafika, nazwa, typy) i dodaj akcje (CTA ulubionych dla zalogowanych albo przekierowanie do logowania).
 3. Zaimplementuj sekcję statystyk (paski lub wykres radarowy) z weryfikacją wartości względem PokeAPI.
 4. Wyświetl linię ewolucji i listę ruchów, korzystając z cache ruchów dla wydajności.
 5. Dodaj breadcrumbs lub przycisk powrotu do ostatnich wyników wyszukiwania.
