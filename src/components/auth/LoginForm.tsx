@@ -15,6 +15,16 @@ const INITIAL_VALUES: LoginInput = {
   rememberMe: false,
 };
 
+interface LoginResponseBody {
+  message?: string;
+  fieldErrors?: FieldErrors<typeof loginSchema>;
+  details?: unknown;
+  user?: {
+    id: string;
+    email: string | null;
+  } | null;
+}
+
 export default function LoginForm({ redirectTo, message }: LoginFormProps) {
   const emailId = useId();
   const passwordId = useId();
@@ -24,6 +34,14 @@ export default function LoginForm({ redirectTo, message }: LoginFormProps) {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors<typeof loginSchema>>({});
   const [status, setStatus] = useState<StatusMessage | null>(message ? { variant: "info", content: message } : null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const redirectTarget = useMemo(() => {
+    if (typeof redirectTo === "string" && redirectTo.startsWith("/")) {
+      return redirectTo;
+    }
+
+    return "/";
+  }, [redirectTo]);
 
   const redirectHint = useMemo(() => {
     if (!redirectTo) {
@@ -70,14 +88,65 @@ export default function LoginForm({ redirectTo, message }: LoginFormProps) {
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 400));
-      setStatus({
-        variant: "success",
-        content: "Dane wyglądają poprawnie. Integracja logowania z backendem zostanie dodana w kolejnych krokach.",
-      });
-      setIsSubmitting(false);
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(result.data),
+          credentials: "same-origin",
+        });
+
+        let payload: LoginResponseBody | null = null;
+
+        try {
+          payload = (await response.json()) as LoginResponseBody;
+        } catch {
+          payload = null;
+        }
+
+        if (response.status === 422 && payload?.fieldErrors) {
+          setFieldErrors(payload.fieldErrors ?? {});
+          setStatus({
+            variant: "error",
+            content: payload.message ?? "Popraw zaznaczone pola i spróbuj ponownie.",
+          });
+          return;
+        }
+
+        if (response.status === 401) {
+          setStatus({
+            variant: "error",
+            content: payload?.message ?? "Nieprawidłowy adres e-mail lub hasło.",
+          });
+          return;
+        }
+
+        if (!response.ok) {
+          setStatus({
+            variant: "error",
+            content: payload?.message ?? "Coś poszło nie tak. Spróbuj ponownie później.",
+          });
+          return;
+        }
+
+        setStatus({
+          variant: "success",
+          content: "Logowanie udane! Przenosimy Cię dalej...",
+        });
+
+        window.location.assign(redirectTarget);
+      } catch {
+        setStatus({
+          variant: "error",
+          content: "Coś poszło nie tak. Spróbuj ponownie później.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [values]
+    [values, redirectTarget]
   );
 
   return (
