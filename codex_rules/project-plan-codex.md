@@ -58,12 +58,12 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. [x] Create Playwright scenario covering search, filter combination, and empty-state display.
 
 ## Phase 4 – Pokemon Details (US-002)
-1. Configure Astro dynamic route `pokemon/[identifier]` to fetch details server-side using the cache layer built in Phase 2.
-2. Build summary header (artwork, name, types) and include quick actions (favorite toggle CTA for logged users or login prompt).
-3. Implement stats section using either CSS bars or a React chart component; cross-verify values with PokeAPI schema.
-4. Render evolution chain timeline and moves list referencing cached move data for display efficiency.
-5. Provide navigation breadcrumbs or back button to return to the previous search context.
-6. Add unit tests for data transformation (stat normalization, evolution parsing) and Playwright coverage for hitting the detail page from search results.
+1. [x] Configure Astro dynamic route `pokemon/[identifier]` to fetch details server-side using the cache layer built in Phase 2.
+2. [x] Build summary header (artwork, name, types) and include quick actions (favorite toggle CTA for logged users or login prompt).
+3. [x] Implement stats section using either CSS bars or a React chart component; cross-verify values with PokeAPI schema.
+4. [x] Render evolution chain timeline and moves list referencing cached move data for display efficiency.
+5. [x] Provide navigation breadcrumbs or back button to return to the previous search context.
+6. [x] Add unit tests for data transformation (stat normalization, evolution parsing) and Playwright coverage for hitting the detail page from search results.
 
 ## Phase 5 – Authentication (US-005)
 1. Wire Supabase client in Astro server and React contexts, enabling SSR awareness of sessions.

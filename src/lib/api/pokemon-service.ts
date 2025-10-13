@@ -1,4 +1,4 @@
-import type { PokemonListResponseDto } from "@/types";
+import type { PokemonDetailResponseDto, PokemonListResponseDto } from "@/types";
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -16,6 +16,16 @@ interface PokemonListEdgeResponse {
     refreshedIds: number[];
     cacheTtlMs: number;
     search?: string;
+  };
+  source: string;
+}
+
+interface PokemonDetailEdgeResponse {
+  data: PokemonDetailResponseDto;
+  meta: {
+    refreshed: boolean;
+    cacheTtlMs: number;
+    movesCached: number;
   };
   source: string;
 }
@@ -65,4 +75,28 @@ export async function fetchPokemonListFromEdge(
   });
 
   return await handleResponse<PokemonListEdgeResponse>(response);
+}
+
+interface FetchDetailOptions {
+  baseUrl?: string | URL;
+}
+
+export async function fetchPokemonDetailFromEdge(identifier: string, options: FetchDetailOptions = {}) {
+  const query = new URLSearchParams({
+    identifier: identifier.trim(),
+  });
+
+  const requestUrl =
+    options.baseUrl !== undefined
+      ? new URL(`/api/pokemon/details?${query.toString()}`, options.baseUrl).toString()
+      : `/api/pokemon/details?${query.toString()}`;
+
+  const response = await fetch(requestUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return await handleResponse<PokemonDetailEdgeResponse>(response);
 }

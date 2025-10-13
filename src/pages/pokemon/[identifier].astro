@@ -1,38 +1,343 @@
 ---
+import type { PokemonDetailResponseDto } from "@/types";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
+
 import MainLayout from "../../layouts/MainLayout.astro";
-const { identifier } = Astro.params;
+import { PokemonFavoriteAction } from "../../components/pokemon/PokemonFavoriteAction";
+import { PokemonEvolutionTimeline } from "../../components/pokemon/evolution/PokemonEvolutionTimeline";
+import { PokemonMovesGrid } from "../../components/pokemon/moves/PokemonMovesGrid";
+import { PokemonStatsPanel } from "../../components/pokemon/PokemonStatsPanel";
+import { fetchPokemonDetailFromEdge } from "../../lib/api/pokemon-service";
+
+const { identifier: rawIdentifier } = Astro.params;
+
+if (!rawIdentifier) {
+  Astro.response.status = 404;
+  throw new Error("Brak identyfikatora Pokémona w adresie.");
+}
+
+const normalizeName = (value: string) =>
+  value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
+let detail: PokemonDetailResponseDto | null = null;
+let errorMessage: string | null = null;
+
+try {
+  const response = await fetchPokemonDetailFromEdge(rawIdentifier, { baseUrl: Astro.url });
+  detail = response.data;
+} catch (error) {
+  errorMessage =
+    error instanceof Error ? error.message : "Nie udało się pobrać szczegółów Pokémona. Spróbuj ponownie później.";
+  const lower = errorMessage.toLowerCase();
+  if (lower.includes("404")) {
+    Astro.response.status = 404;
+  } else if (lower.includes("timeout") || lower.includes("failed to fetch")) {
+    Astro.response.status = 504;
+  } else {
+    Astro.response.status = 502;
+  }
+}
+
+const TYPE_COLORS: Record<string, string> = {
+  bug: "#179A55",
+  dark: "#040706",
+  dragon: "#378A94",
+  electric: "#E0E64B",
+  fairy: "#9E1A44",
+  fire: "#B22328",
+  flying: "#90B1C5",
+  ghost: "#363069",
+  ice: "#7ECFF2",
+  poison: "#642785",
+  psychic: "#AC296B",
+  rock: "#4B190E",
+  steel: "#5C756D",
+  water: "#2648DC",
+  fighting: "#9F422A",
+  grass: "#007C42",
+  ground: "#AD7235",
+  normal: "#B8B6B3",
+};
+
+const GENERATION_LABELS: Record<string, string> = {
+  "generation-i": "I",
+  "generation-ii": "II",
+  "generation-iii": "III",
+  "generation-iv": "IV",
+  "generation-v": "V",
+  "generation-vi": "VI",
+  "generation-vii": "VII",
+  "generation-viii": "VIII",
+  "generation-ix": "IX",
+};
+
+const formatGenerationLabel = (value: string | null | undefined) => {
+  if (!value) return null;
+  return GENERATION_LABELS[value] ?? value.replace("generation-", "").toUpperCase();
+};
+
+const formatRegionLabel = (value: string | null | undefined) => {
+  if (!value) return null;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
+
+const TYPE_TONE_MAP: Record<string, BadgeTone> = {
+  bug: "bug",
+  dark: "dark",
+  dragon: "dragon",
+  electric: "electric",
+  fairy: "fairy",
+  fire: "fire",
+  flying: "flying",
+  ghost: "ghost",
+  ice: "ice",
+  poison: "poison",
+  psychic: "psychic",
+  rock: "rock",
+  steel: "steel",
+  water: "water",
+  fighting: "fighting",
+  grass: "grass",
+  ground: "ground",
+  normal: "normal",
+};
+
+const summary = detail?.summary ?? null;
+const formattedName = summary ? normalizeName(summary.name) : normalizeName(rawIdentifier);
+const dexNumber = summary ? `#${String(summary.pokemonId).padStart(3, "0")}` : null;
+const pageTitle = summary ? `${formattedName} – Pokédex – 10x Poke Sky` : `Pokémon – 10x Poke Sky`;
+const types = summary?.types ?? [];
+const typedBadges = types.map((type) => ({
+  raw: type,
+  label: normalizeName(type),
+  tone: TYPE_TONE_MAP[type.toLowerCase()] ?? undefined,
+}));
+const generationLabel = formatGenerationLabel(summary?.generation ?? null);
+const regionLabel = formatRegionLabel(summary?.region ?? null);
+const metadata = [
+  generationLabel ? { label: "Generacja", value: generationLabel } : null,
+  regionLabel ? { label: "Region", value: regionLabel } : null,
+].filter(Boolean);
+
+const preservedBackParams = new URLSearchParams();
+const allowedBackKeys = ["q", "type", "generation", "region"];
+allowedBackKeys.forEach((key) => {
+  Astro.url.searchParams.getAll(key).forEach((value) => {
+    if (value) preservedBackParams.append(key, value);
+  });
+});
+const backHref = `/pokemon${preservedBackParams.toString() ? `?${preservedBackParams.toString()}` : ""}`;
+const backLabel = preservedBackParams.toString() ? "Wróć do wyników" : "Pokédex";
+
+const spriteUrl =
+  detail?.pokemon?.sprites?.other?.["official-artwork"]?.front_default ??
+  detail?.pokemon?.sprites?.other?.home?.front_default ??
+  summary?.spriteUrl ??
+  detail?.pokemon?.sprites?.front_default ??
+  null;
+
+const primaryTypeColor = types.length > 0 ? TYPE_COLORS[types[0].toLowerCase()] ?? "#1a1f1c" : "#1a1f1c";
+
+const heroGlowStyle = `background: radial-gradient(circle at center, color-mix(in srgb, ${primaryTypeColor} 55%, transparent) 0%, transparent 68%)`;
+
+const previewData = detail
+  ? JSON.stringify(
+      {
+        stats: detail.pokemon?.stats ?? [],
+        moves: (detail.moves ?? []).slice(0, 5),
+      },
+      null,
+      2
+    )
+  : "";
 ---
 
-<MainLayout title={`Pokemon ${identifier} – 10x Poke Sky`}>
-  <div slot="header" class="space-y-2">
-    <a class="text-sm text-primary" href="/pokemon">← Powrót do Pokédexu</a>
-    <h1 class="text-4xl font-semibold capitalize">{identifier}</h1>
-    <p class="text-muted-foreground">Szczegóły pokemona zostaną wypełnione w fazie 4.</p>
+<MainLayout title={pageTitle}>
+  <div slot="header" class="space-y-4">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+        <li>
+          <a class="inline-flex items-center gap-1 transition hover:text-foreground" href="/">
+            Strona główna
+          </a>
+        </li>
+        <li aria-hidden class="opacity-50">
+          /
+        </li>
+        <li>
+          <a class="inline-flex items-center gap-2 transition hover:text-foreground" href={backHref}>
+            <span aria-hidden>←</span>
+            {backLabel}
+          </a>
+        </li>
+        <li aria-hidden class="opacity-50">
+          /
+        </li>
+        <li aria-current="page" class="font-medium text-foreground">
+          {formattedName}
+        </li>
+      </ol>
+    </nav>
+
+    {
+      errorMessage ? (
+        <div class="space-y-2 rounded-2xl border border-destructive/40 bg-destructive/10 p-6 text-destructive">
+          <h1 class="text-3xl font-semibold">Nie udało się wczytać danych</h1>
+          <p>
+            {errorMessage}. Jeśli problem się powtarza, wróć do listy i wybierz innego Pokémona lub spróbuj ponownie
+            później.
+          </p>
+        </div>
+      ) : (
+        <div class="space-y-1">
+          <p class="text-xs uppercase tracking-[0.35em] text-muted-foreground">Karta Pokémona</p>
+          <h1 class="text-4xl font-semibold capitalize sm:text-5xl">{formattedName}</h1>
+          {dexNumber ? <p class="text-sm text-muted-foreground">{dexNumber}</p> : null}
+        </div>
+      )
+    }
   </div>
 
-  <section class="grid gap-6 sm:grid-cols-[minmax(0,320px)_1fr]">
-    <div
-      class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 text-center shadow-md"
-    >
-      <div class="mb-4 flex items-center justify-center">
+  {
+    !errorMessage && detail ? (
+      <section class="space-y-10">
         <div
-          class="aspect-square w-48 rounded-full bg-[color:color-mix(in_srgb,var(--color-background)_30%,transparent)]"
+          class="relative overflow-hidden rounded-[48px] border border-white/5 bg-[color:color-mix(in_srgb,var(--color-background)_85%,transparent)] px-6 py-10 text-white shadow-floating backdrop-blur md:px-16 md:py-14"
         >
+          <div class="pointer-events-none absolute inset-0 opacity-60" style={heroGlowStyle} />
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+          <div class="relative z-10 flex flex-col items-center gap-8 text-center">
+            <header class="flex w-full items-center justify-between text-[0.65rem] uppercase tracking-[0.45em] text-white/60">
+              <span>{dexNumber ?? "Pokémon"}</span>
+              <div class="flex items-center gap-3 text-white">
+                <PokemonFavoriteAction
+                  client:load
+                  pokemonId={summary!.pokemonId}
+                  pokemonName={formattedName}
+                />
+              </div>
+            </header>
+            {spriteUrl ? (
+              <div class="relative flex h-48 w-48 items-center justify-center rounded-[40px] bg-black/10 p-6 backdrop-blur-sm shadow-inner shadow-black/30 md:h-64 md:w-64">
+                <img
+                  class="h-full w-full object-contain drop-shadow-[0_18px_32px_rgba(0,0,0,0.35)]"
+                  src={spriteUrl}
+                  alt={formattedName}
+                  loading="lazy"
+                />
+              </div>
+            ) : (
+              <div class="flex h-40 w-40 items-center justify-center rounded-full bg-muted/30 text-muted-foreground">
+                Brak grafiki
+              </div>
+            )}
+
+            <div class="space-y-3">
+              <div class="space-y-2">
+                <p class="text-sm uppercase tracking-[0.35em] text-white/60">Pokémon</p>
+                <h1 class="text-4xl font-semibold capitalize tracking-tight text-white sm:text-5xl">{formattedName}</h1>
+                {dexNumber ? <p class="text-sm font-medium text-white/70">{dexNumber}</p> : null}
+              </div>
+              <div class="flex flex-wrap items-center justify-center gap-3">
+                {typedBadges.map(({ raw, label, tone }) => (
+                  <Badge
+                    tone={tone}
+                    key={raw}
+                    variant="surface"
+                    class="rounded-full border-white/20 bg-white/10 px-4 py-2 text-sm font-medium tracking-normal text-white shadow-sm shadow-black/30 backdrop-blur"
+                  >
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+              {metadata.length ? (
+                <dl class="flex flex-wrap items-center justify-center gap-6 text-xs font-medium uppercase tracking-[0.35em] text-white/60">
+                  {metadata.map((entry) => (
+                    <div class="flex flex-col items-center gap-1" key={entry!.label}>
+                      <dt>{entry!.label}</dt>
+                      <dd class="text-sm tracking-normal text-white">{entry!.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+            </div>
+
+            {summary?.cachedAt ? (
+              <p class="text-[0.7rem] uppercase tracking-[0.4em] text-white/40">
+                Odświeżono {new Date(summary.cachedAt).toLocaleString()}
+              </p>
+            ) : null}
+          </div>
         </div>
-      </div>
-      <p class="text-muted-foreground">Artwork / Sprite</p>
-    </div>
 
-    <div class="space-y-4">
-      <div class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 shadow-md">
-        <h2 class="mb-2 text-xl font-semibold">Statystyki</h2>
-        <p class="text-muted-foreground">Placeholder na wykres i tabelę statystyk.</p>
-      </div>
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,360px)_1fr]">
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+            <h2 class="text-lg font-semibold text-foreground">Statystyki bazowe</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Wartości bazowe pochodzą z PokeAPI i pozwalają szybko porównać Pokémona z innymi w drużynie.
+            </p>
+            <div class="mt-6">
+              <PokemonStatsPanel client:load stats={detail.pokemon.stats ?? []} />
+            </div>
+          </article>
 
-      <div class="rounded-2xl bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-6 shadow-md">
-        <h2 class="mb-2 text-xl font-semibold">Ewolucje</h2>
-        <p class="text-muted-foreground">Sekcja timeline zostanie dodana w fazie 4.</p>
-      </div>
-    </div>
-  </section>
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+            <h2 class="text-lg font-semibold text-foreground">Metryki podstawowe</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Dane szczegółowe i wizualizacje pojawią się w kolejnych krokach fazy 4.
+            </p>
+            <dl class="mt-6 space-y-4 text-sm text-muted-foreground">
+              <div class="flex items-center justify-between rounded-xl bg-muted/20 px-4 py-3">
+                <dt>Waga</dt>
+                <dd class="font-medium text-foreground">
+                  {detail.pokemon.weight ? `${detail.pokemon.weight / 10} kg` : "—"}
+                </dd>
+              </div>
+              <div class="flex items-center justify-between rounded-xl bg-muted/20 px-4 py-3">
+                <dt>Wzrost</dt>
+                <dd class="font-medium text-foreground">
+                  {detail.pokemon.height ? `${detail.pokemon.height / 10} m` : "—"}
+                </dd>
+              </div>
+              <div class="flex items-center justify-between rounded-xl bg-muted/20 px-4 py-3">
+                <dt>Typy</dt>
+                <dd class="font-medium text-foreground">
+                  {typedBadges.length ? typedBadges.map((item) => item.label).join(", ") : "—"}
+                </dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+
+        <section class="space-y-6">
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+            <h2 class="text-lg font-semibold text-foreground">Łańcuch ewolucji</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Śledź jak {formattedName} zmienia się w kolejnych formach. Wskazujemy wymagane warunki w skrócie.
+            </p>
+            <div class="mt-6">
+              <PokemonEvolutionTimeline client:load chain={detail.evolutionChain ?? null} />
+            </div>
+          </article>
+
+          <article class="rounded-3xl border border-border/30 bg-surface/80 p-6 shadow-sm backdrop-blur">
+            <h2 class="text-lg font-semibold text-foreground">Wybrane ruchy</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Lista obejmuje pierwsze {detail.moves?.length ? Math.min(12, detail.moves.length) : 0} ruchów dostępnych
+              dla Pokémona. Pełny katalog będzie dostępny w sekcji ruchów.
+            </p>
+            <div class="mt-6">
+              <PokemonMovesGrid client:load moves={detail.moves ?? []} />
+            </div>
+          </article>
+        </section>
+      </section>
+    ) : null
+  }
 </MainLayout>
+
+export const prerender = false;
