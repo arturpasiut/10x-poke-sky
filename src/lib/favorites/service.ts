@@ -413,12 +413,14 @@ export const parseSpriteUrlFromPayload = (payload: PokemonCacheRow["payload"]): 
   const parsed = parseJson(payload);
 
   if (!parsed) {
+    console.log("[parseSpriteUrlFromPayload] Failed to parse JSON from payload", payload);
     return null;
   }
 
   const spritesRaw = parsed.sprites;
 
   if (!isRecord(spritesRaw)) {
+    console.log("[parseSpriteUrlFromPayload] sprites is not a record", { parsed, spritesRaw });
     return null;
   }
 
@@ -434,9 +436,11 @@ export const parseSpriteUrlFromPayload = (payload: PokemonCacheRow["payload"]): 
     const spriteValue = getNestedValue(spritesRaw, path);
     const sprite = extractString(spriteValue);
     if (sprite) {
+      console.log("[parseSpriteUrlFromPayload] Found sprite", { path, sprite });
       return sprite;
     }
   }
 
+  console.log("[parseSpriteUrlFromPayload] No sprite found in any path", { spritesRaw });
   return null;
 };

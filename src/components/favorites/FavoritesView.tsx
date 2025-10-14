@@ -184,12 +184,12 @@ export default function FavoritesView() {
             <div key={pokemon.pokemonId} className="group relative">
               <PokemonCard pokemon={pokemon} />
               <div className="pointer-events-none absolute inset-0 rounded-3xl border border-transparent transition group-hover:border-white/20" />
-              <div className="absolute right-5 top-5 flex flex-col items-end gap-2">
+              <div className="absolute bottom-6 left-6 right-6 flex flex-col items-stretch gap-2">
                 <Button
                   type="button"
-                  size="sm"
+                  size="default"
                   variant="secondary"
-                  className="pointer-events-auto gap-2 bg-white/20 text-white hover:bg-white/30"
+                  className="pointer-events-auto gap-2 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20"
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
@@ -198,10 +198,10 @@ export default function FavoritesView() {
                   disabled={isRemoving}
                 >
                   {isRemoving ? <Loader2 className="size-4 animate-spin" /> : <HeartOff className="size-4" />}
-                  Usuń
+                  Usuń z ulubionych
                 </Button>
                 {removalState.status === "error" && removalState.error ? (
-                  <p className="pointer-events-none max-w-[220px] rounded-md bg-black/70 px-2 py-1 text-xs text-red-300 shadow-lg">
+                  <p className="pointer-events-none rounded-md bg-black/70 px-3 py-2 text-xs text-red-300 shadow-lg">
                     {removalState.error}
                   </p>
                 ) : null}

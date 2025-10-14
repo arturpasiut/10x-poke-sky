@@ -31,7 +31,7 @@ function Component({ pokemon }: PokemonCardProps) {
     <a
       href={detailHref}
       className={clsx(
-        "group relative flex h-72 overflow-hidden rounded-3xl border border-white/5 bg-[#0f151c] transition-transform",
+        "group relative flex h-96 overflow-hidden rounded-3xl border border-white/5 bg-[#0f151c] transition-transform",
         "shadow-card hover:-translate-y-1 focus-visible:-translate-y-1 focus-visible:outline-none focus-visible-outline",
       )}
       aria-label={`${displayName} ${dexNumber}`}
@@ -59,8 +59,8 @@ function Component({ pokemon }: PokemonCardProps) {
           </div>
         </div>
 
-        <div className="absolute inset-x-0 top-10 flex justify-center">
-          <div className="relative h-44 w-44 overflow-visible">
+        <div className="absolute inset-x-0 top-16 flex justify-center">
+          <div className="relative h-40 w-40 overflow-visible">
             <div className="absolute inset-0 rounded-full bg-white/10 blur-2xl transition duration-500 group-hover:scale-105" />
             <img
               src={spriteUrl ?? fallbackSprite}
@@ -71,7 +71,7 @@ function Component({ pokemon }: PokemonCardProps) {
           </div>
         </div>
 
-        <div className="relative mt-auto space-y-2 pt-40">
+        <div className="relative mt-auto space-y-2 pt-44 pb-16">
           <h3 className="text-2xl font-semibold capitalize tracking-wide">{displayName}</h3>
           <p className="text-sm text-white/80">Zobacz szczegóły →</p>
         </div>
