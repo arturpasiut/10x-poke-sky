@@ -67,23 +67,68 @@ export type Database = {
         }
         Relationships: []
       }
+      cache_refresh_targets: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          id: number
+          label: string | null
+          last_refreshed: string | null
+          priority: number | null
+          target_id: number
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          id?: number
+          label?: string | null
+          last_refreshed?: string | null
+          priority?: number | null
+          target_id: number
+          target_type: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          id?: number
+          label?: string | null
+          last_refreshed?: string | null
+          priority?: number | null
+          target_id?: number
+          target_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
           id: string
           pokemon_id: number
+          pokemon_name: string | null
+          pokemon_sprite_url: string | null
+          pokemon_types: string[] | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           pokemon_id: number
+          pokemon_name?: string | null
+          pokemon_sprite_url?: string | null
+          pokemon_types?: string[] | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           pokemon_id?: number
+          pokemon_name?: string | null
+          pokemon_sprite_url?: string | null
+          pokemon_types?: string[] | null
           user_id?: string
         }
         Relationships: []
@@ -328,4 +373,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

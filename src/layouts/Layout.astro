@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 interface Props {
   title?: string;
@@ -9,6 +10,7 @@ const { title = "10x Poke Sky" } = Astro.props;
 const supabase = Astro.locals.supabase;
 
 let userEmail: string | null = null;
+let sessionData: { userId: string; email: string } | null = null;
 
 try {
   const {
@@ -18,9 +20,14 @@ try {
 
   if (!error && user) {
     userEmail = user.email ?? null;
+    sessionData = {
+      userId: user.id,
+      email: user.email ?? "",
+    };
   }
 } catch {
   userEmail = null;
+  sessionData = null;
 }
 
 const currentUrl = new URL(Astro.request.url);
@@ -37,6 +44,7 @@ const flashMessage = currentUrl.searchParams.get("message");
     <title>{title}</title>
   </head>
   <body class="layout-body">
+    <SessionProvider client:load initialSession={sessionData} />
     <header class="layout-header">
       <a class="layout-brand" href="/">10x Poke Sky</a>
       <div class="layout-actions">
