@@ -65,4 +65,35 @@ export const removeFavorite = async (pokemonId: number): Promise<void> => {
   }
 };
 
+export const checkIsFavorite = async (pokemonId: number): Promise<boolean> => {
+  if (!supabaseClient) {
+    console.error("[checkIsFavorite] Supabase client is not configured");
+    return false;
+  }
+
+  try {
+    const user = await requireAuthenticatedUser();
+    const { data, error } = await supabaseClient
+      .from("favorites")
+      .select("pokemon_id")
+      .eq("user_id", user.id)
+      .eq("pokemon_id", pokemonId)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[checkIsFavorite] Supabase error:", error);
+      return false;
+    }
+
+    return data !== null;
+  } catch (err) {
+    if (err instanceof AuthenticationRequiredError) {
+      console.log("[checkIsFavorite] User not authenticated");
+      return false;
+    }
+    console.error("[checkIsFavorite] Unexpected error:", err);
+    return false;
+  }
+};
+
 export { AuthenticationRequiredError };
