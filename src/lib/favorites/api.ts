@@ -116,6 +116,47 @@ export const fetchFavoritesList = async (params: FavoritesListParams = {}) => {
   };
 };
 
+export const addFavoriteToApi = async (pokemonId: number) => {
+  const response = await fetch(BASE_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ pokemonId }),
+  });
+
+  if (!response.ok) {
+    const error = await parseErrorPayload(response);
+    throw new FavoritesApiError(error.message, {
+      code: error.code,
+      details: error.details,
+      retryAfterMs: error.retryAfterMs,
+    });
+  }
+
+  const payload = await response.json();
+
+  return {
+    pokemonId: payload.pokemonId,
+    addedAt: payload.addedAt,
+    isNew: response.status === 201,
+  };
+};
+
+export const checkIsFavorite = async (pokemonId: number): Promise<boolean> => {
+  try {
+    const result = await fetchFavoritesList({ pageSize: 50 });
+    return result.items.some((item) => item.pokemonId === pokemonId);
+  } catch (error) {
+    if (error instanceof FavoritesApiError && error.code === 401) {
+      return false;
+    }
+    throw error;
+  }
+};
+
 export const deleteFavoriteFromApi = async (pokemonId: number) => {
   const url = `${BASE_ENDPOINT}/${pokemonId}`;
   const response = await fetch(url, {
