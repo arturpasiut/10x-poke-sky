@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 
-import type { Tables } from "@/db/database.types";
+import type { Json, Tables } from "@/db/database.types";
 import type { FavoriteListItemDto, FavoritesListResponseDto, PokemonFavoriteSnapshot } from "@/types";
 
 type SupabaseServerClient = App.Locals["supabase"];
@@ -62,6 +62,7 @@ export class FavoritesServiceError extends Error {
 
 const FAVORITES_TABLE = "favorites";
 const POKEMON_CACHE_TABLE = "pokemon_cache";
+const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -135,7 +136,7 @@ export const fetchFavorites = async (
 
   const { data, error, count, status } = await supabase
     .from(FAVORITES_TABLE)
-    .select("pokemon_id, created_at", { count: "exact" })
+    .select("pokemon_id, created_at, pokemon_name, pokemon_types, pokemon_sprite_url", { count: "exact" })
     .eq("user_id", userId)
     .order(orderColumn, { ascending, nullsFirst: false })
     .range(offset, Math.max(offset, upperBound));
@@ -161,42 +162,7 @@ export const fetchFavorites = async (
   };
 };
 
-export const loadPokemonSnapshots = async (
-  supabase: SupabaseServerClient,
-  pokemonIds: number[]
-): Promise<Map<number, FavoritePokemonSnapshot>> => {
-  const uniqueIds = Array.from(new Set(pokemonIds.filter((id) => Number.isInteger(id))));
-
-  if (uniqueIds.length === 0) {
-    return new Map();
-  }
-
-  const { data, error, status } = await supabase
-    .from(POKEMON_CACHE_TABLE)
-    .select("pokemon_id, name, types, payload")
-    .in("pokemon_id", uniqueIds);
-
-  if (error) {
-    console.error("[favorites] loadPokemonSnapshots error", { error, pokemonIds: uniqueIds, status });
-    throw new FavoritesServiceError(500, "Nie udało się odczytać danych o Pokemonach.", {
-      code: error.code,
-      details: error.details,
-    });
-  }
-
-  const snapshots = new Map<number, FavoritePokemonSnapshot>();
-
-  for (const row of data ?? []) {
-    snapshots.set(row.pokemon_id, {
-      pokemonId: row.pokemon_id,
-      name: row.name,
-      types: row.types,
-      spriteUrl: parseSpriteUrlFromPayload(row.payload),
-    });
-  }
-
-  return snapshots;
-};
+// Removed loadPokemonSnapshots - data is now stored directly in favorites table
 
 const lookupExistingFavorite = async (
   supabase: SupabaseServerClient,
@@ -225,17 +191,85 @@ const lookupExistingFavorite = async (
   return data ?? null;
 };
 
+const fetchPokemonDataFromPokeApi = async (pokemonId: number) => {
+  const response = await fetch(`${POKEAPI_BASE_URL}/pokemon/${pokemonId}`, {
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new FavoritesServiceError(
+      502,
+      `Nie udało się pobrać danych Pokemona #${pokemonId} z PokeAPI.`,
+      {
+        code: `POKEAPI_${response.status}`,
+        details: `PokeAPI returned status ${response.status}`,
+      }
+    );
+  }
+
+  const payload = (await response.json()) as Record<string, unknown>;
+
+  // Extract name
+  const name = extractString(payload.name) ?? `pokemon-${pokemonId}`;
+
+  // Extract types
+  const typesRaw = payload.types;
+  const types: string[] = [];
+  if (Array.isArray(typesRaw)) {
+    for (const entry of typesRaw) {
+      if (isRecord(entry) && isRecord(entry.type) && typeof entry.type.name === "string") {
+        types.push(entry.type.name);
+      }
+    }
+  }
+
+  // Extract sprite URL
+  const spritesRaw = payload.sprites;
+  let spriteUrl: string | null = null;
+
+  if (isRecord(spritesRaw)) {
+    const spritePaths: string[][] = [
+      ["other", "official-artwork", "front_default"],
+      ["other", "home", "front_default"],
+      ["other", "dream_world", "front_default"],
+      ["front_default"],
+      ["front_shiny"],
+    ];
+
+    for (const path of spritePaths) {
+      const spriteValue = getNestedValue(spritesRaw, path);
+      const sprite = extractString(spriteValue);
+      if (sprite) {
+        spriteUrl = sprite;
+        break;
+      }
+    }
+  }
+
+  return {
+    name,
+    types,
+    spriteUrl,
+  };
+};
+
 export const upsertFavorite = async (
   supabase: SupabaseServerClient,
   userId: string,
   pokemonId: number
 ): Promise<UpsertFavoriteResult> => {
+  // Fetch Pokemon data from PokeAPI
+  const pokemonData = await fetchPokemonDataFromPokeApi(pokemonId);
+
   const { data, error, status } = await supabase
     .from(FAVORITES_TABLE)
     .upsert(
       {
         user_id: userId,
         pokemon_id: pokemonId,
+        pokemon_name: pokemonData.name,
+        pokemon_types: pokemonData.types,
+        pokemon_sprite_url: pokemonData.spriteUrl,
       },
       {
         onConflict: "user_id,pokemon_id",
@@ -324,52 +358,19 @@ export const deleteFavorite = async (
   };
 };
 
-const collator = new Intl.Collator("pl", {
-  sensitivity: "base",
-  usage: "sort",
-});
-
-const toSnapshot = (
-  favorite: Pick<FavoriteRow, "pokemon_id">,
-  snapshot?: FavoritePokemonSnapshot
-): PokemonFavoriteSnapshot => ({
-  name: snapshot?.name ?? `Pokemon #${favorite.pokemon_id}`,
-  types: Array.isArray(snapshot?.types) ? snapshot.types : [],
-  spriteUrl: snapshot?.spriteUrl ?? null,
-});
-
-export const toFavoriteListItem = (
-  favorite: Pick<FavoriteRow, "pokemon_id" | "created_at">,
-  snapshot?: FavoritePokemonSnapshot
-): FavoriteListItemDto => ({
-  pokemonId: favorite.pokemon_id,
-  addedAt: favorite.created_at,
-  pokemon: toSnapshot(favorite, snapshot),
-});
-
-const compareByName = (order: FavoriteSortOrder) => {
-  return (a: FavoriteListItemDto, b: FavoriteListItemDto) => {
-    const result = collator.compare(a.pokemon.name, b.pokemon.name);
-    if (result === 0) {
-      return order === "asc" ? a.pokemonId - b.pokemonId : b.pokemonId - a.pokemonId;
-    }
-    return order === "asc" ? result : -result;
-  };
-};
-
 export const toFavoritesListResponse = (
   result: FetchFavoritesResult,
-  snapshots: Map<number, FavoritePokemonSnapshot>,
   options: FavoritesQueryOptions
 ): FavoritesListResponseDto => {
-  const items = result.rows.map((row) => {
-    const snapshot = snapshots.get(row.pokemon_id);
-    return toFavoriteListItem(row, snapshot);
-  });
-
-  if (options.sort === "name") {
-    items.sort(compareByName(options.order));
-  }
+  const items: FavoriteListItemDto[] = result.rows.map((row) => ({
+    pokemonId: row.pokemon_id,
+    addedAt: row.created_at,
+    pokemon: {
+      name: row.pokemon_name ?? `Pokemon #${row.pokemon_id}`,
+      types: Array.isArray(row.pokemon_types) ? row.pokemon_types : [],
+      spriteUrl: row.pokemon_sprite_url ?? null,
+    },
+  }));
 
   const total = Math.max(result.total, items.length);
   const hasNext = options.page * options.pageSize < total;
@@ -413,14 +414,18 @@ export const parseSpriteUrlFromPayload = (payload: PokemonCacheRow["payload"]): 
   const parsed = parseJson(payload);
 
   if (!parsed) {
-    console.log("[parseSpriteUrlFromPayload] Failed to parse JSON from payload", payload);
     return null;
   }
 
-  const spritesRaw = parsed.sprites;
+  // Try direct sprites first (simple PokeAPI response)
+  let spritesRaw = parsed.sprites;
+
+  // If not found, try nested pokemon.sprites (enriched response)
+  if (!isRecord(spritesRaw) && isRecord(parsed.pokemon)) {
+    spritesRaw = (parsed.pokemon as Record<string, unknown>).sprites;
+  }
 
   if (!isRecord(spritesRaw)) {
-    console.log("[parseSpriteUrlFromPayload] sprites is not a record", { parsed, spritesRaw });
     return null;
   }
 
@@ -436,11 +441,9 @@ export const parseSpriteUrlFromPayload = (payload: PokemonCacheRow["payload"]): 
     const spriteValue = getNestedValue(spritesRaw, path);
     const sprite = extractString(spriteValue);
     if (sprite) {
-      console.log("[parseSpriteUrlFromPayload] Found sprite", { path, sprite });
       return sprite;
     }
   }
 
-  console.log("[parseSpriteUrlFromPayload] No sprite found in any path", { spritesRaw });
   return null;
 };

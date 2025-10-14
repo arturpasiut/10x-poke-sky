@@ -3,7 +3,6 @@ import type { APIRoute } from "astro";
 import type { FavoritesQueryOptions } from "@/lib/favorites/service";
 import {
   fetchFavorites,
-  loadPokemonSnapshots,
   requireUser,
   toFavoritesListResponse,
   upsertFavorite,
@@ -92,11 +91,7 @@ export const GET: APIRoute = async ({ locals, request }) => {
   try {
     const user = await requireUser(supabase);
     const favorites = await fetchFavorites(supabase, user.id, query);
-    const snapshots = await loadPokemonSnapshots(
-      supabase,
-      favorites.rows.map((row) => row.pokemon_id)
-    );
-    const dto = toFavoritesListResponse(favorites, snapshots, query);
+    const dto = toFavoritesListResponse(favorites, query);
 
     return jsonResponse(dto, { status: 200 });
   } catch (error) {
@@ -117,6 +112,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
 
   try {
     const user = await requireUser(supabase);
+
     const result = await upsertFavorite(supabase, user.id, body.pokemonId);
     const status = result.isNew ? 201 : 200;
 
