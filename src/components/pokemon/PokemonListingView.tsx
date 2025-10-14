@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 
+import { useStore } from "zustand"
+
 import { Button } from "@/components/ui/button"
 import { POKEMON_SORT_OPTIONS } from "@/lib/pokemon/filters"
 import {
@@ -17,7 +19,12 @@ import type {
 } from "@/lib/pokemon/types"
 import { usePokemonFilterOptions } from "@/hooks/usePokemonFilterOptions"
 import { usePokemonListQuery } from "@/hooks/usePokemonListQuery"
-import { usePokemonSearchStore } from "@/stores/usePokemonSearchStore"
+import {
+  selectIsHydrated,
+  selectPokemonQueryState,
+  selectPokemonQueryString,
+  usePokemonSearchStore,
+} from "@/stores/usePokemonSearchStore"
 
 import { EmptyStateWithAI } from "./EmptyStateWithAI"
 import { ErrorCallout } from "./ErrorCallout"
@@ -33,23 +40,9 @@ import { StatusBanner } from "./StatusBanner"
 
 export default function PokemonListingView() {
   const store = usePokemonSearchStore
-
-  const [queryState, setQueryState] = useState(() => {
-    const snapshot = store.getState()
-    return {
-      search: snapshot.search,
-      types: snapshot.types,
-      generation: snapshot.generation,
-      region: snapshot.region,
-      sort: snapshot.sort,
-      order: snapshot.order,
-      page: snapshot.page,
-      pageSize: snapshot.pageSize,
-    }
-  })
-  const [isHydrated, setIsHydrated] = useState(() => store.getState().isHydrated)
-  const [queryString, setQueryString] = useState(() => store.getState().toQueryString())
-
+  const queryState = useStore(store, selectPokemonQueryState)
+  const isHydrated = useStore(store, selectIsHydrated)
+  const queryString = useStore(store, selectPokemonQueryString)
   const {
     setSearch,
     toggleType,
@@ -64,54 +57,21 @@ export default function PokemonListingView() {
     replaceFromUrl,
     commitQuery,
     restoreLastApplied,
-  } = useMemo(() => {
-    const snapshot = store.getState()
-    return {
-      setSearch: snapshot.setSearch,
-      toggleType: snapshot.toggleType,
-      setGeneration: snapshot.setGeneration,
-      setRegion: snapshot.setRegion,
-      setSort: snapshot.setSort,
-      toggleOrder: snapshot.toggleOrder,
-      setPage: snapshot.setPage,
-      resetFilters: snapshot.resetFilters,
-      resetAll: snapshot.resetAll,
-      initialiseFromUrl: snapshot.initialiseFromUrl,
-      replaceFromUrl: snapshot.replaceFromUrl,
-      commitQuery: snapshot.commitQuery,
-      restoreLastApplied: snapshot.restoreLastApplied,
-    }
-  }, [store])
-
-  useEffect(() => {
-    const selector = (state: ReturnType<typeof store.getState>) => ({
-      query: {
-        search: state.search,
-        types: state.types,
-        generation: state.generation,
-        region: state.region,
-        sort: state.sort,
-        order: state.order,
-        page: state.page,
-        pageSize: state.pageSize,
-      },
-      isHydrated: state.isHydrated,
-      queryString: state.toQueryString(),
-    })
-
-    const initialSlice = selector(store.getState())
-    setQueryState(initialSlice.query)
-    setIsHydrated(initialSlice.isHydrated)
-    setQueryString(initialSlice.queryString)
-
-    const unsubscribe = store.subscribe(selector, (slice) => {
-      setQueryState(slice.query)
-      setIsHydrated(slice.isHydrated)
-      setQueryString(slice.queryString)
-    })
-
-    return unsubscribe
-  }, [store])
+  } = useStore(store, (state) => ({
+    setSearch: state.setSearch,
+    toggleType: state.toggleType,
+    setGeneration: state.setGeneration,
+    setRegion: state.setRegion,
+    setSort: state.setSort,
+    toggleOrder: state.toggleOrder,
+    setPage: state.setPage,
+    resetFilters: state.resetFilters,
+    resetAll: state.resetAll,
+    initialiseFromUrl: state.initialiseFromUrl,
+    replaceFromUrl: state.replaceFromUrl,
+    commitQuery: state.commitQuery,
+    restoreLastApplied: state.restoreLastApplied,
+  }))
 
   const { filters } = usePokemonFilterOptions()
   const [isDrawerOpen, setDrawerOpen] = useState(false)
@@ -134,20 +94,6 @@ export default function PokemonListingView() {
 
     initialiseFromUrl(window.location.search)
 
-    const snapshot = store.getState()
-    setQueryState({
-      search: snapshot.search,
-      types: snapshot.types,
-      generation: snapshot.generation,
-      region: snapshot.region,
-      sort: snapshot.sort,
-      order: snapshot.order,
-      page: snapshot.page,
-      pageSize: snapshot.pageSize,
-    })
-    setIsHydrated(snapshot.isHydrated)
-    setQueryString(snapshot.toQueryString())
-
     const handlePopState = () => {
       replaceFromUrl(window.location.search)
     }
@@ -157,7 +103,7 @@ export default function PokemonListingView() {
     return () => {
       window.removeEventListener("popstate", handlePopState)
     }
-  }, [initialiseFromUrl, replaceFromUrl, store])
+  }, [initialiseFromUrl, replaceFromUrl])
 
   useEffect(() => {
     if (!isHydrated || typeof window === "undefined") {
