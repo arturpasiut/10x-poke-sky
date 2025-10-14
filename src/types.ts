@@ -1,4 +1,5 @@
 import type { Json, Tables, TablesInsert, TablesUpdate } from "./db/database.types"
+import type { EvolutionChain, Pokemon as PokemonDetailPayload, PokemonSpecies } from "@/lib/types/pokemon"
 
 type ProfileRow = Tables<"profiles">
 type PokemonRow = Tables<"pokemon_cache">
@@ -49,6 +50,7 @@ export type PokemonSummaryDto = {
    * Cached payload may include sprites; expose a single URL derived from that structure.
    */
   spriteUrl: string | null
+  cachedAt?: PokemonRow["cached_at"]
   highlights?: string[]
 }
 
@@ -62,6 +64,18 @@ export type PokemonDetailDto = {
   region: PokemonRow["region"]
   payload: PokemonRow["payload"]
   cachedAt: PokemonRow["cached_at"]
+}
+
+export type PokemonDetailSummaryDto = PokemonSummaryDto & {
+  cachedAt: PokemonRow["cached_at"]
+}
+
+export type PokemonDetailResponseDto = {
+  summary: PokemonDetailSummaryDto
+  pokemon: PokemonDetailPayload
+  species: PokemonSpecies | null
+  evolutionChain: EvolutionChain | null
+  moves: MoveSummaryDto[]
 }
 
 export type MoveSummaryDto = {
