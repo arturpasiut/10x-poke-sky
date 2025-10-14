@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { memo, useEffect, useState } from "react"
 
 import clsx from "clsx"
 
@@ -16,10 +16,20 @@ const fallbackSprite =
 
 function Component({ pokemon }: PokemonCardProps) {
   const { spriteUrl, spriteAlt, displayName, routeHref, dexNumber, typeBadges, cardGradientClass } = pokemon
+  const [searchSuffix, setSearchSuffix] = useState("")
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+    setSearchSuffix(window.location.search)
+  }, [])
+
+  const detailHref = `${routeHref}${searchSuffix}`
 
   return (
     <a
-      href={routeHref}
+      href={detailHref}
       className={clsx(
         "group relative flex h-72 overflow-hidden rounded-3xl border border-white/5 bg-[#0f151c] transition-transform",
         "shadow-card hover:-translate-y-1 focus-visible:-translate-y-1 focus-visible:outline-none focus-visible-outline",

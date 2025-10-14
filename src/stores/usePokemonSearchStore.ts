@@ -70,6 +70,23 @@ function extractQueryState(
   }
 }
 
+function isQueryStateEqual(a: PokemonListQueryState, b: PokemonListQueryState): boolean {
+  if (a.search !== b.search) return false
+  if (a.generation !== b.generation) return false
+  if (a.region !== b.region) return false
+  if (a.sort !== b.sort) return false
+  if (a.order !== b.order) return false
+  if (a.page !== b.page) return false
+  if (a.pageSize !== b.pageSize) return false
+  if (a.types.length !== b.types.length) return false
+  for (let index = 0; index < a.types.length; index += 1) {
+    if (a.types[index] !== b.types[index]) {
+      return false
+    }
+  }
+  return true
+}
+
 function createInitialState(): PokemonSearchStore {
   const initialState = createDefaultQueryState()
 
@@ -201,7 +218,14 @@ export const usePokemonSearchStore = create<PokemonSearchStore>()((set, get) => 
   commitQuery() {
     const current = get()
     const committed = extractQueryState(current)
-    set({ lastAppliedQuery: committed })
+    set((state) =>
+      isQueryStateEqual(state.lastAppliedQuery, committed)
+        ? state
+        : {
+            ...state,
+            lastAppliedQuery: committed,
+          },
+    )
   },
   restoreLastApplied() {
     set((state) => {
