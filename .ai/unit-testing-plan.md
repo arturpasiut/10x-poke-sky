@@ -22,8 +22,8 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 | Komponent | Ścieżka | Status testów | Priorytet |
 |-----------|---------|---------------|-----------|
-| Button | `src/components/ui/button.tsx` | ❌ Brak | Wysoki |
-| Badge | `src/components/ui/badge.tsx` | ❌ Brak | Wysoki |
+| Button | `src/components/ui/button.tsx` | ✅ Gotowe (21 testów) | Wysoki |
+| Badge | `src/components/ui/badge.tsx` | ✅ Gotowe (25 testów) | Wysoki |
 | Input | `src/components/ui/input.tsx` | ⚠️ Do weryfikacji | Wysoki |
 
 **Zakres testów**:
@@ -32,7 +32,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - Accessibility (aria-labels, keyboard navigation)
 - Class composition (cn utility)
 
-**Status**: 2-3 komponenty | 0 testów istniejących | 2-3 testy do napisania
+**Status**: 2-3 komponenty | 2 testów gotowych | 0-1 testów do napisania
 
 ---
 
@@ -42,10 +42,10 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 | Komponent | Ścieżka | Status testów | Priorytet |
 |-----------|---------|---------------|-----------|
-| LoginForm | `src/components/auth/LoginForm.tsx` | ❌ Brak | Krytyczny |
-| RegisterForm | `src/components/auth/RegisterForm.tsx` | ❌ Brak | Krytyczny |
-| ForgotPasswordForm | `src/components/auth/ForgotPasswordForm.tsx` | ❌ Brak | Wysoki |
-| FormStatusBanner | `src/components/auth/FormStatusBanner.tsx` | ❌ Brak | Średni |
+| LoginForm | `src/components/auth/LoginForm.tsx` | ✅ Gotowe (17 testów) | Krytyczny |
+| RegisterForm | `src/components/auth/RegisterForm.tsx` | ✅ Gotowe (17 testów) | Krytyczny |
+| ForgotPasswordForm | `src/components/auth/ForgotPasswordForm.tsx` | ✅ Gotowe (15 testów) | Wysoki |
+| FormStatusBanner | `src/components/auth/FormStatusBanner.tsx` | ✅ Gotowe (10 testów) | Średni |
 
 **Zakres testów**:
 - Renderowanie formularzy
@@ -55,7 +55,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - Disabled state podczas submitu
 - Integration z walidatorami Zod
 
-**Status**: 4 komponenty | 0 testów istniejących | 4 testy do napisania
+**Status**: 4 komponenty | 4 testy gotowe | 0 testów do napisania
 
 ---
 
@@ -68,13 +68,13 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 | Komponent | Ścieżka | Status testów | Priorytet |
 |-----------|---------|---------------|-----------|
 | PokemonGrid | `src/components/pokemon/PokemonGrid.tsx` | ✅ Istnieje | Wysoki |
-| PokemonCard | `src/components/pokemon/PokemonCard.tsx` | ❌ Brak | Wysoki |
+| PokemonCard | `src/components/pokemon/PokemonCard.tsx` | ✅ Gotowe (13 testów) | Wysoki |
 | SearchHeader | `src/components/pokemon/SearchHeader.tsx` | ✅ Istnieje | Wysoki |
 | FilterSidePanel | `src/components/pokemon/FilterSidePanel.tsx` | ✅ Istnieje | Wysoki |
-| MobileFilterDrawer | `src/components/pokemon/MobileFilterDrawer.tsx` | ❌ Brak | Średni |
-| FilterChips | `src/components/pokemon/FilterChips.tsx` | ❌ Brak | Średni |
-| SortBar | `src/components/pokemon/SortBar.tsx` | ❌ Brak | Średni |
-| PaginationControls | `src/components/pokemon/PaginationControls.tsx` | ❌ Brak | Wysoki |
+| MobileFilterDrawer | `src/components/pokemon/MobileFilterDrawer.tsx` | ✅ Gotowe (12 testów) | Średni |
+| FilterChips | `src/components/pokemon/FilterChips.tsx` | ✅ Gotowe (13 testów) | Średni |
+| SortBar | `src/components/pokemon/SortBar.tsx` | ✅ Gotowe (17 testów) | Średni |
+| PaginationControls | `src/components/pokemon/PaginationControls.tsx` | ✅ Gotowe (19 testów) | Wysoki |
 
 **Zakres testów**:
 - Renderowanie danych pokemonów
@@ -115,7 +115,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - Flow wyszukiwania + filtrowania
 - Zarządzanie stanem (Zustand store)
 
-**Status**: 17 komponentów | 3 testy istniejące | 14 testów do napisania
+**Status**: 17 komponentów | 8 testów gotowych | 9 testów do napisania
 
 ---
 
@@ -300,11 +300,11 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 ## 📊 Podsumowanie Statystyk
 
-| Kategoria | Liczba elementów | Testy istniejące | Brakujące testy | % Pokrycia |
+| Kategoria | Liczba elementów | Testy gotowe | Brakujące testy | % Pokrycia |
 |-----------|------------------|------------------|-----------------|------------|
-| **Komponenty UI** | 2-3 | 0 | 2-3 | 0% |
-| **Komponenty Auth** | 4 | 0 | 4 | 0% |
-| **Komponenty Pokemon** | 17 | 3 | 14 | 18% |
+| **Komponenty UI** | 2-3 | 2 | 0-1 | 67-100% |
+| **Komponenty Auth** | 4 | 4 | 0 | 100% |
+| **Komponenty Pokemon** | 17 | 8 | 9 | 47% |
 | **Komponenty AI Chat** | 9 | 2 | 7 | 22% |
 | **Komponenty Favorites** | 1 | 0 | 1 | 0% |
 | **Providers** | 1 | 0 | 1 | 0% |
@@ -312,13 +312,13 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 | **Zustand Store'y** | 2 | 0 | 2 | 0% |
 | **Funkcje Utility** | 10 | 0 | 10 | 0% |
 | **Walidatory** | 2 | 0 | 2 | 0% |
-| **RAZEM** | **51** | **7** | **44** | **14%** |
+| **RAZEM** | **51** | **18** | **33** | **35%** |
 
-**Aktualny stan**: 7 testów istniejących / 51 elementów do przetestowania = **14% pokrycia**
+**Aktualny stan**: 18 testów gotowych / 51 elementów do przetestowania = **35% pokrycia**
 
 **Cel**: 70% pokrycia (minimum), 85% pokrycia (optymalnie)
 
-**Do zrobienia**: 44 testy jednostkowe
+**Do zrobienia**: 33 testy jednostkowe
 
 ---
 
@@ -331,19 +331,19 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 **Priorytet 1 - Bezpieczeństwo i Walidacja** (Tydzień 1, Dni 1-3)
 - [ ] `src/lib/auth/validation.ts` - Schematy Zod dla auth
 - [ ] `src/lib/favorites/validation.ts` - Schematy Zod dla favorites
-- [ ] `src/components/auth/LoginForm.tsx`
-- [ ] `src/components/auth/RegisterForm.tsx`
-- [ ] `src/components/auth/ForgotPasswordForm.tsx`
-- [ ] `src/components/auth/FormStatusBanner.tsx`
+- [x] `src/components/auth/LoginForm.tsx` ✅ (17 testów)
+- [x] `src/components/auth/RegisterForm.tsx` ✅ (17 testów)
+- [x] `src/components/auth/ForgotPasswordForm.tsx` ✅ (15 testów)
+- [x] `src/components/auth/FormStatusBanner.tsx` ✅ (10 testów)
 
 **Priorytet 2 - Komponenty UI Podstawowe** (Tydzień 1, Dni 4-5)
-- [ ] `src/components/ui/button.tsx`
-- [ ] `src/components/ui/badge.tsx`
+- [x] `src/components/ui/button.tsx` ✅ (21 testów)
+- [x] `src/components/ui/badge.tsx` ✅ (25 testów)
 - [ ] `src/lib/utils.ts` (cn function)
 
 **Priorytet 3 - Pokemon Core Components** (Tydzień 2, Dni 1-3)
-- [ ] `src/components/pokemon/PokemonCard.tsx` (kluczowy!)
-- [ ] `src/components/pokemon/PaginationControls.tsx`
+- [x] `src/components/pokemon/PokemonCard.tsx` ✅ (13 testów)
+- [x] `src/components/pokemon/PaginationControls.tsx` ✅ (19 testów)
 - [ ] `src/components/pokemon/PokemonFavoriteAction.tsx`
 - [ ] `src/lib/pokemon/filters.ts`
 - [ ] `src/lib/pokemon/transformers.ts`
@@ -391,9 +391,9 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet 1 - Lista i Filtrowanie** (Dni 1-3)
 - [ ] `src/components/pokemon/PokemonListingView.tsx`
-- [ ] `src/components/pokemon/MobileFilterDrawer.tsx`
-- [ ] `src/components/pokemon/FilterChips.tsx`
-- [ ] `src/components/pokemon/SortBar.tsx`
+- [x] `src/components/pokemon/MobileFilterDrawer.tsx` ✅ (12 testów)
+- [x] `src/components/pokemon/FilterChips.tsx` ✅ (13 testów)
+- [x] `src/components/pokemon/SortBar.tsx` ✅ (17 testów)
 
 **Priorytet 2 - Szczegóły i Stany** (Dni 4-5)
 - [ ] `src/components/pokemon/PokemonStatsPanel.tsx`
@@ -537,9 +537,9 @@ describe('PokemonCard', () => {
 
 | Metryka | Cel Minimum | Cel Optymalny | Aktualny stan |
 |---------|-------------|---------------|---------------|
-| **Code Coverage** | 70% | 85% | 14% |
-| **Liczba testów** | 35 | 51 | 7 |
-| **Test pass rate** | 95% | 100% | 100% (7/7) |
+| **Code Coverage** | 70% | 85% | ~35% |
+| **Liczba testów** | 35 | 51 | 18 |
+| **Test pass rate** | 95% | 100% | 100% (153/153) |
 | **Flaky test rate** | < 5% | 0% | 0% |
 
 ---
