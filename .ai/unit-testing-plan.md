@@ -88,14 +88,14 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 | Komponent | Ścieżka | Status testów | Priorytet |
 |-----------|---------|---------------|-----------|
-| PokemonStatsPanel | `src/components/pokemon/PokemonStatsPanel.tsx` | ❌ Brak | Średni |
-| PokemonEvolutionTimeline | `src/components/pokemon/evolution/PokemonEvolutionTimeline.tsx` | ❌ Brak | Średni |
-| PokemonMovesGrid | `src/components/pokemon/moves/PokemonMovesGrid.tsx` | ❌ Brak | Niski |
-| PokemonFavoriteAction | `src/components/pokemon/PokemonFavoriteAction.tsx` | ❌ Brak | Wysoki |
-| EmptyStateWithAI | `src/components/pokemon/EmptyStateWithAI.tsx` | ❌ Brak | Średni |
-| ErrorCallout | `src/components/pokemon/ErrorCallout.tsx` | ❌ Brak | Średni |
-| StatusBanner | `src/components/pokemon/StatusBanner.tsx` | ❌ Brak | Średni |
-| ListSkeleton | `src/components/pokemon/ListSkeleton.tsx` | ❌ Brak | Niski |
+| PokemonStatsPanel | `src/components/pokemon/PokemonStatsPanel.tsx` | ✅ Gotowe (15 testów) | Średni |
+| PokemonEvolutionTimeline | `src/components/pokemon/evolution/PokemonEvolutionTimeline.tsx` | ✅ Gotowe (16 testów) | Średni |
+| PokemonMovesGrid | `src/components/pokemon/moves/PokemonMovesGrid.tsx` | ✅ Gotowe (21 testów) | Niski |
+| PokemonFavoriteAction | `src/components/pokemon/PokemonFavoriteAction.tsx` | ✅ Gotowe (20 testów) | Wysoki |
+| EmptyStateWithAI | `src/components/pokemon/EmptyStateWithAI.tsx` | ✅ Gotowe (17 testów) | Średni |
+| ErrorCallout | `src/components/pokemon/ErrorCallout.tsx` | ✅ Gotowe (26 testów) | Średni |
+| StatusBanner | `src/components/pokemon/StatusBanner.tsx` | ✅ Gotowe (26 testów) | Średni |
+| ListSkeleton | `src/components/pokemon/ListSkeleton.tsx` | ✅ Gotowe (25 testów) | Niski |
 
 **Zakres testów**:
 - Wyświetlanie statystyk i danych
@@ -115,7 +115,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - Flow wyszukiwania + filtrowania
 - Zarządzanie stanem (Zustand store)
 
-**Status**: 17 komponentów | 8 testów gotowych | 9 testów do napisania
+**Status**: 17 komponentów | 16 testów gotowych | 1 test do napisania
 
 ---
 
@@ -304,7 +304,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 |-----------|------------------|------------------|-----------------|------------|
 | **Komponenty UI** | 2-3 | 2 | 0-1 | 67-100% |
 | **Komponenty Auth** | 4 | 4 | 0 | 100% |
-| **Komponenty Pokemon** | 17 | 8 | 9 | 47% |
+| **Komponenty Pokemon** | 17 | 16 | 1 | 94% |
 | **Komponenty AI Chat** | 9 | 2 | 7 | 22% |
 | **Komponenty Favorites** | 1 | 0 | 1 | 0% |
 | **Providers** | 1 | 0 | 1 | 0% |
@@ -312,13 +312,13 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 | **Zustand Store'y** | 2 | 0 | 2 | 0% |
 | **Funkcje Utility** | 10 | 0 | 10 | 0% |
 | **Walidatory** | 2 | 0 | 2 | 0% |
-| **RAZEM** | **51** | **18** | **33** | **35%** |
+| **RAZEM** | **51** | **26** | **25** | **51%** |
 
-**Aktualny stan**: 18 testów gotowych / 51 elementów do przetestowania = **35% pokrycia**
+**Aktualny stan**: 26 testów gotowych / 51 elementów do przetestowania = **51% pokrycia**
 
 **Cel**: 70% pokrycia (minimum), 85% pokrycia (optymalnie)
 
-**Do zrobienia**: 33 testy jednostkowe
+**Do zrobienia**: 25 testów jednostkowych
 
 ---
 
@@ -537,9 +537,9 @@ describe('PokemonCard', () => {
 
 | Metryka | Cel Minimum | Cel Optymalny | Aktualny stan |
 |---------|-------------|---------------|---------------|
-| **Code Coverage** | 70% | 85% | ~35% |
-| **Liczba testów** | 35 | 51 | 18 |
-| **Test pass rate** | 95% | 100% | 100% (153/153) |
+| **Code Coverage** | 70% | 85% | ~51% |
+| **Liczba testów** | 35 | 51 | 26 |
+| **Test pass rate** | 95% | 100% | 100% (319/319) |
 | **Flaky test rate** | < 5% | 0% | 0% |
 
 ---
