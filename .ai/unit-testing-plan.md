@@ -135,7 +135,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 | SuggestionChips | `src/components/ai-chat/SuggestionChips.tsx` | ❌ Brak | Średni |
 | RateLimitAlert | `src/components/ai-chat/RateLimitAlert.tsx` | ❌ Brak | Wysoki |
 | FavoritePromptCTA | `src/components/ai-chat/FavoritePromptCTA.tsx` | ❌ Brak | Niski |
-| ChatSkeleton | `src/components/ai-chat/ChatSkeleton.tsx` | ❌ Brak | Niski |
+| ChatSkeleton | `src/components/ai-chat/ChatSkeleton.tsx` | ✅ Istnieje | Niski |
 
 **Zakres testów**:
 - Wysyłanie promptów
