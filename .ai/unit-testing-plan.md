@@ -108,14 +108,16 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 | Komponent | Ścieżka | Status testów | Priorytet |
 |-----------|---------|---------------|-----------|
-| PokemonListingView | `src/components/pokemon/PokemonListingView.tsx` | ❌ Brak | Wysoki |
+| PokemonListingView | `src/components/pokemon/PokemonListingView.tsx` | ⚠️ E2E (placeholder) | Wysoki |
 
 **Zakres testów**:
 - Integration komponentów
 - Flow wyszukiwania + filtrowania
 - Zarządzanie stanem (Zustand store)
 
-**Status**: 17 komponentów | 16 testów gotowych | 1 test do napisania
+**Uwaga**: PokemonListingView to złożony komponent integracyjny mocno powiązany z Zustand store. Wszystkie jego komponenty potomne są przetestowane osobno. Pełne testy integracyjne tego komponentu należą do testów E2E.
+
+**Status**: 17 komponentów | 16 testów gotowych + 1 placeholder (E2E) | 0 testów do napisania
 
 ---
 
