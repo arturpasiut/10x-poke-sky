@@ -1,48 +1,43 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react";
 
-import { useStore } from "zustand"
+import { useStore } from "zustand";
 
-import { Button } from "@/components/ui/button"
-import { POKEMON_SORT_OPTIONS } from "@/lib/pokemon/filters"
-import {
-  MAX_SELECTED_TYPES,
-  getGenerationLabel,
-  getRegionLabel,
-  getTypeLabel,
-} from "@/lib/pokemon/filters"
+import { Button } from "@/components/ui/button";
+import { POKEMON_SORT_OPTIONS } from "@/lib/pokemon/filters";
+import { MAX_SELECTED_TYPES, getGenerationLabel, getRegionLabel, getTypeLabel } from "@/lib/pokemon/filters";
 import type {
   ApiError,
   FilterChipViewModel,
   PaginationViewModel,
   PokemonSortKey,
   PokemonSummaryViewModel,
-} from "@/lib/pokemon/types"
-import { usePokemonFilterOptions } from "@/hooks/usePokemonFilterOptions"
-import { usePokemonListQuery } from "@/hooks/usePokemonListQuery"
+} from "@/lib/pokemon/types";
+import { usePokemonFilterOptions } from "@/hooks/usePokemonFilterOptions";
+import { usePokemonListQuery } from "@/hooks/usePokemonListQuery";
 import {
   selectIsHydrated,
   selectPokemonQueryState,
   selectPokemonQueryString,
   usePokemonSearchStore,
-} from "@/stores/usePokemonSearchStore"
+} from "@/stores/usePokemonSearchStore";
 
-import { EmptyStateWithAI } from "./EmptyStateWithAI"
-import { ErrorCallout } from "./ErrorCallout"
-import { FilterChips } from "./FilterChips"
-import { FilterSidePanel } from "./FilterSidePanel"
-import { ListSkeleton } from "./ListSkeleton"
-import { MobileFilterDrawer } from "./MobileFilterDrawer"
-import { PaginationControls } from "./PaginationControls"
-import { PokemonGrid } from "./PokemonGrid"
-import { SearchHeader } from "./SearchHeader"
-import { SortBar } from "./SortBar"
-import { StatusBanner } from "./StatusBanner"
+import { EmptyStateWithAI } from "./EmptyStateWithAI";
+import { ErrorCallout } from "./ErrorCallout";
+import { FilterChips } from "./FilterChips";
+import { FilterSidePanel } from "./FilterSidePanel";
+import { ListSkeleton } from "./ListSkeleton";
+import { MobileFilterDrawer } from "./MobileFilterDrawer";
+import { PaginationControls } from "./PaginationControls";
+import { PokemonGrid } from "./PokemonGrid";
+import { SearchHeader } from "./SearchHeader";
+import { SortBar } from "./SortBar";
+import { StatusBanner } from "./StatusBanner";
 
 export default function PokemonListingView() {
-  const store = usePokemonSearchStore
-  const queryState = useStore(store, selectPokemonQueryState)
-  const isHydrated = useStore(store, selectIsHydrated)
-  const queryString = useStore(store, selectPokemonQueryString)
+  const store = usePokemonSearchStore;
+  const queryState = useStore(store, selectPokemonQueryState);
+  const isHydrated = useStore(store, selectIsHydrated);
+  const queryString = useStore(store, selectPokemonQueryString);
   const {
     setSearch,
     toggleType,
@@ -71,72 +66,72 @@ export default function PokemonListingView() {
     replaceFromUrl: state.replaceFromUrl,
     commitQuery: state.commitQuery,
     restoreLastApplied: state.restoreLastApplied,
-  }))
+  }));
 
-  const { filters } = usePokemonFilterOptions()
-  const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [retryDisabledUntil, setRetryDisabledUntil] = useState<number | undefined>(undefined)
-  const [searchDraft, setSearchDraft] = useState(queryState.search)
+  const { filters } = usePokemonFilterOptions();
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [retryDisabledUntil, setRetryDisabledUntil] = useState<number | undefined>(undefined);
+  const [searchDraft, setSearchDraft] = useState(queryState.search);
   const [statusBanner, setStatusBanner] = useState<{
-    title: string
-    description?: string
-    tone?: "info" | "warning"
-  } | null>(null)
+    title: string;
+    description?: string;
+    tone?: "info" | "warning";
+  } | null>(null);
 
   useEffect(() => {
-    setSearchDraft(queryState.search)
-  }, [queryState.search])
+    setSearchDraft(queryState.search);
+  }, [queryState.search]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
-      return
+      return;
     }
 
-    initialiseFromUrl(window.location.search)
+    initialiseFromUrl(window.location.search);
 
     const handlePopState = () => {
-      replaceFromUrl(window.location.search)
-    }
+      replaceFromUrl(window.location.search);
+    };
 
-    window.addEventListener("popstate", handlePopState)
+    window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener("popstate", handlePopState)
-    }
-  }, [initialiseFromUrl, replaceFromUrl])
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [initialiseFromUrl, replaceFromUrl]);
 
   useEffect(() => {
     if (!isHydrated || typeof window === "undefined") {
-      return
+      return;
     }
 
     const currentSearch = window.location.search.startsWith("?")
       ? window.location.search.slice(1)
-      : window.location.search
+      : window.location.search;
 
     if (queryString === currentSearch) {
-      return
+      return;
     }
 
-    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname
-    window.history.replaceState(null, "", newUrl)
-  }, [isHydrated, queryString])
+    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    window.history.replaceState(null, "", newUrl);
+  }, [isHydrated, queryString]);
 
-  const queryResult = usePokemonListQuery(queryState, { enabled: isHydrated })
-  const { status, data, error, retry, isFetching } = queryResult
-  const totalCount = data?.list.total ?? undefined
+  const queryResult = usePokemonListQuery(queryState, { enabled: isHydrated });
+  const { status, data, error, retry, isFetching } = queryResult;
+  const totalCount = data?.list.total ?? undefined;
 
   useEffect(() => {
     if (status === "success" && data) {
-      commitQuery()
-      setRetryDisabledUntil(undefined)
-      setStatusBanner(null)
+      commitQuery();
+      setRetryDisabledUntil(undefined);
+      setStatusBanner(null);
     }
-  }, [status, data, commitQuery])
+  }, [status, data, commitQuery]);
 
   useEffect(() => {
     if (status !== "error" || !error) {
-      return
+      return;
     }
 
     if (error.code === 400) {
@@ -144,39 +139,39 @@ export default function PokemonListingView() {
         tone: "warning",
         title: "Nieprawidłowe filtry",
         description: error.message ?? "Przywrócono ostatnie poprawne parametry.",
-      })
-      restoreLastApplied()
-      return
+      });
+      restoreLastApplied();
+      return;
     }
 
     if (error.code === 429) {
       if (error.retryAfterMs) {
-        setRetryDisabledUntil(Date.now() + error.retryAfterMs)
+        setRetryDisabledUntil(Date.now() + error.retryAfterMs);
       }
       setStatusBanner({
         tone: "warning",
         title: "Przekroczono limit zapytań",
         description: error.message,
-      })
-      return
+      });
+      return;
     }
 
     setStatusBanner({
       tone: "info",
       title: "Nie udało się odświeżyć Pokédexu",
       description: error.message,
-    })
-  }, [status, error, restoreLastApplied])
+    });
+  }, [status, error, restoreLastApplied]);
 
   const filterChips = useMemo<FilterChipViewModel[]>(() => {
-    const chips: FilterChipViewModel[] = []
+    const chips: FilterChipViewModel[] = [];
 
     for (const type of queryState.types) {
       chips.push({
         id: `type:${type}`,
         label: getTypeLabel(type),
         onRemove: () => toggleType(type),
-      })
+      });
     }
 
     if (queryState.generation) {
@@ -184,7 +179,7 @@ export default function PokemonListingView() {
         id: `generation:${queryState.generation}`,
         label: getGenerationLabel(queryState.generation),
         onRemove: () => setGeneration(null),
-      })
+      });
     }
 
     if (queryState.region) {
@@ -192,22 +187,22 @@ export default function PokemonListingView() {
         id: `region:${queryState.region}`,
         label: getRegionLabel(queryState.region),
         onRemove: () => setRegion(null),
-      })
+      });
     }
 
-    return chips
-  }, [queryState.types, queryState.generation, queryState.region, toggleType, setGeneration, setRegion])
+    return chips;
+  }, [queryState.types, queryState.generation, queryState.region, toggleType, setGeneration, setRegion]);
 
-  const reachedTypeLimit = queryState.types.length === MAX_SELECTED_TYPES
+  const reachedTypeLimit = queryState.types.length === MAX_SELECTED_TYPES;
 
   const handleRetry = () => {
     if (error?.retryAfterMs) {
-      setRetryDisabledUntil(Date.now() + error.retryAfterMs)
+      setRetryDisabledUntil(Date.now() + error.retryAfterMs);
     }
-    retry()
-  }
+    retry();
+  };
 
-  const showEmptyState = status === "success" && (data?.items?.length ?? 0) === 0
+  const showEmptyState = status === "success" && (data?.items?.length ?? 0) === 0;
 
   return (
     <section className="space-y-8 pb-20">
@@ -216,17 +211,17 @@ export default function PokemonListingView() {
         total={totalCount}
         onSearchChange={setSearchDraft}
         onSubmit={() => {
-          const draft = searchDraft.trim()
+          const draft = searchDraft.trim();
           if (draft === queryState.search) {
-            retry()
-            return
+            retry();
+            return;
           }
-          setSearch(draft)
+          setSearch(draft);
         }}
         onReset={() => {
-          setSearchDraft("")
-          resetAll()
-          retry()
+          setSearchDraft("");
+          resetAll();
+          retry();
         }}
         isLoading={isFetching && !data}
       />
@@ -321,38 +316,36 @@ export default function PokemonListingView() {
           selectedGeneration={queryState.generation}
           selectedRegion={queryState.region}
           onToggleType={(value) => {
-            toggleType(value)
+            toggleType(value);
           }}
           onSelectGeneration={(value) => {
-            setGeneration(value)
+            setGeneration(value);
           }}
           onSelectRegion={(value) => {
-            setRegion(value)
+            setRegion(value);
           }}
           onResetFilters={() => {
-            resetFilters()
+            resetFilters();
           }}
           onClose={() => setDrawerOpen(false)}
         />
       </MobileFilterDrawer>
 
-      {showEmptyState ? (
-        <EmptyStateWithAI ctaLabel="Zapytaj AI" onCta={() => (window.location.href = "/ai")} />
-      ) : null}
+      {showEmptyState ? <EmptyStateWithAI ctaLabel="Zapytaj AI" onCta={() => (window.location.href = "/ai")} /> : null}
     </section>
-  )
+  );
 }
 
 type ContentSwitchProps = {
-  status: "idle" | "loading" | "success" | "error"
-  isFetching: boolean
-  items: PokemonSummaryViewModel[]
-  pagination: PaginationViewModel | undefined
-  onRetry: () => void
-  error?: ApiError
-  retryDisabledUntil?: number
-  onPageChange: (page: number) => void
-}
+  status: "idle" | "loading" | "success" | "error";
+  isFetching: boolean;
+  items: PokemonSummaryViewModel[];
+  pagination: PaginationViewModel | undefined;
+  onRetry: () => void;
+  error?: ApiError;
+  retryDisabledUntil?: number;
+  onPageChange: (page: number) => void;
+};
 
 function ContentSwitch({
   status,
@@ -365,11 +358,11 @@ function ContentSwitch({
   onPageChange,
 }: ContentSwitchProps) {
   if (status === "loading" && !items.length) {
-    return <ListSkeleton />
+    return <ListSkeleton />;
   }
 
   if (status === "error" && error) {
-    return <ErrorCallout error={error} onRetry={onRetry} retryDisabledUntil={retryDisabledUntil} />
+    return <ErrorCallout error={error} onRetry={onRetry} retryDisabledUntil={retryDisabledUntil} />;
   }
 
   if (items.length) {
@@ -380,20 +373,20 @@ function ContentSwitch({
           <PaginationControls pagination={pagination} onPageChange={onPageChange} isLoading={isFetching} />
         ) : null}
       </>
-    )
+    );
   }
 
   if (status === "loading") {
-    return <ListSkeleton />
+    return <ListSkeleton />;
   }
 
   if (status === "success") {
-    return null
+    return null;
   }
 
   return (
     <div className="rounded-3xl border border-white/10 bg-[#0e1621]/60 p-12 text-center text-white/70">
       <p>Brak wyników do wyświetlenia.</p>
     </div>
-  )
+  );
 }

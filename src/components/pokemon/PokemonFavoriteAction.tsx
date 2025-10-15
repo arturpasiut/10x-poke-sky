@@ -102,6 +102,7 @@ export function PokemonFavoriteAction({ pokemonId, pokemonName }: PokemonFavorit
           href={loginHref}
           aria-label={`Dodaj ${pokemonName} do ulubionych – wymagane logowanie`}
           data-pokemon-id={pokemonId}
+          data-testid={`favorite-login-prompt-${pokemonId}`}
         >
           <Heart className="size-4" />
           Dodaj do ulubionych
@@ -113,11 +114,7 @@ export function PokemonFavoriteAction({ pokemonId, pokemonName }: PokemonFavorit
   const isLoading = operationState !== "idle" || favoriteState === "checking";
   const isFavorite = favoriteState === "favorite";
   const buttonText = isFavorite ? "Usuń z ulubionych" : "Dodaj do ulubionych";
-  const ariaLabel = error
-    ? `${buttonText} – ${error}`
-    : isLoading
-      ? `${buttonText} – ładowanie...`
-      : buttonText;
+  const ariaLabel = error ? `${buttonText} – ${error}` : isLoading ? `${buttonText} – ładowanie...` : buttonText;
 
   return (
     <div className="flex flex-col items-end gap-1">
@@ -130,16 +127,19 @@ export function PokemonFavoriteAction({ pokemonId, pokemonName }: PokemonFavorit
         title={error || undefined}
         className="gap-2 rounded-full border border-white/10 bg-white/10 text-white shadow-md shadow-black/20 backdrop-blur transition hover:bg-white/20 disabled:opacity-60 dark:bg-white/10 dark:text-white"
         data-pokemon-id={pokemonId}
+        data-testid={`favorite-toggle-button-${pokemonId}`}
+        data-is-favorite={isFavorite}
+        data-is-loading={isLoading}
       >
         {isLoading ? (
-          <Loader2 className="size-4 animate-spin" />
+          <Loader2 className="size-4 animate-spin" data-testid={`favorite-action-loading-${pokemonId}`} />
         ) : (
           <Heart className="size-4" fill={isFavorite ? "currentColor" : "none"} />
         )}
         {buttonText}
       </Button>
       {error && (
-        <p className="text-xs text-red-400" role="alert">
+        <p className="text-xs text-red-400" role="alert" data-testid={`favorite-action-error-${pokemonId}`}>
           {error}
         </p>
       )}

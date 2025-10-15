@@ -26,20 +26,17 @@
 ### Testing:
 
 - Testy jednostkowe - Vitest z React Testing Library dla komponentów UI:
-
   - Vitest jako nowoczesny i szybki runner testów zoptymalizowany dla Vite/Astro
   - React Testing Library do testowania interaktywnych komponentów React
   - @testing-library/dom do testowania statycznych komponentów Astro
   - MSW (Mock Service Worker) do mockowania API w testach
 
 - Testy end-to-end - Playwright:
-
   - Symulacja pełnych ścieżek użytkownika z lepszą wieloprzeglądarkowością
   - Testowanie kluczowych funkcjonalności: kreator reguł, generowanie reguł na podstawie plików, zarządzanie kolekcjami
   - Automatyczne uruchamianie testów w ramach pipeline CI/CD GitHub Actions
 
 - Formatowanie i lintowanie kodu
-
   - ESLint dla lintowania kodu
   - Prettier dla formatowania kodu
 

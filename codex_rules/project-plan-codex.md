@@ -1,35 +1,40 @@
 # Project Execution Plan: 10x-poke-sky
 
 ## Purpose
+
 This roadmap explains how to implement the full 10x-poke-sky experience from the current Astro starter until all functional requirements in `project-prd-codex.md` are met. Each phase lists concrete ordered steps, expected outputs, and handoff criteria so that any engineer or AI agent can resume work midstream.
 
 ## Guiding Principles
+
 1. Ship user-facing value iteratively while keeping the repo releasable.
 2. Source of truth for product scope is the PRD; this plan decomposes it into actionable work.
 3. Maintain parity between Supabase schema, TypeScript models, and UI contracts.
 4. Guard performance, accessibility, and security requirements continuously instead of deferring.
 
 ## Initial Delivery Rule !!!IMPORTANT!!!
+
 1. During the early phases (0 and 1) implement every external integration behind mocked services and fake credentials only.
 2. Design adapters, configuration seams, and environment validation so production keys can be dropped in later without rewrites; postpone wiring real APIs, auth providers, or webhooks until infrastructure is provisioned.
 3. Never commit real secrets—keep mocks deterministic and document what needs to be swapped when going live.
 
 ## High-Level Milestones
-| Phase | Focus | Complete When |
-| --- | --- | --- |
-| 0 | Environment and architecture scaffold | Supabase, env files, design system foundations ready |
-| 1 | Layout, routing, shared UI | Astro routes, layouts, navigation, Zustand store in place |
-| 2 | Data integration and cache | Supabase caches Pokemon data with refresh path validated |
-| 3 | Pokemon discovery (US-001) | Search page with filters, tests, empty state |
-| 4 | Pokemon details (US-002) | Detail view with stats, evolutions, moves, favorites CTA |
-| 5 | Auth (US-005) | Login and register flows gated by Supabase policies |
-| 6 | Favorites (US-003) | Add/remove favorites sync, gated routes, tests |
-| 7 | Moves catalog (US-006) | Moves explorer with sorting, persisted filters |
-| 8 | AI identification (US-004) | Gemini-backed chat suggesting Pokemon reliably |
-| 9 | Quality and reliability | Performance, accessibility, security checks green |
-| 10 | Release and handover | CI/CD, documentation, launch checklist signed |
+
+| Phase | Focus                                 | Complete When                                             |
+| ----- | ------------------------------------- | --------------------------------------------------------- |
+| 0     | Environment and architecture scaffold | Supabase, env files, design system foundations ready      |
+| 1     | Layout, routing, shared UI            | Astro routes, layouts, navigation, Zustand store in place |
+| 2     | Data integration and cache            | Supabase caches Pokemon data with refresh path validated  |
+| 3     | Pokemon discovery (US-001)            | Search page with filters, tests, empty state              |
+| 4     | Pokemon details (US-002)              | Detail view with stats, evolutions, moves, favorites CTA  |
+| 5     | Auth (US-005)                         | Login and register flows gated by Supabase policies       |
+| 6     | Favorites (US-003)                    | Add/remove favorites sync, gated routes, tests            |
+| 7     | Moves catalog (US-006)                | Moves explorer with sorting, persisted filters            |
+| 8     | AI identification (US-004)            | Gemini-backed chat suggesting Pokemon reliably            |
+| 9     | Quality and reliability               | Performance, accessibility, security checks green         |
+| 10    | Release and handover                  | CI/CD, documentation, launch checklist signed             |
 
 ## Phase 0 – Foundation Setup
+
 1. [x] Audit existing repo (layouts, components, configs) and remove demo content while keeping useful utilities.
 2. [x] Create `.env` and `.env.sample` with Supabase, PokeAPI, Gemini placeholders; implement runtime validation via `src/lib/env.ts`.
 3. [x] Provision Supabase project, configure auth settings, and create tables `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` with RLS policies that restrict access to authenticated owners.
@@ -38,6 +43,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. [x] Document local setup steps in README and verify `npm run dev` works with placeholder pages only.
 
 ## Phase 1 – Layout, Routing, Shared UI
+
 1. [x] Define Astro layouts (`MainLayout`, `AuthLayout`) and wire them to routes `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
 2. [x] Implement global navigation bar, footer, and responsive grid primitives, using Tailwind classes aligned with design tokens.
 3. Introduce Zustand stores: `useSessionStore` for Supabase auth state and `useUiStore` for global UI flags.
@@ -46,6 +52,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Snapshot layout using Playwright visual regression or manual screenshots for design approval.
 
 ## Phase 2 – Data Integration and Cache Strategy
+
 1. Generate TypeScript types for PokeAPI responses using OpenAPI or manual typing stored in `src/lib/types/pokemon.ts`.
 2. Build HTTP client wrappers in `src/lib/api/pokeapi.ts` with retry logic, timeout, and error normalization.
 3. Implement Supabase edge function `fetch-pokemon-list` that checks `pokemon_cache`, refreshes entries older than 24h, and returns paginated results.
@@ -55,6 +62,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 7. Write Vitest suites covering cache TTL logic and data transformers to guarantee schema parity.
 
 ## Phase 3 – Pokemon Discovery (US-001)
+
 1. Build the homepage list view consuming `fetch-pokemon-list`, showing pagination or infinite scroll according to design.
 2. Implement search input with debounce, hooking into query params for shareable URLs and reading filter data from Supabase meta tables.
 3. Render filter controls (type, generation, region) and ensure they update the list request payload.
@@ -63,6 +71,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Create Playwright scenario covering search, filter combination, and empty-state display.
 
 ## Phase 4 – Pokemon Details (US-002)
+
 1. Configure Astro dynamic route `pokemon/[identifier]` to fetch details server-side using the cache layer built in Phase 2.
 2. Build summary header (artwork, name, types) and include quick actions (favorite toggle CTA for logged users or login prompt).
 3. Implement stats section using either CSS bars or a React chart component; cross-verify values with PokeAPI schema.
@@ -71,6 +80,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Add unit tests for data transformation (stat normalization, evolution parsing) and Playwright coverage for hitting the detail page from search results.
 
 ## Phase 5 – Authentication (US-005)
+
 1. Wire Supabase client in Astro server and React contexts, enabling SSR awareness of sessions.
 2. Implement registration form using React Hook Form + Zod, with client-side and server-side validation.
 3. Implement login form with remember-me option and secure redirect handling.
@@ -79,6 +89,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Write Cypress or Playwright authentication scenario including register, login, logout, and guard checks for protected routes.
 
 ## Phase 6 – Favorites (US-003)
+
 1. Ensure `favorites` table policies enforce user-level access; write SQL tests or manual verification in Supabase dashboard.
 2. Build React hook `useFavorites` to list, add, and remove favorites with optimistic updates and fallback reconciliation from Supabase.
 3. Attach favorite toggle button to Pokemon detail cards and list items; disable when unauthenticated and redirect to login on click.
@@ -87,6 +98,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Cover the hook with Vitest (mock Supabase client) and add Playwright flow for adding and removing favorites.
 
 ## Phase 7 – Moves Catalog (US-006)
+
 1. Extend Supabase cache to include move metadata, tying each move to type, region, and power metrics.
 2. Create `/moves` page using a virtualized table or grid to handle large datasets efficiently.
 3. Implement controls for sorting by type, region, power and persist selections in URL parameters and LocalStorage for returning users.
@@ -95,6 +107,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Build unit tests for sorting logic and Playwright scenario for applying multiple filters.
 
 ## Phase 8 – AI Identification Chat (US-004)
+
 1. Introduce AI client abstraction in `src/lib/ai/client.ts` with interface supporting Gemini now and OpenRouter later.
 2. Implement Gemini API integration (API key in Supabase secrets, fetch wrapper with streaming support if available).
 3. Design prompt template injecting user description plus structured Pokemon data context to improve match accuracy.
@@ -104,6 +117,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 7. Create Vitest tests for prompt builder and response parser and Playwright end-to-end test for a successful identification flow.
 
 ## Phase 9 – Quality, Performance, Accessibility, Security
+
 1. Optimize asset delivery with Astro Image, Tailwind `@layer` pruning, and route-level code splitting where needed.
 2. Run Lighthouse and WebPageTest, track metrics in the repo (JSON snapshots) and fix regressions to meet PRD SLAs.
 3. Execute accessibility audits using axe DevTools and manual screen-reader checks; remediate focus traps and ARIA issues.
@@ -112,6 +126,7 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Update documentation with performance tuning notes and known limitations for future maintainers.
 
 ## Phase 10 – Release and Handover
+
 1. Finalize GitHub Actions workflow running lint, unit tests, integration tests, and Playwright suites on PR and main branches.
 2. Configure Cloudflare Pages deployment from the main branch with environment variables for production services.
 3. Perform release candidate testing: smoke test critical flows, verify caching TTL jobs, and check AI quotas.
@@ -120,11 +135,13 @@ This roadmap explains how to implement the full 10x-poke-sky experience from the
 6. Tag v1.0.0 release in git and transition to maintenance mode with backlog for post-launch improvements.
 
 ## Recommended Task Breakdown Workflow
+
 1. Create GitHub issues for each numbered step; link to this document for context and assign owners.
 2. Work phase-by-phase but keep at least one sprint buffer before AI features to stabilize core flows.
 3. After each step, update a shared status board and ensure tests covering new functionality are merged before progressing.
 
 ## AI Handoff Notes
+
 1. When starting a new session, identify the current phase and highest unfinished numbered step, then execute or assist with that item.
 2. Always validate environment variables and Supabase connectivity before running scripts that depend on them.
 3. For any uncertainty, consult `project-prd-codex.md` and this plan, then escalate clarifying questions to the product owner.

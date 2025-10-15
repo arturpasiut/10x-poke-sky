@@ -1,11 +1,11 @@
-import type { PokemonSummaryViewModel } from "@/lib/pokemon/types"
+import type { PokemonSummaryViewModel } from "@/lib/pokemon/types";
 
-import { PokemonCard } from "./PokemonCard"
+import { PokemonCard } from "./PokemonCard";
 
 type PokemonGridProps = {
-  items: PokemonSummaryViewModel[]
-  "aria-busy"?: boolean
-}
+  items: PokemonSummaryViewModel[];
+  "aria-busy"?: boolean;
+};
 
 export function PokemonGrid({ items, "aria-busy": busy }: PokemonGridProps) {
   return (
@@ -19,5 +19,5 @@ export function PokemonGrid({ items, "aria-busy": busy }: PokemonGridProps) {
         <PokemonCard key={pokemon.pokemonId} pokemon={pokemon} />
       ))}
     </div>
-  )
+  );
 }

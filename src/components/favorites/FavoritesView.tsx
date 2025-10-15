@@ -105,7 +105,7 @@ export default function FavoritesView() {
         setRemovalState(pokemonId, { status: "error", error: message });
       }
     },
-    [removalMap, setRemovalState],
+    [removalMap, setRemovalState]
   );
 
   const hasFavorites = items.length > 0;
@@ -113,26 +113,37 @@ export default function FavoritesView() {
   const removalEntries = useMemo(() => removalMap, [removalMap]);
 
   if (status === "loading") {
-    return <ListSkeleton />;
+    return (
+      <div data-testid="favorites-loading">
+        <ListSkeleton />
+      </div>
+    );
   }
 
   if (status === "error" && error) {
     const requiresAuth = error.code === 401;
 
     return (
-      <section className="flex flex-col items-center gap-6 rounded-3xl border border-white/5 bg-[#101722] p-10 text-center shadow-lg shadow-black/30">
+      <section
+        className="flex flex-col items-center gap-6 rounded-3xl border border-white/5 bg-[#101722] p-10 text-center shadow-lg shadow-black/30"
+        data-testid="favorites-error-state"
+      >
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold">Nie udało się załadować ulubionych</h2>
-          <p className="text-muted-foreground">{error.message}</p>
+          <p className="text-muted-foreground" data-testid="favorites-error-message">
+            {error.message}
+          </p>
           {error.details ? <p className="text-sm text-muted-foreground/80">{error.details}</p> : null}
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button onClick={handleRetry} variant="secondary">
+          <Button onClick={handleRetry} variant="secondary" data-testid="favorites-retry-button">
             Spróbuj ponownie
           </Button>
           {requiresAuth ? (
             <Button asChild>
-              <a href={loginHref}>Zaloguj się</a>
+              <a href={loginHref} data-testid="favorites-login-link">
+                Zaloguj się
+              </a>
             </Button>
           ) : null}
         </div>
@@ -142,22 +153,29 @@ export default function FavoritesView() {
 
   if (status === "success" && !hasFavorites) {
     return (
-      <section className="flex flex-col items-center gap-6 rounded-3xl border border-white/5 bg-[#101722] p-12 text-center shadow-lg shadow-black/25">
+      <section
+        className="flex flex-col items-center gap-6 rounded-3xl border border-white/5 bg-[#101722] p-12 text-center shadow-lg shadow-black/25"
+        data-testid="favorites-empty-state"
+      >
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
           <HeartOff className="size-7 text-white/80" />
         </div>
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold text-white">Brak ulubionych Pokémonów</h2>
-          <p className="text-base text-white/80">
+          <p className="text-base text-white/80" data-testid="favorites-empty-message">
             Dodaj Pokémony do ulubionych, a pojawią się na tej liście. Odkrywaj Pokédex lub wykorzystaj asystenta AI.
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild variant="secondary">
-            <a href="/pokemon">Przejdź do Pokédexu</a>
+            <a href="/pokemon" data-testid="favorites-browse-link">
+              Przejdź do Pokédexu
+            </a>
           </Button>
           <Button asChild variant="ghost">
-            <a href="/ai">Zaproś asystenta AI</a>
+            <a href="/ai" data-testid="favorites-ai-link">
+              Zaproś asystenta AI
+            </a>
           </Button>
         </div>
       </section>
@@ -175,13 +193,14 @@ export default function FavoritesView() {
         role="feed"
         aria-live="polite"
         aria-busy={false}
+        data-testid="favorites-grid"
       >
         {items.map((pokemon) => {
           const removalState = removalEntries[pokemon.pokemonId] ?? DEFAULT_REMOVAL_STATE;
           const isRemoving = removalState.status === "removing";
 
           return (
-            <div key={pokemon.pokemonId} className="group relative">
+            <div key={pokemon.pokemonId} className="group relative" data-testid={`favorite-card-${pokemon.pokemonId}`}>
               <PokemonCard pokemon={pokemon} />
               <div className="pointer-events-none absolute inset-0 rounded-3xl border border-transparent transition group-hover:border-white/20" />
               <div className="absolute bottom-6 left-6 right-6 flex flex-col items-stretch gap-2">
@@ -196,12 +215,16 @@ export default function FavoritesView() {
                     void handleRemove(pokemon.pokemonId);
                   }}
                   disabled={isRemoving}
+                  data-testid={`favorite-remove-button-${pokemon.pokemonId}`}
                 >
                   {isRemoving ? <Loader2 className="size-4 animate-spin" /> : <HeartOff className="size-4" />}
                   Usuń z ulubionych
                 </Button>
                 {removalState.status === "error" && removalState.error ? (
-                  <p className="pointer-events-none rounded-md bg-black/70 px-3 py-2 text-xs text-red-300 shadow-lg">
+                  <p
+                    className="pointer-events-none rounded-md bg-black/70 px-3 py-2 text-xs text-red-300 shadow-lg"
+                    data-testid={`favorite-remove-error-${pokemon.pokemonId}`}
+                  >
                     {removalState.error}
                   </p>
                 ) : null}

@@ -4,15 +4,15 @@ The Tailwind setup is driven by CSS custom properties defined in `global.css` so
 
 ## Color Tokens
 
-| Token | Light | Dark | Notes |
-| --- | --- | --- | --- |
-| `background` | `#FFFFFF` | `#090F0B` | App shell background |
-| `surface` | `#B8B6B3` | `#3E4047` | Cards, panels |
-| `surface-variant` | `#595C61` | `#595C61` | Muted surfaces |
-| `primary` | `#CB290B` | – | Brand red used in CTA states |
-| `secondary` | `#145526` | – | Accent green |
-| `tertiary` | `#4572E8` | – | Accent blue |
-| `outline` | `#B8B6B3` | `#B8B6B3` | Strokes, separators |
+| Token             | Light     | Dark      | Notes                        |
+| ----------------- | --------- | --------- | ---------------------------- |
+| `background`      | `#FFFFFF` | `#090F0B` | App shell background         |
+| `surface`         | `#B8B6B3` | `#3E4047` | Cards, panels                |
+| `surface-variant` | `#595C61` | `#595C61` | Muted surfaces               |
+| `primary`         | `#CB290B` | –         | Brand red used in CTA states |
+| `secondary`       | `#145526` | –         | Accent green                 |
+| `tertiary`        | `#4572E8` | –         | Accent blue                  |
+| `outline`         | `#B8B6B3` | `#B8B6B3` | Strokes, separators          |
 
 Additional palette entries for Pokémon types, regions, and activities are exposed under `pokemon.*`, `region.*`, and `activity.*` in Tailwind.
 

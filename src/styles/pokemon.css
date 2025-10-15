@@ -27,7 +27,8 @@
   }
 
   .bg-pokedex-grid {
-    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 65%),
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 65%),
       radial-gradient(circle at bottom right, rgba(12, 18, 28, 0.6), rgba(9, 16, 25, 0.9));
   }
 

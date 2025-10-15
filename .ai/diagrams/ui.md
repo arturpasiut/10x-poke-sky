@@ -1,11 +1,13 @@
 <architecture_analysis>
+
 1. **Komponenty**: Layout.astro (bazowy), MainLayout.astro, AuthLayout.astro, AppTopBar.astro, strony Astro (`login.astro`, `register.astro`, `forgot.astro`, `reset.astro`, `favorites.astro`, `settings.astro`, `ai.astro`), React (`AuthProvider.tsx`, `AuthSessionHydrator.tsx`, `LoginForm.tsx`, `RegisterForm.tsx`, `ForgotPasswordForm.tsx`, `ResetPasswordForm.tsx`, `UserMenu.tsx`, `AuthToaster.tsx`, `FavoritesList.tsx`, `AIChatPanel.tsx`, `RateLimitAlert.tsx`), moduły (`useAuthStore.ts`, `supabase.client.ts`, endpointy `/api/auth/*`, `/api/favorites`).
 2. **Strony i komponenty**: Strony logowania/rejestracji/resetu korzystają z AuthLayout + odpowiednich formularzy React oraz AuthToaster; `favorites.astro` i `settings.astro` używają MainLayout z AppTopBar i komponentami klienckimi (`FavoritesList`, w przyszłości sekcje ustawień); `ai.astro` utrzymuje integrację z `AIChatPanel`, który po zmianach korzysta z `AuthProvider`.
 3. **Przepływ danych**: Middleware (`createServerClient`) udostępnia `Astro.locals.supabase` stronom SSR; strony przekazują dane sesji do `AuthSessionHydrator` i `AuthProvider`; formularze React walidują wejście (`zod`) i wywołują `/api/auth/*`, które aktualizują cookies Supabase; `AuthProvider` synchronizuje wynik z `useAuthStore`, a stan trafia do `AppTopBar`, `FavoritesList`, `AIChatPanel`; `FavoritesList` oraz `AIChatPanel` korzystają z `/api/favorites` do spójnej listy ulubionych.
 4. **Opis komponentów**: MainLayout rozszerzony o AppTopBar i nawigację; AuthLayout zapewnia spójny kontener i slot na powiadomienia; AppTopBar renderuje globalne CTA i menu użytkownika; formularze React obsługują walidację i wywołania API; AuthProvider + useAuthStore zarządzają stanem sesji; AuthToaster dostarcza komunikaty; FavoritesList renderuje ulubione z obsługą akcji; AIChatPanel wykorzystuje stan auth do zarządzania ulubionymi; endpointy `/api/auth/*` oraz `/api/favorites` mostkują UI z Supabase.
-</architecture_analysis>
+   </architecture_analysis>
 
 <mermaid_diagram>
+
 ```mermaid
 flowchart TD
   classDef updated fill:#ffeccf,stroke:#d97706,stroke-width:2px;
@@ -97,4 +99,5 @@ flowchart TD
   class AuthApi,FavoritesApi service;
   class UseAuthStore state;
 ```
+
 </mermaid_diagram>

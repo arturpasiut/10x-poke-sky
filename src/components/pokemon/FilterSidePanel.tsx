@@ -1,27 +1,27 @@
-import clsx from "clsx"
+import clsx from "clsx";
 
-import { Button } from "@/components/ui/button"
-import { MAX_SELECTED_TYPES } from "@/lib/pokemon/filters"
+import { Button } from "@/components/ui/button";
+import { MAX_SELECTED_TYPES } from "@/lib/pokemon/filters";
 import type {
   FilterOption,
   PokemonAvailableFilters,
   PokemonGenerationValue,
   PokemonRegionValue,
   PokemonTypeValue,
-} from "@/lib/pokemon/types"
+} from "@/lib/pokemon/types";
 
 type FilterSidePanelProps = {
-  filters: PokemonAvailableFilters
-  selectedTypes: PokemonTypeValue[]
-  selectedGeneration: PokemonGenerationValue | null
-  selectedRegion: PokemonRegionValue | null
-  onToggleType: (type: PokemonTypeValue) => void
-  onSelectGeneration: (generation: PokemonGenerationValue | null) => void
-  onSelectRegion: (region: PokemonRegionValue | null) => void
-  onResetFilters: () => void
-  onClose?: () => void
-  variant?: "default" | "drawer"
-}
+  filters: PokemonAvailableFilters;
+  selectedTypes: PokemonTypeValue[];
+  selectedGeneration: PokemonGenerationValue | null;
+  selectedRegion: PokemonRegionValue | null;
+  onToggleType: (type: PokemonTypeValue) => void;
+  onSelectGeneration: (generation: PokemonGenerationValue | null) => void;
+  onSelectRegion: (region: PokemonRegionValue | null) => void;
+  onResetFilters: () => void;
+  onClose?: () => void;
+  variant?: "default" | "drawer";
+};
 
 export function FilterSidePanel({
   filters,
@@ -38,11 +38,11 @@ export function FilterSidePanel({
   const containerClass =
     variant === "drawer"
       ? "flex h-full flex-col gap-6 overflow-y-auto bg-[#0d131c] p-6 text-white"
-      : "pokedex-panel p-6 text-white shadow-card"
+      : "pokedex-panel p-6 text-white shadow-card";
 
   const renderTypeOption = (option: FilterOption<PokemonTypeValue>) => {
-    const isSelected = selectedTypes.includes(option.value)
-    const selectionFull = isSelected || selectedTypes.length < MAX_SELECTED_TYPES
+    const isSelected = selectedTypes.includes(option.value);
+    const selectionFull = isSelected || selectedTypes.length < MAX_SELECTED_TYPES;
 
     return (
       <li key={option.value}>
@@ -54,7 +54,7 @@ export function FilterSidePanel({
               ? "bg-primary-500 text-white shadow-[0_10px_25px_-15px_rgba(255,90,90,0.7)]"
               : selectionFull
                 ? "pokedex-chip"
-                : "border border-white/5 bg-white/5 text-white/30 cursor-not-allowed",
+                : "border border-white/5 bg-white/5 text-white/30 cursor-not-allowed"
           )}
           onClick={() => onToggleType(option.value)}
           aria-pressed={isSelected}
@@ -63,14 +63,14 @@ export function FilterSidePanel({
           {option.label}
         </button>
       </li>
-    )
-  }
+    );
+  };
 
   const renderRadioList = <T extends string>(
     options: FilterOption<T>[],
     selected: T | null,
     onChange: (value: T | null) => void,
-    ariaName: string,
+    ariaName: string
   ) => (
     <div role="radiogroup" aria-label={ariaName} className="flex flex-col gap-2">
       <button
@@ -80,7 +80,7 @@ export function FilterSidePanel({
           "flex items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition focus-visible:outline-none focus-visible-outline",
           selected === null
             ? "border-primary-400/60 bg-primary-400/20 text-white"
-            : "border-white/10 bg-white/5 text-white/70 hover:border-white/20",
+            : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
         )}
         aria-pressed={selected === null}
       >
@@ -95,7 +95,7 @@ export function FilterSidePanel({
             "flex items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition focus-visible:outline-none focus-visible-outline",
             selected === option.value
               ? "border-primary-400/60 bg-primary-400/20 text-white"
-              : "border-white/10 bg-white/5 text-white/70 hover:border-white/20",
+              : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
           )}
           aria-pressed={selected === option.value}
         >
@@ -104,7 +104,7 @@ export function FilterSidePanel({
         </button>
       ))}
     </div>
-  )
+  );
 
   return (
     <aside className={containerClass} aria-label="Filtry Pokédexu">
@@ -156,5 +156,5 @@ export function FilterSidePanel({
         {renderRadioList(filters.regions, selectedRegion, onSelectRegion, "Filtruj według regionu")}
       </section>
     </aside>
-  )
+  );
 }

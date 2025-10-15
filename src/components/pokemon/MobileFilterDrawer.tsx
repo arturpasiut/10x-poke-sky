@@ -1,72 +1,72 @@
-import { type PropsWithChildren, useCallback, useEffect, useRef } from "react"
+import { type PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
-import { createPortal } from "react-dom"
+import { createPortal } from "react-dom";
 
 type MobileFilterDrawerProps = PropsWithChildren<{
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}>
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}>;
 
 export function MobileFilterDrawer({ open, onOpenChange, children }: MobileFilterDrawerProps) {
-  const panelRef = useRef<HTMLDivElement | null>(null)
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!open) {
-      return
+      return;
     }
 
-    const panel = panelRef.current
-    panel?.focus()
+    const panel = panelRef.current;
+    panel?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onOpenChange(false)
+        onOpenChange(false);
       }
 
       if (event.key === "Tab" && panel) {
         const focusable = panel.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        )
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
         if (focusable.length === 0) {
-          return
+          return;
         }
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
 
         if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault()
-          last.focus()
+          event.preventDefault();
+          last.focus();
         } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault()
-          first.focus()
+          event.preventDefault();
+          first.focus();
         }
       }
-    }
+    };
 
     const handleBodyScroll = () => {
-      document.body.style.overflow = open ? "hidden" : ""
-    }
+      document.body.style.overflow = open ? "hidden" : "";
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
-    handleBodyScroll()
+    document.addEventListener("keydown", handleKeyDown);
+    handleBodyScroll();
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown)
-      document.body.style.overflow = ""
-    }
-  }, [open, onOpenChange])
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [open, onOpenChange]);
 
   const handleOverlayClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (event.target === event.currentTarget) {
-        onOpenChange(false)
+        onOpenChange(false);
       }
     },
-    [onOpenChange],
-  )
+    [onOpenChange]
+  );
 
   if (!open || typeof document === "undefined") {
-    return null
+    return null;
   }
 
   return createPortal(
@@ -84,6 +84,6 @@ export function MobileFilterDrawer({ open, onOpenChange, children }: MobileFilte
         {children}
       </div>
     </div>,
-    document.body,
-  )
+    document.body
+  );
 }

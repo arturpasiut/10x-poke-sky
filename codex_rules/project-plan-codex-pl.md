@@ -1,35 +1,40 @@
 # Plan Realizacji Projektu: 10x-poke-sky
 
 ## Cel
+
 Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke-sky, spełniającej wymagania z `project-prd-codex.md`. Każda faza zawiera kolejne kroki, oczekiwane rezultaty i kryteria przekazania, tak aby dowolny deweloper lub agent AI mógł przejąć pracę w dowolnym momencie.
 
 ## Zasady przewodnie
+
 1. Dostarczaj wartość użytkownikom iteracyjnie, utrzymując repozytorium w stanie gotowym do releasu.
 2. Zakres produktu opisuje PRD; ten dokument rozkłada go na działania.
 3. Zachowaj zgodność schematu Supabase, modeli TypeScript i kontraktów UI.
 4. Dbaj o wydajność, dostępność i bezpieczeństwo w trakcie prac, nie odkładaj poprawek na koniec.
 
 ## Zasada początkowej implementacji !!!WAŻNE!!!
+
 1. W fazach 0 i 1 wszystkie integracje zewnętrzne budujemy na mockach i fałszywych poświadczeniach.
 2. Projektuj adaptery, miejsca wstrzyknięcia konfiguracji i walidację środowiska tak, aby klucze produkcyjne dało się podpiąć później bez przepisywania kodu; realne API, auth i webhooki podłączamy dopiero po uruchomieniu infrastruktury.
 3. Nigdy nie commituj prawdziwych sekretów — mocki mają być deterministyczne i opisane, żeby wiadomo było, co podmienić przy wejściu na produkcję.
 
 ## Kamienie milowe
-| Faza | Zakres | Ukończone, gdy |
-| --- | --- | --- |
-| 0 | Środowisko i architektura | Skonfigurowano Supabase, pliki env, fundament design systemu |
-| 1 | Layout, routing, komponenty wspólne | Działają trasy Astro, layouty, nawigacja i store Zustand |
-| 2 | Dane i cache | Supabase cache’uje dane Pokemonów z walidacją ścieżki odświeżania |
-| 3 | Odkrywanie Pokemonów (US-001) | Lista z filtrami i testami działa, brak wyników kieruje do AI |
-| 4 | Szczegóły Pokemona (US-002) | Widok statystyk, ewolucji, ruchów i CTA ulubionych gotowy |
-| 5 | Autoryzacja (US-005) | Logowanie i rejestracja z Supabase, polityki dostępu wymuszają ochronę |
-| 6 | Ulubione (US-003) | Dodawanie/usuwanie ulubionych działa, trasa chroniona, testy przechodzą |
-| 7 | Katalog ruchów (US-006) | Strona ruchów z sortowaniem, zapamiętywaniem filtrów |
-| 8 | Czat AI (US-004) | Gemini rozpoznaje Pokemony i sugeruje trafne wyniki |
-| 9 | Jakość i niezawodność | Audyty wydajności, dostępności, bezpieczeństwa zaliczone |
-| 10 | Release i przekazanie | CI/CD, dokumentacja, checklist launchowa ukończone |
+
+| Faza | Zakres                              | Ukończone, gdy                                                          |
+| ---- | ----------------------------------- | ----------------------------------------------------------------------- |
+| 0    | Środowisko i architektura           | Skonfigurowano Supabase, pliki env, fundament design systemu            |
+| 1    | Layout, routing, komponenty wspólne | Działają trasy Astro, layouty, nawigacja i store Zustand                |
+| 2    | Dane i cache                        | Supabase cache’uje dane Pokemonów z walidacją ścieżki odświeżania       |
+| 3    | Odkrywanie Pokemonów (US-001)       | Lista z filtrami i testami działa, brak wyników kieruje do AI           |
+| 4    | Szczegóły Pokemona (US-002)         | Widok statystyk, ewolucji, ruchów i CTA ulubionych gotowy               |
+| 5    | Autoryzacja (US-005)                | Logowanie i rejestracja z Supabase, polityki dostępu wymuszają ochronę  |
+| 6    | Ulubione (US-003)                   | Dodawanie/usuwanie ulubionych działa, trasa chroniona, testy przechodzą |
+| 7    | Katalog ruchów (US-006)             | Strona ruchów z sortowaniem, zapamiętywaniem filtrów                    |
+| 8    | Czat AI (US-004)                    | Gemini rozpoznaje Pokemony i sugeruje trafne wyniki                     |
+| 9    | Jakość i niezawodność               | Audyty wydajności, dostępności, bezpieczeństwa zaliczone                |
+| 10   | Release i przekazanie               | CI/CD, dokumentacja, checklist launchowa ukończone                      |
 
 ## Faza 0 – Przygotowanie fundamentów
+
 1. Przejrzyj repo (layouty, komponenty, konfiguracje) i usuń treści demo, zostawiając przydatne utility.
 2. Utwórz `.env` oraz `.env.sample` z danymi Supabase, PokeAPI i Gemini; dodaj walidację środowiska w `src/lib/env.ts`.
 3. Załóż projekt Supabase, ustaw parametry auth i utwórz tabele `profiles`, `favorites`, `pokemon_cache`, `moves_cache`, `ai_queries` wraz z politykami RLS ograniczającymi dostęp do właściciela rekordu.
@@ -38,6 +43,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Zaktualizuj README o kroki uruchomienia lokalnego i upewnij się, że `npm run dev` działa z placeholderami.
 
 ## Faza 1 – Layout, routing, komponenty współdzielone
+
 1. Zdefiniuj layouty Astro (`MainLayout`, `AuthLayout`) i podepnij trasy `index`, `pokemon/[identifier]`, `moves`, `favorites`, `auth/login`, `auth/register`, `auth/forgot`.
 2. Zaimplementuj globalną nawigację, stopkę oraz responsywne siatki zgodne z tokenami Tailwind.
 3. Dodaj sklepy Zustand: `useSessionStore` (stan Supabase) i `useUiStore` (flag UI).
@@ -46,6 +52,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Przygotuj zrzuty ekranów layoutu lub testy wizualne Playwright do akceptacji designu.
 
 ## Faza 2 – Integracja danych i cache
+
 1. Wygeneruj typy TypeScript dla odpowiedzi PokeAPI (np. przy pomocy OpenAPI) i umieść je w `src/lib/types/pokemon.ts`.
 2. Zbuduj wrapper HTTP w `src/lib/api/pokeapi.ts` z retry, timeoutem i normalizacją błędów.
 3. Napisz funkcję edge `fetch-pokemon-list`, która sprawdza `pokemon_cache`, odświeża wpisy starsze niż 24h i zwraca paginowane wyniki.
@@ -55,6 +62,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 7. Przygotuj testy Vitest obejmujące logikę TTL cache i transformatory danych (porównanie z typami).
 
 ## Faza 3 – Odkrywanie Pokemonów (US-001)
+
 1. Zbuduj widok główny listy korzystający z `fetch-pokemon-list` z paginacją lub „infinite scroll” zgodnie z designem.
 2. Zaimplementuj pole wyszukiwania z debounce, powiązane z parametrami URL; korzystaj z meta danych filtrów przechowywanych w Supabase.
 3. Wyświetlaj kontrolki filtrów (typ, generacja, region) aktualizujące zapytanie listy.
@@ -63,6 +71,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Napisz scenariusz Playwright obejmujący wyszukiwanie, kombinacje filtrów i wyświetlanie komunikatu „brak wyników”.
 
 ## Faza 4 – Szczegóły Pokemona (US-002)
+
 1. Skonfiguruj dynamiczną trasę `pokemon/[identifier]` w Astro, pobierając dane po stronie serwera przez warstwę cache.
 2. Zbuduj nagłówek (grafika, nazwa, typy) i dodaj akcje (CTA ulubionych dla zalogowanych albo przekierowanie do logowania).
 3. Zaimplementuj sekcję statystyk (paski lub wykres radarowy) z weryfikacją wartości względem PokeAPI.
@@ -71,6 +80,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Przygotuj testy jednostkowe transformacji (normalizacja statystyk, parsowanie ewolucji) i scenariusz Playwright od wyszukiwarki do detalu.
 
 ## Faza 5 – Autoryzacja (US-005)
+
 1. Podłącz klienta Supabase w warstwie Astro (SSR) oraz w kontekście React, aby śledzić sesję.
 2. Zbuduj formularz rejestracji (React Hook Form + Zod) z walidacją po obu stronach.
 3. Utwórz formularz logowania z opcją zapamiętania użytkownika i bezpiecznym przekierowaniem.
@@ -79,6 +89,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Napisz scenariusze Playwright: rejestracja, logowanie, wylogowanie, próba wejścia na trasę chronioną bez sesji.
 
 ## Faza 6 – Ulubione (US-003)
+
 1. Potwierdź, że polityki RLS tabeli `favorites` dopuszczają tylko operacje właściciela; przetestuj w Supabase SQL Editor.
 2. Zaimplementuj hook `useFavorites` do listowania, dodawania i usuwania ulubionych z optymistyczną aktualizacją.
 3. Dodaj przycisk ulubionych do kafli i strony szczegółów; bez sesji kieruj do logowania.
@@ -87,6 +98,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Pokryj hook testami Vitest (mock Supabase) i scenariuszem Playwright dodawania/usuwania ulubionych.
 
 ## Faza 7 – Katalog ruchów (US-006)
+
 1. Rozszerz cache Supabase o metadane ruchów, uwzględniając typ, region i parametry mocy.
 2. Stwórz stronę `/moves` z wirtualizowaną tabelą lub siatką, aby obsłużyć duże zestawy danych.
 3. Dodaj sortowanie po typie, regionie i mocy oraz zapisywanie filtrów w URL i LocalStorage.
@@ -95,6 +107,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Przygotuj testy jednostkowe logiki sortowania i scenariusz Playwright dla kombinacji filtrów.
 
 ## Faza 8 – Czat rozpoznający Pokemony (US-004)
+
 1. Dodaj abstrakcję klienta AI w `src/lib/ai/client.ts` z interfejsem umożliwiającym podmianę dostawcy (Gemini teraz, OpenRouter później).
 2. Zaimplementuj integrację z Gemini (klucz w Supabase secrets, wrapper HTTP z obsługą streamingu jeśli dostępny).
 3. Opracuj szablon promptu, który łączy opis użytkownika ze zwięzłym kontekstem danych PokeAPI dla lepszej celności.
@@ -104,6 +117,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 7. Napisz testy Vitest dla generatora promptów i parsera odpowiedzi oraz scenariusz Playwright dla pozytywnego rozpoznania.
 
 ## Faza 9 – Jakość, wydajność, dostępność, bezpieczeństwo
+
 1. Optymalizuj zasoby: Astro Image, tree-shaking Tailwind (`@layer`), code-splitting tras w razie potrzeby.
 2. Uruchom Lighthouse i WebPageTest, zapisuj wyniki (JSON) w repo i popraw regresje, aby spełniać SLA z PRD.
 3. Przeprowadź audyty dostępności (axe, testy screen reader) i napraw błędy focusu, ARIA, kontrastów.
@@ -112,6 +126,7 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Zaktualizuj dokumentację o tuning wydajności i znane ograniczenia dla przyszłych opiekunów projektu.
 
 ## Faza 10 – Release i przekazanie
+
 1. Dokończ workflow GitHub Actions uruchamiający lint, testy jednostkowe, integracyjne i Playwright na PR oraz gałęzi głównej.
 2. Skonfiguruj deployment na Cloudflare Pages z gałęzi `main`, ustawiając zmienne środowiskowe produkcji.
 3. Przeprowadź testy RC: smoke testy kluczowych ścieżek, weryfikacja cronów cache, kontrola limitów Gemini.
@@ -120,11 +135,13 @@ Ten plan opisuje, jak rozbudować obecną bazę Astro do pełnej wersji 10x-poke
 6. Otaguj wersję `v1.0.0` w repozytorium i przejdź do trybu utrzymania z backlogiem usprawnień po starcie.
 
 ## Zalecany sposób prowadzenia zadań
+
 1. Twórz issue w GitHub dla każdego numerowanego kroku; linkuj do tego dokumentu i przypisuj odpowiedzialnych.
 2. Realizuj fazy sekwencyjnie, odkładając start prac nad AI do momentu ustabilizowania core’owych funkcji.
 3. Po każdym kroku aktualizuj tablicę statusów i dopilnuj, by testy nowych funkcji były scalone przed przejściem dalej.
 
 ## Wskazówki do pracy z AI
+
 1. Rozpoczynając sesję, znajdź bieżącą fazę i najwyższy niedokończony krok; zajmij się nim lub wesprzyj w realizacji.
 2. Zanim uruchomisz skrypty zależne od usług, potwierdź ustawienia zmiennych środowiskowych i połączenie z Supabase.
 3. W razie wątpliwości sięgnij do `project-prd-codex.md` i tego planu, a pytania eskaluj do właściciela produktu.

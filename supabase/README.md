@@ -75,4 +75,3 @@ RLS policies ensure that:
 - Add Edge Functions that consume this schema (Phase 0 step 4).
 - When provisioning a real Supabase project, copy these migrations and re-run `supabase db push` to replicate the structure.
 - Store real service role/anon keys in deployment secrets, never in the repo.
-

@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button"
-import type { PokemonSortOrder, PokemonSortKey, SortOption } from "@/lib/pokemon/types"
+import { Button } from "@/components/ui/button";
+import type { PokemonSortOrder, PokemonSortKey, SortOption } from "@/lib/pokemon/types";
 
 type SortBarProps = {
-  options: SortOption[]
-  value: PokemonSortKey
-  order: PokemonSortOrder
-  onValueChange: (value: PokemonSortKey) => void
-  onToggleOrder: () => void
-  disabled?: boolean
-}
+  options: SortOption[];
+  value: PokemonSortKey;
+  order: PokemonSortOrder;
+  onValueChange: (value: PokemonSortKey) => void;
+  onToggleOrder: () => void;
+  disabled?: boolean;
+};
 
 export function SortBar({ options, value, order, onValueChange, onToggleOrder, disabled = false }: SortBarProps) {
   return (
@@ -41,5 +41,5 @@ export function SortBar({ options, value, order, onValueChange, onToggleOrder, d
         <span className="text-xs uppercase tracking-[0.3em]">{order === "asc" ? "↑ Rosnąco" : "↓ Malejąco"}</span>
       </Button>
     </div>
-  )
+  );
 }

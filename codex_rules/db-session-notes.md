@@ -103,16 +103,19 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 **Cel**: Podstawowe dane użytkownika, połączenie z Supabase Auth
 
 **Struktura**:
+
 - `id` (UUID, PK, FK → auth.users.id)
 - `email` (text, NOT NULL, unique)
 - `created_at` (timestamptz, default NOW())
 - `updated_at` (timestamptz, default NOW())
 
 **Relacje**:
+
 - 1:N z `favorites` (jeden użytkownik → wiele ulubionych)
 - 1:N z `ai_recognition_stats` (jeden użytkownik → wiele statystyk, opcjonalne)
 
 **Triggery**:
+
 - Auto-tworzenie profilu przy rejestracji nowego użytkownika w auth.users
 - Auto-update dla updated_at
 
@@ -121,6 +124,7 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 **Cel**: Przechowywanie ulubionych pokemonów użytkowników
 
 **Struktura**:
+
 - `id` (UUID, PK, default gen_random_uuid())
 - `user_id` (UUID, FK → profiles.id, NOT NULL)
 - `pokemon_id` (integer, NOT NULL, CHECK 1-1025)
@@ -129,16 +133,19 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 - `created_at` (timestamptz, default NOW())
 
 **Constraints**:
+
 - UNIQUE (user_id, pokemon_id) - zapobiega duplikatom
 - CHECK (pokemon_id > 0 AND pokemon_id <= 1025)
 - FK user_id ON DELETE CASCADE
 
 **Indeksy**:
+
 - Unique composite index na (user_id, pokemon_id)
 - Index na user_id
 - Index na created_at
 
 **RLS Policies**:
+
 - SELECT: auth.uid() = user_id
 - INSERT: auth.uid() = user_id
 - DELETE: auth.uid() = user_id
@@ -148,6 +155,7 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 **Cel**: Zbieranie statystyk trafności rozpoznawania pokemonów przez AI
 
 **Struktura**:
+
 - `id` (UUID, PK, default gen_random_uuid())
 - `user_id` (UUID, FK → profiles.id, NULLABLE)
 - `user_description` (text, NOT NULL)
@@ -159,9 +167,11 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 - `created_at` (timestamptz, default NOW())
 
 **Constraints**:
+
 - FK user_id ON DELETE SET NULL (zachowanie zanonimizowanych statystyk)
 
 **Indeksy**:
+
 - Index na created_at (analizy czasowe)
 - Index na model_used (porównanie modeli)
 - Index na was_correct (accuracy metrics)
@@ -169,6 +179,7 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 - GIN index na suggested_pokemon_ids (analiza często sugerowanych pokemonów)
 
 **RLS Policies**:
+
 - INSERT: true (wszyscy mogą dodawać, także niezalogowani)
 - SELECT: auth.uid() = user_id OR user_id IS NULL (użytkownik widzi tylko swoje + anonimowe)
 - UPDATE: auth.uid() = user_id (tylko dla explicit feedback)
@@ -182,8 +193,8 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 3. **Sesje**: JWT tokens zarządzane automatycznie przez Supabase Auth.
 
 4. **CASCADE rules**: Przemyślane zasady usuwania:
-    - Favorites: CASCADE (usuwanie danych osobowych)
-    - AI stats: SET NULL (zachowanie zanonimizowanych danych)
+   - Favorites: CASCADE (usuwanie danych osobowych)
+   - AI stats: SET NULL (zachowanie zanonimizowanych danych)
 
 5. **Rate limiting**: Gotowość architektury na włączenie mechanizmu blokady nadmiernego użycia AI API (domyślnie wyłączone dla MVP).
 
@@ -192,16 +203,16 @@ Projekt wymaga prostej, ale dobrze zaprojektowanej bazy danych PostgreSQL w Supa
 ### Kwestie skalowalności
 
 1. **Indeksowanie**: Strategiczne indeksy przygotowane na wzrost liczby rekordów:
-    - Composite indexes dla często łączonych warunków
-    - GIN indexes dla array queries
-    - Partial indexes dla selektywnych zapytań
+   - Composite indexes dla często łączonych warunków
+   - GIN indexes dla array queries
+   - Partial indexes dla selektywnych zapytań
 
 2. **Brak cache'owania PokeAPI**: Dane pobierane on-demand, cache po stronie frontendu (localStorage).
 
 3. **Przyszła rozbudowa**: Schema zaprojektowana z myślą o łatwej rozbudowie:
-    - Nullable fields dla opcjonalnych danych
-    - Możliwość dodania JSONB dla suggested_pokemons z confidence scores
-    - Możliwość dodania materialized views dla agregacji statystyk
+   - Nullable fields dla opcjonalnych danych
+   - Możliwość dodania JSONB dla suggested_pokemons z confidence scores
+   - Możliwość dodania materialized views dla agregacji statystyk
 
 4. **Partycjonowanie**: Nie jest potrzebne dla MVP, ale możliwe w przyszłości dla tabeli ai_recognition_stats (partycjonowanie po created_at).
 

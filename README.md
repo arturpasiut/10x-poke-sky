@@ -48,10 +48,10 @@ npm install
 cp .env.sample .env
 ```
 
-  - `SUPABASE_URL` / `SUPABASE_KEY` – keep fake credentials locally until Supabase is provisioned.
-  - `POKEAPI_BASE_URL` – defaults to the public PokeAPI (`https://pokeapi.co/api/v2`).
-  - `USE_POKEAPI_MOCK` – `false` by default; set to `true` only when you want to exercise the edge functions against local fixtures.
-  - `OPENROUTER_API_KEY` / `GEMINI_API_KEY` – optional for now; AI features remain mocked without real keys.
+- `SUPABASE_URL` / `SUPABASE_KEY` – keep fake credentials locally until Supabase is provisioned.
+- `POKEAPI_BASE_URL` – defaults to the public PokeAPI (`https://pokeapi.co/api/v2`).
+- `USE_POKEAPI_MOCK` – `false` by default; set to `true` only when you want to exercise the edge functions against local fixtures.
+- `OPENROUTER_API_KEY` / `GEMINI_API_KEY` – optional for now; AI features remain mocked without real keys.
 
 4. Run the development server:
 
@@ -81,13 +81,13 @@ npm run build
 ```md
 .
 ├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   ├── styles/     # Tailwind entrypoint + design-token notes
-│   └── assets/     # Static assets
-├── public/         # Public assets
+│ ├── layouts/ # Astro layouts
+│ ├── pages/ # Astro pages
+│ │ └── api/ # API endpoints
+│ ├── components/ # UI components (Astro & React)
+│ ├── styles/ # Tailwind entrypoint + design-token notes
+│ └── assets/ # Static assets
+├── public/ # Public assets
 ```
 
 ## Local Development

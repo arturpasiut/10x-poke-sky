@@ -1,5 +1,7 @@
 # Architektura UI dla 10x-poke-sky
+
 ## 1. Przegląd struktury UI
+
 - Warstwa shell łączy nagłówek, obszar treści i globalne powiadomienia w domyślnym trybie dark, reagując na preferencje systemu i skalując layout w oparciu o breakpoints Tailwind (sm/md/lg/xl).
 - Struktura widoków obejmuje moduły: onboarding/auth, strona główna, katalog Pokémonów, widok szczegółowy, katalog ruchów, ulubione oraz pełnoekranowy czat AI; pokrywa to user stories US-001-US-006 z PRD.
 - Stan domenowy zarządzany jest przez store'y Zustand (`useAuthStore`, `useSearchStore`, `useFavoritesStore`), synchronizowane z Supabase i czyszczone przy wylogowaniu; brak dodatkowego cache'u klienta zgodnie z MVP.
@@ -8,6 +10,7 @@
 - Bezpieczeństwo obejmuje ochronę tras ulubionych, gating akcji dodawania, walidację formularzy auth i obsługę JWT, a dostępność zapewniają kontrasty WCAG AA, focus ringi, aria-live dla wyników i odpowiedzi AI oraz alt texty sprite'ów.
 
 ## 2. Lista widoków
+
 - Shell & Nawigacja globalna | Ścieżka: layout shell | Główny cel: utrzymanie spójnego layoutu, nawigacji i warstwy feedbacku dla wszystkich ekranów | Kluczowe informacje: logo/aplikacja, stan sesji (zalogowany/gość), skróty do Pokédex, Moves, Favorites, AI, slot na breadcrumbs i toasty | Kluczowe komponenty: `HeaderBar`, `NavLinks`, `UserMenu`, `ThemeToggle`, `MobileDrawer`, `ToastStack`, `LoadingIndicator` | UX/A11y/Bezpieczeństwo: dark mode z wysokim kontrastem, focus trap w drawerze, aria-labels dla ikon, pokazywanie stanu aktywnego nawigacji, ukrywanie/disable akcji wymagających auth z tooltipem informacyjnym | Powiązane API: Supabase Auth session heartbeat | User stories: US-001-US-006 (nawigacja między przepływami) | Spełnia wymagania: responsywność i dostępność (PRD sekcja 7), logowanie dostępne w nagłówku (US-005).
 - Uwierzytelnianie (logowanie/rejestracja) | Ścieżka: `/auth` | Główny cel: bezpieczne logowanie, rejestracja i odzyskiwanie hasła z możliwością kontynuacji jako gość | Kluczowe informacje: formularze email/hasło, walidacje (minimalna długość, powtórzenie), link resetu, komunikat o korzyściach konta | Kluczowe komponenty: `TabbedAuthForm`, `PasswordStrengthMeter`, `GuestContinueCTA`, `ForgotPasswordModal`, `FormErrorList` | UX/A11y/Bezpieczeństwo: aria-describedby dla błędów, maskowanie haseł z opcją podglądu, dynamiczne komunikaty 401/422, blokada wielokrotnych prób (alert 429), przekierowanie po sukcesie na poprzedni flow | Powiązane API: `POST /auth/v1/signup`, `POST /auth/v1/token?grant_type=password`, `POST /auth/v1/recover`, `GET /api/users/me/profile` | User stories: US-005 | Spełnia wymagania: logowanie i autoryzacja (PRD sekcja 3 i 5), bezpieczeństwo haseł (PRD sekcja 7).
 - Strona główna | Ścieżka: `/` | Główny cel: wprowadzenie do aplikacji, szybkie wyszukiwanie i przekierowanie do kluczowych sekcji | Kluczowe informacje: hero w trybie dark z wyszukiwarką, CTA rejestracji, skróty (Pokédex, Moves, Evolutions, Locations), banner AI chat, sekcja pozyskania gościa | Kluczowe komponenty: `HeroSearch`, `QuickLinkCards`, `HighlightsCarousel`, `AIChatCTA`, `GuestUpsellBanner`, `MarketingCopy` | UX/A11y/Bezpieczeństwo: kontrolowane autofocus (desktop), aria-live dla wyników instant search, alternatywne treści materiałów graficznych, fallback kopii dla kart Evolutions/Locations gdy brak potwierdzonych danych | Powiązane API: `GET /api/pokemon` (popularne/trending), planowana integracja dla kart Evolutions/Locations wymaga potwierdzenia źródeł | User stories: US-001 (inicjacja wyszukiwania), US-004 (CTA do AI) | Spełnia wymagania: wyszukiwarka (PRD sekcja 3), guidance dla problemów pamięciowych (PRD sekcja 2); Punkty bólu: brak danych dla Evolutions/Locations -> tymczasowa treść informacyjna i link do listy Pokémonów.
@@ -18,6 +21,7 @@
 - Czat AI | Ścieżka: `/ai` | Główny cel: identyfikacja Pokémona na podstawie opisu użytkownika bez przechowywania historii | Kluczowe informacje: bieżąca transkrypcja sesji, pole promptu (min 10/max 500 znaków), sugerowane podpowiedzi, odpowiedzi z confidence i linkami do detali, komunikaty limitów | Kluczowe komponenty: `AIChatPanel`, `PromptInput`, `SuggestionChips`, `ChatTranscript` (aria-live polite), `SuggestionCards`, `RateLimitAlert`, `ChatSkeleton` | UX/A11y/Bezpieczeństwo: aria-live dla odpowiedzi, walidacja promptu przed wysłaniem, messaging domenowy (Pokemon-only), obsługa 429/500 z fallback copy, CTA do logowania przy próbie dodania sugestii do ulubionych | Powiązane API: `POST /api/ai/identify`, opcjonalnie `GET /api/users/me/ai-queries` dla zalogowanych | User stories: US-004 | Spełnia wymagania: czat AI (PRD sekcja 3 i 5), adresowanie pain pointu wyszukiwania opisowego (PRD sekcja 2).
 
 ## 3. Mapa podróży użytkownika
+
 - Wejście (gość): użytkownik trafia na `/`, widzi hero i CTA rejestracji, może przejść jako gość lub zalogować się z nagłówka.
 - Wyszukiwanie i filtry: wpis w hero przenosi do `/pokemon` z aktywnym zapytaniem; użytkownik doprecyzowuje filtry w panelu bocznym, a wyniki aktualizują się bez przeładowania.
 - Przegląd szczegółów: kliknięcie karty otwiera `/pokemon/:id`, breadcrumbs pozwalają wrócić do listy z zachowanym stanem scrolla i filtrów; użytkownik eksploruje statystyki, moves i ewolucje.
@@ -27,6 +31,7 @@
 - Obsługa błędów: globalne toasty oraz inline bannery informują o 401/429/500; użytkownik ma opcję ponowienia zapytania lub powrotu do home, a w przypadku 403 na Favorites modal proponuje logowanie.
 
 ## 4. Układ i struktura nawigacji
+
 - Górny `HeaderBar` zawiera logo (link do `/`), linki `Pokédex`, `Moves`, `Favorites`, `AI Chat`, wbudowane CTA logowania/rejestracji oraz wskaźnik sesji; aktywna zakładka jest wyróżniona.
 - Mobile wykorzystuje `MobileDrawer` otwierany ikoną hamburgera, który replikuje linki i CTA, utrzymując focus trap i zamykanie klawiszem Escape zgodnie z dostępnością.
 - W widoku szczegółów wprowadzony jest `Breadcrumb` (`Pokédex > [Pokemon]`) ułatwiający powrót przy zachowaniu stanu listy.
@@ -34,6 +39,7 @@
 - Globalne wyszukiwanie w nagłówku (ikonka lupy) może otwierać modal quick search, jednak główny przepływ utrzymuje hero search na stronie głównej.
 
 ## 5. Kluczowe komponenty
+
 - `HeaderBar` i `ResponsiveDrawer`: wspólny szkielet nawigacyjny z obsługą sesji użytkownika, powiadomień i przełącznika motywu zgodny z wymaganiami dostępności.
 - `SearchAndFilterSuite`: zestaw `HeroSearch`, `SearchHeader`, `FilterSidePanel`, `FilterChips` i `SortBar`, który utrzymuje spójne doświadczenie wyszukiwania oraz mapuje parametry na zapytania `/api/pokemon`.
 - `PokemonCard` oraz `SuggestionCard`: modułowe kafelki wykorzystywane w liście wyników, ulubionych i odpowiedziach AI, wspierające skeletony, akcje hover oraz CTA szczegółów.

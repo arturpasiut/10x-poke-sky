@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
 /**
  * PokemonListingView Integration Tests
@@ -35,8 +35,8 @@ import { describe, it, expect } from 'vitest';
  * ✅ ListSkeleton
  */
 
-describe('PokemonListingView', () => {
-  it('should be tested via E2E tests due to complexity', () => {
+describe("PokemonListingView", () => {
+  it("should be tested via E2E tests due to complexity", () => {
     expect(true).toBe(true);
   });
 });

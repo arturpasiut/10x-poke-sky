@@ -26,7 +26,6 @@
 ### Testing:
 
 - Testy jednostkowe i integracyjne - Vitest 3.2.4 z React Testing Library:
-
   - Vitest jako nowoczesny i szybki runner testów zoptymalizowany dla Vite/Astro
   - React Testing Library 16.3.0 do testowania interaktywnych komponentów React
   - @testing-library/dom do testowania statycznych komponentów Astro
@@ -37,7 +36,6 @@
   - Vitest Coverage (v8) - generowanie raportów pokrycia kodu (cel: ≥70%, optymalnie 85%)
 
 - Testy end-to-end - Playwright 1.56.0:
-
   - Symulacja pełnych ścieżek użytkownika z wieloprzeglądarkowością (Chromium, Firefox, WebKit)
   - Testowanie kluczowych user stories: wyszukiwanie pokemonów, szczegóły, ulubione, czat AI, autentykacja
   - Playwright Accessibility Testing - audyty dostępności (axe-core integration)
@@ -45,7 +43,6 @@
   - Automatyczne uruchamianie testów w ramach pipeline CI/CD GitHub Actions
 
 - Formatowanie i lintowanie kodu
-
   - ESLint dla lintowania kodu
   - Prettier dla formatowania kodu
 

@@ -20,13 +20,14 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Wysoki (podstawowe building blocks)
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| Button | `src/components/ui/button.tsx` | ✅ Gotowe (21 testów) | Wysoki |
-| Badge | `src/components/ui/badge.tsx` | ✅ Gotowe (25 testów) | Wysoki |
-| Input | `src/components/ui/input.tsx` | ⚠️ Do weryfikacji | Wysoki |
+| Komponent | Ścieżka                        | Status testów         | Priorytet |
+| --------- | ------------------------------ | --------------------- | --------- |
+| Button    | `src/components/ui/button.tsx` | ✅ Gotowe (21 testów) | Wysoki    |
+| Badge     | `src/components/ui/badge.tsx`  | ✅ Gotowe (25 testów) | Wysoki    |
+| Input     | `src/components/ui/input.tsx`  | ⚠️ Do weryfikacji     | Wysoki    |
 
 **Zakres testów**:
+
 - Props (variants, sizes, disabled state)
 - Events (onClick, onChange)
 - Accessibility (aria-labels, keyboard navigation)
@@ -40,14 +41,15 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Krytyczny (bezpieczeństwo)
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| LoginForm | `src/components/auth/LoginForm.tsx` | ✅ Gotowe (17 testów) | Krytyczny |
-| RegisterForm | `src/components/auth/RegisterForm.tsx` | ✅ Gotowe (17 testów) | Krytyczny |
-| ForgotPasswordForm | `src/components/auth/ForgotPasswordForm.tsx` | ✅ Gotowe (15 testów) | Wysoki |
-| FormStatusBanner | `src/components/auth/FormStatusBanner.tsx` | ✅ Gotowe (10 testów) | Średni |
+| Komponent          | Ścieżka                                      | Status testów         | Priorytet |
+| ------------------ | -------------------------------------------- | --------------------- | --------- |
+| LoginForm          | `src/components/auth/LoginForm.tsx`          | ✅ Gotowe (17 testów) | Krytyczny |
+| RegisterForm       | `src/components/auth/RegisterForm.tsx`       | ✅ Gotowe (17 testów) | Krytyczny |
+| ForgotPasswordForm | `src/components/auth/ForgotPasswordForm.tsx` | ✅ Gotowe (15 testów) | Wysoki    |
+| FormStatusBanner   | `src/components/auth/FormStatusBanner.tsx`   | ✅ Gotowe (10 testów) | Średni    |
 
 **Zakres testów**:
+
 - Renderowanie formularzy
 - Walidacja pól (email, hasło, potwierdzenie hasła)
 - Wyświetlanie błędów walidacji
@@ -65,18 +67,19 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 #### **3.1 Lista i Wyszukiwanie**
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| PokemonGrid | `src/components/pokemon/PokemonGrid.tsx` | ✅ Istnieje | Wysoki |
-| PokemonCard | `src/components/pokemon/PokemonCard.tsx` | ✅ Gotowe (13 testów) | Wysoki |
-| SearchHeader | `src/components/pokemon/SearchHeader.tsx` | ✅ Istnieje | Wysoki |
-| FilterSidePanel | `src/components/pokemon/FilterSidePanel.tsx` | ✅ Istnieje | Wysoki |
-| MobileFilterDrawer | `src/components/pokemon/MobileFilterDrawer.tsx` | ✅ Gotowe (12 testów) | Średni |
-| FilterChips | `src/components/pokemon/FilterChips.tsx` | ✅ Gotowe (13 testów) | Średni |
-| SortBar | `src/components/pokemon/SortBar.tsx` | ✅ Gotowe (17 testów) | Średni |
-| PaginationControls | `src/components/pokemon/PaginationControls.tsx` | ✅ Gotowe (19 testów) | Wysoki |
+| Komponent          | Ścieżka                                         | Status testów         | Priorytet |
+| ------------------ | ----------------------------------------------- | --------------------- | --------- |
+| PokemonGrid        | `src/components/pokemon/PokemonGrid.tsx`        | ✅ Istnieje           | Wysoki    |
+| PokemonCard        | `src/components/pokemon/PokemonCard.tsx`        | ✅ Gotowe (13 testów) | Wysoki    |
+| SearchHeader       | `src/components/pokemon/SearchHeader.tsx`       | ✅ Istnieje           | Wysoki    |
+| FilterSidePanel    | `src/components/pokemon/FilterSidePanel.tsx`    | ✅ Istnieje           | Wysoki    |
+| MobileFilterDrawer | `src/components/pokemon/MobileFilterDrawer.tsx` | ✅ Gotowe (12 testów) | Średni    |
+| FilterChips        | `src/components/pokemon/FilterChips.tsx`        | ✅ Gotowe (13 testów) | Średni    |
+| SortBar            | `src/components/pokemon/SortBar.tsx`            | ✅ Gotowe (17 testów) | Średni    |
+| PaginationControls | `src/components/pokemon/PaginationControls.tsx` | ✅ Gotowe (19 testów) | Wysoki    |
 
 **Zakres testów**:
+
 - Renderowanie danych pokemonów
 - Interakcje użytkownika (kliknięcia, hover)
 - Filtrowanie i sortowanie
@@ -86,18 +89,19 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 #### **3.2 Szczegóły i Stany**
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| PokemonStatsPanel | `src/components/pokemon/PokemonStatsPanel.tsx` | ✅ Gotowe (15 testów) | Średni |
-| PokemonEvolutionTimeline | `src/components/pokemon/evolution/PokemonEvolutionTimeline.tsx` | ✅ Gotowe (16 testów) | Średni |
-| PokemonMovesGrid | `src/components/pokemon/moves/PokemonMovesGrid.tsx` | ✅ Gotowe (21 testów) | Niski |
-| PokemonFavoriteAction | `src/components/pokemon/PokemonFavoriteAction.tsx` | ✅ Gotowe (20 testów) | Wysoki |
-| EmptyStateWithAI | `src/components/pokemon/EmptyStateWithAI.tsx` | ✅ Gotowe (17 testów) | Średni |
-| ErrorCallout | `src/components/pokemon/ErrorCallout.tsx` | ✅ Gotowe (26 testów) | Średni |
-| StatusBanner | `src/components/pokemon/StatusBanner.tsx` | ✅ Gotowe (26 testów) | Średni |
-| ListSkeleton | `src/components/pokemon/ListSkeleton.tsx` | ✅ Gotowe (25 testów) | Niski |
+| Komponent                | Ścieżka                                                         | Status testów         | Priorytet |
+| ------------------------ | --------------------------------------------------------------- | --------------------- | --------- |
+| PokemonStatsPanel        | `src/components/pokemon/PokemonStatsPanel.tsx`                  | ✅ Gotowe (15 testów) | Średni    |
+| PokemonEvolutionTimeline | `src/components/pokemon/evolution/PokemonEvolutionTimeline.tsx` | ✅ Gotowe (16 testów) | Średni    |
+| PokemonMovesGrid         | `src/components/pokemon/moves/PokemonMovesGrid.tsx`             | ✅ Gotowe (21 testów) | Niski     |
+| PokemonFavoriteAction    | `src/components/pokemon/PokemonFavoriteAction.tsx`              | ✅ Gotowe (20 testów) | Wysoki    |
+| EmptyStateWithAI         | `src/components/pokemon/EmptyStateWithAI.tsx`                   | ✅ Gotowe (17 testów) | Średni    |
+| ErrorCallout             | `src/components/pokemon/ErrorCallout.tsx`                       | ✅ Gotowe (26 testów) | Średni    |
+| StatusBanner             | `src/components/pokemon/StatusBanner.tsx`                       | ✅ Gotowe (26 testów) | Średni    |
+| ListSkeleton             | `src/components/pokemon/ListSkeleton.tsx`                       | ✅ Gotowe (25 testów) | Niski     |
 
 **Zakres testów**:
+
 - Wyświetlanie statystyk i danych
 - Timeline ewolucji (renderowanie łańcucha)
 - Akcje ulubione (toggle state)
@@ -106,11 +110,12 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 #### **3.3 Główne widoki**
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| PokemonListingView | `src/components/pokemon/PokemonListingView.tsx` | ⚠️ E2E (placeholder) | Wysoki |
+| Komponent          | Ścieżka                                         | Status testów        | Priorytet |
+| ------------------ | ----------------------------------------------- | -------------------- | --------- |
+| PokemonListingView | `src/components/pokemon/PokemonListingView.tsx` | ⚠️ E2E (placeholder) | Wysoki    |
 
 **Zakres testów**:
+
 - Integration komponentów
 - Flow wyszukiwania + filtrowania
 - Zarządzanie stanem (Zustand store)
@@ -125,19 +130,20 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Wysoki (kluczowa funkcjonalność AI)
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| AIChatPanel | `src/components/ai-chat/AIChatPanel.tsx` | ❌ Brak | Wysoki |
-| ChatTranscript | `src/components/ai-chat/ChatTranscript.tsx` | ✅ Istnieje | Wysoki |
-| PromptInput | `src/components/ai-chat/PromptInput.tsx` | ✅ Istnieje | Wysoki |
-| SuggestionCards | `src/components/ai-chat/SuggestionCards.tsx` | ❌ Brak | Średni |
-| SuggestionCard | `src/components/ai-chat/SuggestionCard.tsx` | ❌ Brak | Średni |
-| SuggestionChips | `src/components/ai-chat/SuggestionChips.tsx` | ❌ Brak | Średni |
-| RateLimitAlert | `src/components/ai-chat/RateLimitAlert.tsx` | ❌ Brak | Wysoki |
-| FavoritePromptCTA | `src/components/ai-chat/FavoritePromptCTA.tsx` | ❌ Brak | Niski |
-| ChatSkeleton | `src/components/ai-chat/ChatSkeleton.tsx` | ✅ Istnieje | Niski |
+| Komponent         | Ścieżka                                        | Status testów | Priorytet |
+| ----------------- | ---------------------------------------------- | ------------- | --------- |
+| AIChatPanel       | `src/components/ai-chat/AIChatPanel.tsx`       | ❌ Brak       | Wysoki    |
+| ChatTranscript    | `src/components/ai-chat/ChatTranscript.tsx`    | ✅ Istnieje   | Wysoki    |
+| PromptInput       | `src/components/ai-chat/PromptInput.tsx`       | ✅ Istnieje   | Wysoki    |
+| SuggestionCards   | `src/components/ai-chat/SuggestionCards.tsx`   | ❌ Brak       | Średni    |
+| SuggestionCard    | `src/components/ai-chat/SuggestionCard.tsx`    | ❌ Brak       | Średni    |
+| SuggestionChips   | `src/components/ai-chat/SuggestionChips.tsx`   | ❌ Brak       | Średni    |
+| RateLimitAlert    | `src/components/ai-chat/RateLimitAlert.tsx`    | ❌ Brak       | Wysoki    |
+| FavoritePromptCTA | `src/components/ai-chat/FavoritePromptCTA.tsx` | ❌ Brak       | Niski     |
+| ChatSkeleton      | `src/components/ai-chat/ChatSkeleton.tsx`      | ✅ Istnieje   | Niski     |
 
 **Zakres testów**:
+
 - Wysyłanie promptów
 - Wyświetlanie transkryptu rozmowy
 - Karty sugestii pokemonów
@@ -153,11 +159,12 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Średni
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| FavoritesView | `src/components/favorites/FavoritesView.tsx` | ❌ Brak | Średni |
+| Komponent     | Ścieżka                                      | Status testów | Priorytet |
+| ------------- | -------------------------------------------- | ------------- | --------- |
+| FavoritesView | `src/components/favorites/FavoritesView.tsx` | ❌ Brak       | Średni    |
 
 **Zakres testów**:
+
 - Lista ulubionych pokemonów
 - Empty state (brak ulubionych)
 - Usuwanie z ulubionych
@@ -171,11 +178,12 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Wysoki (zarządzanie stanem)
 
-| Komponent | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| SessionProvider | `src/components/providers/SessionProvider.tsx` | ❌ Brak | Wysoki |
+| Komponent       | Ścieżka                                        | Status testów | Priorytet |
+| --------------- | ---------------------------------------------- | ------------- | --------- |
+| SessionProvider | `src/components/providers/SessionProvider.tsx` | ❌ Brak       | Wysoki    |
 
 **Zakres testów**:
+
 - Inicjalizacja sesji
 - Context propagation
 - Session updates
@@ -188,13 +196,14 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Krytyczny (logika biznesowa)
 
-| Hook | Ścieżka | Status testów | Priorytet |
-|------|---------|---------------|-----------|
-| usePokemonListQuery | `src/hooks/usePokemonListQuery.ts` | ✅ Istnieje | Krytyczny |
-| usePokemonFilterOptions | `src/hooks/usePokemonFilterOptions.ts` | ❌ Brak | Wysoki |
-| useAiChatSession | `src/features/ai-chat/useAiChatSession.ts` | ✅ Istnieje | Krytyczny |
+| Hook                    | Ścieżka                                    | Status testów | Priorytet |
+| ----------------------- | ------------------------------------------ | ------------- | --------- |
+| usePokemonListQuery     | `src/hooks/usePokemonListQuery.ts`         | ✅ Istnieje   | Krytyczny |
+| usePokemonFilterOptions | `src/hooks/usePokemonFilterOptions.ts`     | ❌ Brak       | Wysoki    |
+| useAiChatSession        | `src/features/ai-chat/useAiChatSession.ts` | ✅ Istnieje   | Krytyczny |
 
 **Zakres testów**:
+
 - Data fetching (success, loading, error states)
 - Query parameters
 - Cache behavior
@@ -209,12 +218,13 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Wysoki (zarządzanie stanem globalnym)
 
-| Store | Ścieżka | Status testów | Priorytet |
-|-------|---------|---------------|-----------|
-| usePokemonSearchStore | `src/stores/usePokemonSearchStore.ts` | ❌ Brak | Wysoki |
-| useSessionStore | `src/lib/stores/use-session-store.ts` | ❌ Brak | Wysoki |
+| Store                 | Ścieżka                               | Status testów | Priorytet |
+| --------------------- | ------------------------------------- | ------------- | --------- |
+| usePokemonSearchStore | `src/stores/usePokemonSearchStore.ts` | ❌ Brak       | Wysoki    |
+| useSessionStore       | `src/lib/stores/use-session-store.ts` | ❌ Brak       | Wysoki    |
 
 **Zakres testów**:
+
 - Initial state
 - Actions (setters, resetters)
 - Computed values (selectors)
@@ -230,49 +240,53 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 #### **9.1 Pokemon Utilities**
 
-| Utility | Ścieżka | Status testów | Priorytet |
-|---------|---------|---------------|-----------|
-| filters | `src/lib/pokemon/filters.ts` | ❌ Brak | Wysoki |
-| transformers | `src/lib/pokemon/transformers.ts` | ❌ Brak | Wysoki |
-| query | `src/lib/pokemon/query.ts` | ❌ Brak | Średni |
+| Utility      | Ścieżka                           | Status testów | Priorytet |
+| ------------ | --------------------------------- | ------------- | --------- |
+| filters      | `src/lib/pokemon/filters.ts`      | ❌ Brak       | Wysoki    |
+| transformers | `src/lib/pokemon/transformers.ts` | ❌ Brak       | Wysoki    |
+| query        | `src/lib/pokemon/query.ts`        | ❌ Brak       | Średni    |
 
 **Zakres testów**:
+
 - Funkcje filtrowania (po typie, generacji, nazwie)
 - Transformery danych z PokeAPI
 - Query builders
 
 #### **9.2 Favorites Utilities**
 
-| Utility | Ścieżka | Status testów | Priorytet |
-|---------|---------|---------------|-----------|
-| transformers | `src/lib/favorites/transformers.ts` | ❌ Brak | Średni |
-| client | `src/lib/favorites/client.ts` | ❌ Brak | Średni |
-| service | `src/lib/favorites/service.ts` | ❌ Brak | Średni |
+| Utility      | Ścieżka                             | Status testów | Priorytet |
+| ------------ | ----------------------------------- | ------------- | --------- |
+| transformers | `src/lib/favorites/transformers.ts` | ❌ Brak       | Średni    |
+| client       | `src/lib/favorites/client.ts`       | ❌ Brak       | Średni    |
+| service      | `src/lib/favorites/service.ts`      | ❌ Brak       | Średni    |
 
 **Zakres testów**:
+
 - Transformacja danych ulubionych
 - API client functions
 - Service layer logic
 
 #### **9.3 AI Utilities**
 
-| Utility | Ścieżka | Status testów | Priorytet |
-|---------|---------|---------------|-----------|
-| mappers | `src/features/ai-chat/mappers.ts` | ❌ Brak | Średni |
-| prompts | `src/lib/ai/prompts.ts` | ❌ Brak | Niski |
+| Utility | Ścieżka                           | Status testów | Priorytet |
+| ------- | --------------------------------- | ------------- | --------- |
+| mappers | `src/features/ai-chat/mappers.ts` | ❌ Brak       | Średni    |
+| prompts | `src/lib/ai/prompts.ts`           | ❌ Brak       | Niski     |
 
 **Zakres testów**:
+
 - Mapowanie odpowiedzi AI
 - Prompt templates
 
 #### **9.4 Ogólne Utilities**
 
-| Utility | Ścieżka | Status testów | Priorytet |
-|---------|---------|---------------|-----------|
-| utils | `src/lib/utils.ts` | ❌ Brak | Wysoki |
-| responses | `src/lib/http/responses.ts` | ❌ Brak | Średni |
+| Utility   | Ścieżka                     | Status testów | Priorytet |
+| --------- | --------------------------- | ------------- | --------- |
+| utils     | `src/lib/utils.ts`          | ❌ Brak       | Wysoki    |
+| responses | `src/lib/http/responses.ts` | ❌ Brak       | Średni    |
 
 **Zakres testów**:
+
 - cn() function (classnames merging)
 - HTTP response helpers
 
@@ -284,12 +298,13 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 **Priorytet**: Krytyczny (bezpieczeństwo danych)
 
-| Walidator | Ścieżka | Status testów | Priorytet |
-|-----------|---------|---------------|-----------|
-| auth/validation | `src/lib/auth/validation.ts` | ❌ Brak | Krytyczny |
-| favorites/validation | `src/lib/favorites/validation.ts` | ❌ Brak | Wysoki |
+| Walidator            | Ścieżka                           | Status testów | Priorytet |
+| -------------------- | --------------------------------- | ------------- | --------- |
+| auth/validation      | `src/lib/auth/validation.ts`      | ❌ Brak       | Krytyczny |
+| favorites/validation | `src/lib/favorites/validation.ts` | ❌ Brak       | Wysoki    |
 
 **Zakres testów**:
+
 - loginSchema (email, password validation)
 - registerSchema (email, password, confirmPassword)
 - resetPasswordSchema
@@ -302,19 +317,19 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 
 ## 📊 Podsumowanie Statystyk
 
-| Kategoria | Liczba elementów | Testy gotowe | Brakujące testy | % Pokrycia |
-|-----------|------------------|------------------|-----------------|------------|
-| **Komponenty UI** | 2-3 | 2 | 0-1 | 67-100% |
-| **Komponenty Auth** | 4 | 4 | 0 | 100% |
-| **Komponenty Pokemon** | 17 | 16 | 1 | 94% |
-| **Komponenty AI Chat** | 9 | 2 | 7 | 22% |
-| **Komponenty Favorites** | 1 | 0 | 1 | 0% |
-| **Providers** | 1 | 0 | 1 | 0% |
-| **Custom Hooki** | 3 | 2 | 1 | 67% |
-| **Zustand Store'y** | 2 | 0 | 2 | 0% |
-| **Funkcje Utility** | 10 | 0 | 10 | 0% |
-| **Walidatory** | 2 | 0 | 2 | 0% |
-| **RAZEM** | **51** | **26** | **25** | **51%** |
+| Kategoria                | Liczba elementów | Testy gotowe | Brakujące testy | % Pokrycia |
+| ------------------------ | ---------------- | ------------ | --------------- | ---------- |
+| **Komponenty UI**        | 2-3              | 2            | 0-1             | 67-100%    |
+| **Komponenty Auth**      | 4                | 4            | 0               | 100%       |
+| **Komponenty Pokemon**   | 17               | 16           | 1               | 94%        |
+| **Komponenty AI Chat**   | 9                | 2            | 7               | 22%        |
+| **Komponenty Favorites** | 1                | 0            | 1               | 0%         |
+| **Providers**            | 1                | 0            | 1               | 0%         |
+| **Custom Hooki**         | 3                | 2            | 1               | 67%        |
+| **Zustand Store'y**      | 2                | 0            | 2               | 0%         |
+| **Funkcje Utility**      | 10               | 0            | 10              | 0%         |
+| **Walidatory**           | 2                | 0            | 2               | 0%         |
+| **RAZEM**                | **51**           | **26**       | **25**          | **51%**    |
 
 **Aktualny stan**: 26 testów gotowych / 51 elementów do przetestowania = **51% pokrycia**
 
@@ -331,6 +346,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 **Cel**: Pokrycie podstawowych komponentów i krytycznej logiki biznesowej
 
 **Priorytet 1 - Bezpieczeństwo i Walidacja** (Tydzień 1, Dni 1-3)
+
 - [ ] `src/lib/auth/validation.ts` - Schematy Zod dla auth
 - [ ] `src/lib/favorites/validation.ts` - Schematy Zod dla favorites
 - [x] `src/components/auth/LoginForm.tsx` ✅ (17 testów)
@@ -339,11 +355,13 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - [x] `src/components/auth/FormStatusBanner.tsx` ✅ (10 testów)
 
 **Priorytet 2 - Komponenty UI Podstawowe** (Tydzień 1, Dni 4-5)
+
 - [x] `src/components/ui/button.tsx` ✅ (21 testów)
 - [x] `src/components/ui/badge.tsx` ✅ (25 testów)
 - [ ] `src/lib/utils.ts` (cn function)
 
 **Priorytet 3 - Pokemon Core Components** (Tydzień 2, Dni 1-3)
+
 - [x] `src/components/pokemon/PokemonCard.tsx` ✅ (13 testów)
 - [x] `src/components/pokemon/PaginationControls.tsx` ✅ (19 testów)
 - [ ] `src/components/pokemon/PokemonFavoriteAction.tsx`
@@ -351,10 +369,12 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - [ ] `src/lib/pokemon/transformers.ts`
 
 **Priorytet 4 - Utility Functions** (Tydzień 2, Dni 4-5)
+
 - [ ] `src/lib/favorites/transformers.ts`
 - [ ] `src/lib/http/responses.ts`
 
 **Deliverables Sprint 1**:
+
 - Minimum 15 testów jednostkowych napisanych
 - Pokrycie kodu: 40-50%
 - Wszystkie komponenty auth pokryte testami
@@ -367,20 +387,25 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 ### **Sprint 2: Hooki, Store'y i Logika Biznesowa** (1 tydzień)
 
 **Priorytet 1 - Custom Hooki** (Dni 1-2)
+
 - [ ] `src/hooks/usePokemonFilterOptions.ts` (brakujący)
 
 **Priorytet 2 - Zustand Store'y** (Dni 3-4)
+
 - [ ] `src/stores/usePokemonSearchStore.ts`
 - [ ] `src/lib/stores/use-session-store.ts`
 
 **Priorytet 3 - AI Chat Utilities** (Dni 5)
+
 - [ ] `src/features/ai-chat/mappers.ts`
 - [ ] `src/components/ai-chat/RateLimitAlert.tsx`
 
 **Priorytet 4 - Providers** (Dni 5)
+
 - [ ] `src/components/providers/SessionProvider.tsx`
 
 **Deliverables Sprint 2**:
+
 - +6-8 testów jednostkowych
 - Pokrycie kodu: 60-70%
 - Wszystkie hooki i store'y pokryte testami
@@ -392,12 +417,14 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 ### **Sprint 3: Pozostałe Komponenty Pokemon** (1 tydzień)
 
 **Priorytet 1 - Lista i Filtrowanie** (Dni 1-3)
+
 - [ ] `src/components/pokemon/PokemonListingView.tsx`
 - [x] `src/components/pokemon/MobileFilterDrawer.tsx` ✅ (12 testów)
 - [x] `src/components/pokemon/FilterChips.tsx` ✅ (13 testów)
 - [x] `src/components/pokemon/SortBar.tsx` ✅ (17 testów)
 
 **Priorytet 2 - Szczegóły i Stany** (Dni 4-5)
+
 - [ ] `src/components/pokemon/PokemonStatsPanel.tsx`
 - [ ] `src/components/pokemon/PokemonEvolutionTimeline.tsx`
 - [ ] `src/components/pokemon/EmptyStateWithAI.tsx`
@@ -406,9 +433,11 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - [ ] `src/components/pokemon/ListSkeleton.tsx`
 
 **Priorytet 3 - Nice-to-have** (Opcjonalnie)
+
 - [ ] `src/components/pokemon/PokemonMovesGrid.tsx`
 
 **Deliverables Sprint 3**:
+
 - +10-11 testów jednostkowych
 - Pokrycie kodu: 75-80%
 - Wszystkie kluczowe komponenty Pokemon pokryte
@@ -420,6 +449,7 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 ### **Sprint 4: Komponenty AI Chat i Finalizacja** (1 tydzień)
 
 **Priorytet 1 - AI Chat Components** (Dni 1-4)
+
 - [ ] `src/components/ai-chat/AIChatPanel.tsx`
 - [ ] `src/components/ai-chat/SuggestionCards.tsx`
 - [ ] `src/components/ai-chat/SuggestionCard.tsx`
@@ -428,15 +458,18 @@ Ten dokument zawiera szczegółową listę komponentów, hooków i funkcji utili
 - [ ] `src/components/ai-chat/ChatSkeleton.tsx`
 
 **Priorytet 2 - Favorites i Pozostałe** (Dni 5)
+
 - [ ] `src/components/favorites/FavoritesView.tsx`
 - [ ] `src/lib/favorites/client.ts`
 - [ ] `src/lib/favorites/service.ts`
 
 **Priorytet 3 - Pozostałe Utilities** (Opcjonalnie)
+
 - [ ] `src/lib/pokemon/query.ts`
 - [ ] `src/lib/ai/prompts.ts`
 
 **Deliverables Sprint 4**:
+
 - +9-12 testów jednostkowych
 - Pokrycie kodu: 85%+ (cel optymalny)
 - Wszystkie komponenty AI Chat pokryte
@@ -495,6 +528,7 @@ describe('PokemonCard', () => {
 ### **Co testować**
 
 ✅ **TAK**:
+
 - Rendering z różnymi props
 - User interactions (clicks, inputs)
 - Conditional rendering
@@ -503,6 +537,7 @@ describe('PokemonCard', () => {
 - Integration między komponentami (jeśli w ramach unit testów)
 
 ❌ **NIE**:
+
 - Implementacja wewnętrzna (internal state)
 - Zewnętrzne API calls (mockuj z MSW)
 - Styling (sprawdź tylko obecność class names)
@@ -519,6 +554,7 @@ describe('PokemonCard', () => {
 ## 🔧 Setup środowiska (przypomnienie)
 
 ### **Zainstalowane narzędzia**
+
 - ✅ Vitest 3.2.4
 - ✅ React Testing Library 16.3.0
 - ✅ @testing-library/jest-dom 6.9.1
@@ -526,9 +562,11 @@ describe('PokemonCard', () => {
 - ✅ jsdom 22.1.0
 
 ### **Do zainstalowania**
+
 - ⚠️ MSW (Mock Service Worker) - dla mockowania API
 
 ### **Konfiguracja**
+
 - Plik: `vitest.config.ts` i `vitest.setup.ts`
 - Environment: jsdom
 - Coverage: v8 provider
@@ -537,12 +575,12 @@ describe('PokemonCard', () => {
 
 ## 📈 Metryki sukcesu
 
-| Metryka | Cel Minimum | Cel Optymalny | Aktualny stan |
-|---------|-------------|---------------|---------------|
-| **Code Coverage** | 70% | 85% | ~51% |
-| **Liczba testów** | 35 | 51 | 26 |
-| **Test pass rate** | 95% | 100% | 100% (319/319) |
-| **Flaky test rate** | < 5% | 0% | 0% |
+| Metryka             | Cel Minimum | Cel Optymalny | Aktualny stan  |
+| ------------------- | ----------- | ------------- | -------------- |
+| **Code Coverage**   | 70%         | 85%           | ~51%           |
+| **Liczba testów**   | 35          | 51            | 26             |
+| **Test pass rate**  | 95%         | 100%          | 100% (319/319) |
+| **Flaky test rate** | < 5%        | 0%            | 0%             |
 
 ---
 
@@ -557,6 +595,7 @@ describe('PokemonCard', () => {
 ---
 
 **Pytania lub wątpliwości?**
+
 - Sprawdź główny plan testów: `.ai/test-plan.md`
 - Sprawdź istniejące testy jako przykłady:
   - `src/components/pokemon/__tests__/PokemonGrid.test.tsx`

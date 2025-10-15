@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 type EmptyStateWithAIProps = {
-  title?: string
-  description?: string
-  ctaLabel: string
-  onCta: () => void
-}
+  title?: string;
+  description?: string;
+  ctaLabel: string;
+  onCta: () => void;
+};
 
 export function EmptyStateWithAI({
   title = "Brak wyników dla wybranych filtrów",
@@ -25,5 +25,5 @@ export function EmptyStateWithAI({
         {ctaLabel}
       </Button>
     </section>
-  )
+  );
 }

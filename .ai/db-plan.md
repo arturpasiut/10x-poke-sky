@@ -1,4 +1,5 @@
 1. Lista tabel z ich kolumnami, typami danych i ograniczeniami
+
 - **profiles**
   - `id` (`uuid`, PRIMARY KEY, FOREIGN KEY → `auth.users.id`, NOT NULL, ON DELETE CASCADE)
   - `display_name` (`text`, NULLABLE)
@@ -44,12 +45,14 @@
   - `created_at` (`timestamptz`, NOT NULL, DEFAULT `timezone('utc', now())`)
 
 2. Relacje między tabelami
+
 - `auth.users.id` ↔ `profiles.id` (relacja 1:1, kaskadowe usuwanie profilu po usunięciu konta).
 - `profiles.id` ↔ `favorites.user_id` (relacja 1:N, kaskadowe usuwanie ulubionych po usunięciu profilu).
 - `auth.users.id` ↔ `ai_queries.user_id` (relacja 1:N, przy usunięciu konta dane są anonimizowane przez `ON DELETE SET NULL`).
 - `pokemon_cache` i `moves_cache` są niezależnymi tabelami cache'ującymi dane zewnętrzne.
 
 3. Indeksy
+
 - `profiles_created_at_idx` na `profiles(created_at DESC)` — wsparcie dla sortowania profili po dacie utworzenia.
 - `favorites_user_idx` na `favorites(user_id)` — szybkie pobieranie ulubionych użytkownika.
 - `favorites_pokemon_idx` na `favorites(pokemon_id)` — analiza popularności pokemonów.
@@ -60,6 +63,7 @@
 - `ai_queries_success_created_at_idx` na `ai_queries(created_at DESC)` WHERE `success IS TRUE` — raportowanie skutecznych odpowiedzi.
 
 4. Zasady PostgreSQL (RLS i funkcje)
+
 - **profiles**
   - RLS włączone.
   - Polityki: `select` i `update` tylko dla właściciela (`auth.uid() = id`), `all` dla roli serwisowej.
@@ -76,6 +80,7 @@
 - Wymagane rozszerzenie: `pgcrypto` (dla `gen_random_uuid()`).
 
 5. Dodatkowe uwagi
+
 - `pokemon_cache` i `moves_cache` są odświeżane przez edge functions; aplikacja traktuje je jako tylko-do-odczytu.
 - `ai_queries` przechowuje pełny prompt i odpowiedź, więc pamiętaj o sanetyzacji danych po stronie backendu przed zapisem.
 - Obecny schemat nie tworzy automatycznie rekordów profilu — wymagane jest wywołanie funkcji serwisowej po rejestracji (do rozważenia w kolejnych iteracjach).

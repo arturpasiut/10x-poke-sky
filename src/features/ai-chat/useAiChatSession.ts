@@ -135,7 +135,10 @@ export const createAssistantMessage = (
   };
 };
 
-export const resolveAssistantText = (response: AiIdentifyResponseDto, suggestions: AiChatSuggestionViewModel[]): string => {
+export const resolveAssistantText = (
+  response: AiIdentifyResponseDto,
+  suggestions: AiChatSuggestionViewModel[]
+): string => {
   const raw = response.rawResponse;
 
   const extracted = extractTextFromRawResponse(raw);

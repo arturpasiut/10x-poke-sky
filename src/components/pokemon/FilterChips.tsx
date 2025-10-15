@@ -1,13 +1,13 @@
-import type { FilterChipViewModel } from "@/lib/pokemon/types"
+import type { FilterChipViewModel } from "@/lib/pokemon/types";
 
 type FilterChipsProps = {
-  chips: FilterChipViewModel[]
-  onClearAll?: () => void
-}
+  chips: FilterChipViewModel[];
+  onClearAll?: () => void;
+};
 
 export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
   if (!chips.length) {
-    return null
+    return null;
   }
 
   return (
@@ -38,5 +38,5 @@ export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
         </button>
       ) : null}
     </div>
-  )
+  );
 }

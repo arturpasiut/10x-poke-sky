@@ -1,8 +1,8 @@
-import { defineConfig, devices } from "@playwright/test"
-import path from "path"
-import dotenv from "dotenv"
+import { defineConfig, devices } from "@playwright/test";
+import path from "path";
+import dotenv from "dotenv";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env.test") })
+dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
   testDir: "./tests",
@@ -19,4 +19,4 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-})
+});
