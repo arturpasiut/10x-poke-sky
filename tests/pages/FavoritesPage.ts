@@ -1,4 +1,4 @@
-import { expect, type Locator } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 /**
@@ -22,7 +22,7 @@ export class FavoritesPage extends BasePage {
   readonly retryButton: Locator;
   readonly loginLink: Locator;
 
-  constructor(page: any) {
+  constructor(page: Page) {
     super(page);
 
     // Main containers
@@ -50,9 +50,12 @@ export class FavoritesPage extends BasePage {
     await this.waitForPageLoad();
     // Wait for either success or error state to appear
     await this.page
-      .waitForSelector('[data-testid="favorites-grid"], [data-testid="favorites-empty-state"], [data-testid="favorites-error-state"]', {
-        timeout: 10000,
-      })
+      .waitForSelector(
+        '[data-testid="favorites-grid"], [data-testid="favorites-empty-state"], [data-testid="favorites-error-state"]',
+        {
+          timeout: 10000,
+        }
+      )
       .catch(() => {
         // If none appear, that's OK - loading might still be visible
       });
@@ -182,17 +185,20 @@ export class FavoritesPage extends BasePage {
 
     // Check if the error message contains text about authentication
     const errorText = await this.errorMessage.textContent();
-    const isAuthError = errorText?.toLowerCase().includes("zweryfikować użytkownika") ||
-                       errorText?.toLowerCase().includes("zaloguj") ||
-                       errorText?.toLowerCase().includes("auth");
+    const isAuthError =
+      errorText?.toLowerCase().includes("zweryfikować użytkownika") ||
+      errorText?.toLowerCase().includes("zaloguj") ||
+      errorText?.toLowerCase().includes("auth");
 
     // Login link should be visible for auth errors (code 401)
     // Wait a bit for it to render if it's an auth error
     if (isAuthError) {
-      await expect(this.loginLink).toBeVisible({ timeout: 5000 }).catch(() => {
-        // If login link doesn't appear, log for debugging
-        console.warn("Login link not visible despite auth error message");
-      });
+      await expect(this.loginLink)
+        .toBeVisible({ timeout: 5000 })
+        .catch(() => {
+          // If login link doesn't appear, log for debugging
+          console.warn("Login link not visible despite auth error message");
+        });
     }
   }
 

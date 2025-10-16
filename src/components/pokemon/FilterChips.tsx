@@ -1,9 +1,9 @@
 import type { FilterChipViewModel } from "@/lib/pokemon/types";
 
-type FilterChipsProps = {
+interface FilterChipsProps {
   chips: FilterChipViewModel[];
   onClearAll?: () => void;
-};
+}
 
 export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
   if (!chips.length) {

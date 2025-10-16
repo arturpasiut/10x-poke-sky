@@ -138,10 +138,6 @@ const spriteUrl = summary?.spriteUrl ?? detail?.pokemon?.sprites?.other?.["offic
 const typeGradientStart = types[0] ? (TYPE_COLORS[types[0]] ?? "#1f2937") : "#1f2937";
 const typeGradientEnd = types[1] ? (TYPE_COLORS[types[1]] ?? "#111827") : "#111827";
 const gradientStyle = `background: radial-gradient(circle at 20% 20%, ${typeGradientStart} 0%, ${typeGradientEnd} 45%, rgba(17,23,39,0.95) 70%);`;
-
-const seoDescription = summary
-  ? `Statystyki i szczegóły Pokémona ${formattedName}. Typy: ${typedBadges.map((badge) => badge.label).join(", ")}.`
-  : "Szczegóły Pokémona w 10x Poke Sky.";
 ---
 
 <MainLayout title={pageTitle}>
@@ -186,7 +182,9 @@ const seoDescription = summary
                 </p>
 
                 <div class="flex items-center gap-3 text-white">
-                  <PokemonFavoriteAction client:load pokemonId={summary!.pokemonId} pokemonName={formattedName} />
+                  {summary && (
+                    <PokemonFavoriteAction client:load pokemonId={summary.pokemonId} pokemonName={formattedName} />
+                  )}
                 </div>
               </div>
               {spriteUrl ? (
@@ -226,12 +224,15 @@ const seoDescription = summary
                 </div>
                 {metadata.length ? (
                   <dl class="flex flex-wrap items-center justify-center gap-6 text-xs font-medium uppercase tracking-[0.35em] text-white/60">
-                    {metadata.map((entry) => (
-                      <div class="flex flex-col items-center gap-1" key={entry!.label}>
-                        <dt>{entry!.label}</dt>
-                        <dd class="text-sm tracking-normal text-white">{entry!.value}</dd>
-                      </div>
-                    ))}
+                    {metadata.map((entry) => {
+                      if (!entry) return null;
+                      return (
+                        <div class="flex flex-col items-center gap-1" key={entry.label}>
+                          <dt>{entry.label}</dt>
+                          <dd class="text-sm tracking-normal text-white">{entry.value}</dd>
+                        </div>
+                      );
+                    })}
                   </dl>
                 ) : null}
               </div>

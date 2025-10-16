@@ -78,13 +78,13 @@ describe("PokemonMovesGrid", () => {
   });
 
   it("should show empty state when moves is undefined", () => {
-    render(<PokemonMovesGrid moves={undefined as any} />);
+    render(<PokemonMovesGrid moves={undefined as unknown as MoveSummaryDto[]} />);
 
     expect(screen.getByText("Nie znaleziono ruchów dla tego Pokémona.")).toBeInTheDocument();
   });
 
   it("should show empty state when moves is null", () => {
-    render(<PokemonMovesGrid moves={null as any} />);
+    render(<PokemonMovesGrid moves={null as unknown as MoveSummaryDto[]} />);
 
     expect(screen.getByText("Nie znaleziono ruchów dla tego Pokémona.")).toBeInTheDocument();
   });
@@ -152,7 +152,7 @@ describe("PokemonMovesGrid", () => {
       {
         moveId: 1,
         name: "struggle",
-        type: null as any,
+        type: null as unknown as string,
         power: 50,
         accuracy: 100,
       },
@@ -169,7 +169,7 @@ describe("PokemonMovesGrid", () => {
       {
         moveId: 1,
         name: "mystery-move",
-        type: null as any,
+        type: null as unknown as string,
         power: 50,
         accuracy: 100,
       },
@@ -241,15 +241,15 @@ describe("PokemonMovesGrid", () => {
 
   // Unknown damage class test
   it("should display unknown damage class as-is", () => {
-    const movesWithUnknownType: MoveSummaryDto[] = [
+    const movesWithUnknownType = [
       {
         moveId: 1,
         name: "custom-move",
-        type: "unknown-type" as any,
+        type: "unknown-type",
         power: 50,
         accuracy: 100,
       },
-    ];
+    ] as MoveSummaryDto[];
 
     render(<PokemonMovesGrid moves={movesWithUnknownType} />);
 

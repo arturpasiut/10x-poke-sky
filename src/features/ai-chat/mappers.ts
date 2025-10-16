@@ -7,11 +7,11 @@ import {
   type SuggestionSummaryLookup,
 } from "./types";
 
-type MapSuggestionParams = {
+interface MapSuggestionParams {
   response: AiIdentifyResponseDto;
   suggestion: AiIdentifySuggestionDto;
   summary?: PokemonSummaryDto;
-};
+}
 
 const formatSummary = (summary?: PokemonSummaryDto): string | undefined => {
   if (!summary) {

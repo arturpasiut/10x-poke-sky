@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- Logging helps diagnose invalid or missing configuration during setup */
 import { z } from "zod";
 
 const envSchema = z.object({

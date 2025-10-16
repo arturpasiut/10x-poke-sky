@@ -16,13 +16,19 @@ describe("PokemonFavoriteAction", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    delete (window as any).location;
-    (window as any).location = { pathname: "/pokemon/pikachu", search: "", href: "" };
+    delete (window as unknown as { location?: unknown }).location;
+    (window as unknown as { location: { pathname: string; search: string; href: string } }).location = {
+      pathname: "/pokemon/pikachu",
+      search: "",
+      href: "",
+    };
   });
 
   // Unauthenticated state tests
   it("should render login link when user is not authenticated", () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("unauthenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "unauthenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
 
     render(<PokemonFavoriteAction {...defaultProps} />);
 
@@ -32,7 +38,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it("should show heart icon when unauthenticated", () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("unauthenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "unauthenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
 
     const { container } = render(<PokemonFavoriteAction {...defaultProps} />);
 
@@ -41,7 +49,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it("should include pokemon ID in data attribute when unauthenticated", () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("unauthenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "unauthenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
 
     render(<PokemonFavoriteAction {...defaultProps} />);
 
@@ -51,7 +61,9 @@ describe("PokemonFavoriteAction", () => {
 
   // Authenticated state - checking favorite status
   it("should check favorite status when authenticated", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
 
     render(<PokemonFavoriteAction {...defaultProps} />);
@@ -62,7 +74,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it("should render button when authenticated", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
 
     render(<PokemonFavoriteAction {...defaultProps} />);
@@ -73,7 +87,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it('should show "Dodaj do ulubionych" when pokemon is not favorite', async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
 
     render(<PokemonFavoriteAction {...defaultProps} />);
@@ -84,7 +100,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it('should show "Usuń z ulubionych" when pokemon is favorite', async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(true);
 
     render(<PokemonFavoriteAction {...defaultProps} />);
@@ -95,7 +113,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it("should show filled heart when pokemon is favorite", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(true);
 
     const { container } = render(<PokemonFavoriteAction {...defaultProps} />);
@@ -107,7 +127,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it("should show empty heart when pokemon is not favorite", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
 
     const { container } = render(<PokemonFavoriteAction {...defaultProps} />);
@@ -121,7 +143,9 @@ describe("PokemonFavoriteAction", () => {
   // Adding to favorites
   it("should call addFavoriteToApi when adding to favorites", async () => {
     const user = userEvent.setup();
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
     vi.mocked(favoritesApi.addFavoriteToApi).mockResolvedValue(undefined);
 
@@ -141,7 +165,9 @@ describe("PokemonFavoriteAction", () => {
 
   it("should update button text after adding to favorites", async () => {
     const user = userEvent.setup();
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
     vi.mocked(favoritesApi.addFavoriteToApi).mockResolvedValue(undefined);
 
@@ -162,7 +188,9 @@ describe("PokemonFavoriteAction", () => {
   // Removing from favorites
   it("should call deleteFavoriteFromApi when removing from favorites", async () => {
     const user = userEvent.setup();
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(true);
     vi.mocked(favoritesApi.deleteFavoriteFromApi).mockResolvedValue(undefined);
 
@@ -182,7 +210,9 @@ describe("PokemonFavoriteAction", () => {
 
   it("should update button text after removing from favorites", async () => {
     const user = userEvent.setup();
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(true);
     vi.mocked(favoritesApi.deleteFavoriteFromApi).mockResolvedValue(undefined);
 
@@ -202,7 +232,9 @@ describe("PokemonFavoriteAction", () => {
 
   // Loading states
   it("should disable button while checking favorite status", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockImplementation(
       () => new Promise((resolve) => setTimeout(() => resolve(false), 100))
     );
@@ -215,7 +247,9 @@ describe("PokemonFavoriteAction", () => {
 
   it("should show loader icon while operation is in progress", async () => {
     const user = userEvent.setup();
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
     vi.mocked(favoritesApi.addFavoriteToApi).mockImplementation(
       () => new Promise((resolve) => setTimeout(() => resolve(undefined), 100))
@@ -236,7 +270,9 @@ describe("PokemonFavoriteAction", () => {
 
   // Error handling
   it("should display error when check fails", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     const error = { code: 500, message: "Failed to check" };
     Object.setPrototypeOf(error, favoritesApi.FavoritesApiError.prototype);
     vi.mocked(favoritesApi.checkIsFavorite).mockRejectedValue(error);
@@ -256,7 +292,9 @@ describe("PokemonFavoriteAction", () => {
 
   it("should display error message when add operation fails", async () => {
     const user = userEvent.setup();
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
 
     const error = { code: 500, message: "Failed to add" };
@@ -280,7 +318,9 @@ describe("PokemonFavoriteAction", () => {
 
   it("should display error message when remove operation fails", async () => {
     const user = userEvent.setup();
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(true);
 
     const error = { code: 500, message: "Failed to remove" };
@@ -304,7 +344,9 @@ describe("PokemonFavoriteAction", () => {
 
   // Accessibility
   it("should have proper aria-label", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
 
     render(<PokemonFavoriteAction {...defaultProps} />);
@@ -316,7 +358,9 @@ describe("PokemonFavoriteAction", () => {
   });
 
   it("should include pokemon ID in button data attribute", async () => {
-    vi.mocked(sessionStore.useSessionStore).mockReturnValue("authenticated" as any);
+    vi.mocked(sessionStore.useSessionStore).mockReturnValue(
+      "authenticated" as ReturnType<typeof sessionStore.useSessionStore>
+    );
     vi.mocked(favoritesApi.checkIsFavorite).mockResolvedValue(false);
 
     render(<PokemonFavoriteAction {...defaultProps} />);

@@ -4,12 +4,12 @@ import type { FavoritesListResponseDto } from "@/types";
 
 const BASE_ENDPOINT = "/api/users/me/favorites";
 
-export type FavoritesListParams = {
+export interface FavoritesListParams {
   page?: number;
   pageSize?: number;
   sort?: "createdAt" | "name";
   order?: "asc" | "desc";
-};
+}
 
 export class FavoritesApiError extends Error {
   readonly code: number;

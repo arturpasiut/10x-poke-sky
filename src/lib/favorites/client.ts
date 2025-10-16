@@ -88,7 +88,7 @@ export const checkIsFavorite = async (pokemonId: number): Promise<boolean> => {
     return data !== null;
   } catch (err) {
     if (err instanceof AuthenticationRequiredError) {
-      console.log("[checkIsFavorite] User not authenticated");
+      console.warn("[checkIsFavorite] User not authenticated");
       return false;
     }
     console.error("[checkIsFavorite] Unexpected error:", err);

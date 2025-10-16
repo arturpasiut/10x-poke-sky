@@ -12,35 +12,35 @@ type FavoriteInsert = TablesInsert<"favorites">;
 
 type JsonRecord = Record<string, Json | undefined>;
 
-export type PaginatedDto<TItem> = {
+export interface PaginatedDto<TItem> {
   items: TItem[];
   page: number;
   pageSize: number;
   total: number;
   hasNext: boolean;
-};
+}
 
-export type UserProfileDto = {
+export interface UserProfileDto {
   id: ProfileRow["id"];
   displayName: ProfileRow["display_name"];
   avatarUrl: ProfileRow["avatar_url"];
   metadata: ProfileRow["metadata"];
   createdAt: ProfileRow["created_at"];
   updatedAt: ProfileRow["updated_at"];
-};
+}
 
-export type UpdateUserProfileCommand = {
+export interface UpdateUserProfileCommand {
   displayName?: ProfileUpdate["display_name"];
   avatarUrl?: ProfileUpdate["avatar_url"];
   /**
    * API guarantees an object (or null) rather than arbitrary JSON, so narrow it for handlers.
    */
   metadata?: JsonRecord | null;
-};
+}
 
 export type PublicProfileDto = Pick<UserProfileDto, "id" | "displayName" | "avatarUrl">;
 
-export type PokemonSummaryDto = {
+export interface PokemonSummaryDto {
   pokemonId: PokemonRow["pokemon_id"];
   name: PokemonRow["name"];
   types: PokemonRow["types"];
@@ -52,11 +52,11 @@ export type PokemonSummaryDto = {
   spriteUrl: string | null;
   cachedAt?: PokemonRow["cached_at"];
   highlights?: string[];
-};
+}
 
 export type PokemonListResponseDto = PaginatedDto<PokemonSummaryDto>;
 
-export type PokemonDetailDto = {
+export interface PokemonDetailDto {
   pokemonId: PokemonRow["pokemon_id"];
   name: PokemonRow["name"];
   types: PokemonRow["types"];
@@ -64,21 +64,21 @@ export type PokemonDetailDto = {
   region: PokemonRow["region"];
   payload: PokemonRow["payload"];
   cachedAt: PokemonRow["cached_at"];
-};
+}
 
 export type PokemonDetailSummaryDto = PokemonSummaryDto & {
   cachedAt: PokemonRow["cached_at"];
 };
 
-export type PokemonDetailResponseDto = {
+export interface PokemonDetailResponseDto {
   summary: PokemonDetailSummaryDto;
   pokemon: PokemonDetailPayload;
   species: PokemonSpecies | null;
   evolutionChain: EvolutionChain | null;
   moves: MoveSummaryDto[];
-};
+}
 
-export type MoveSummaryDto = {
+export interface MoveSummaryDto {
   moveId: MoveRow["move_id"];
   name: MoveRow["name"];
   type: MoveRow["type"];
@@ -87,7 +87,7 @@ export type MoveSummaryDto = {
   pp: MoveRow["pp"];
   generation: MoveRow["generation"];
   cachedAt: MoveRow["cached_at"];
-};
+}
 
 export type MoveListResponseDto = PaginatedDto<MoveSummaryDto>;
 
@@ -95,106 +95,106 @@ export type MoveDetailDto = MoveSummaryDto & {
   payload: MoveRow["payload"];
 };
 
-export type PokemonFavoriteSnapshot = {
+export interface PokemonFavoriteSnapshot {
   name: PokemonRow["name"];
   types: PokemonRow["types"];
   spriteUrl: string | null;
-};
+}
 
-export type FavoriteListItemDto = {
+export interface FavoriteListItemDto {
   pokemonId: FavoriteRow["pokemon_id"];
   addedAt: FavoriteRow["created_at"];
   pokemon: PokemonFavoriteSnapshot;
-};
+}
 
 export type FavoritesListResponseDto = PaginatedDto<FavoriteListItemDto>;
 
-export type AddFavoriteCommand = {
+export interface AddFavoriteCommand {
   pokemonId: FavoriteInsert["pokemon_id"];
-};
+}
 
-export type FavoriteMutationResultDto = {
+export interface FavoriteMutationResultDto {
   pokemonId: FavoriteRow["pokemon_id"];
   addedAt: FavoriteRow["created_at"];
-};
+}
 
-export type AiIdentifyCommand = {
+export interface AiIdentifyCommand {
   prompt: AiQueryRow["prompt"];
   /**
    * Optional caller context; persisted as JSON alongside AI query rows.
    */
   context?: JsonRecord | null;
-};
+}
 
 type SuggestedPokemonIds = NonNullable<AiQueryRow["suggested_pokemon_ids"]>;
 type SuggestedPokemonId = SuggestedPokemonIds[number];
 
-export type AiIdentifySuggestionDto = {
+export interface AiIdentifySuggestionDto {
   pokemonId: SuggestedPokemonId;
   name: string;
   confidence: number;
   rationale: string | null;
-};
+}
 
-export type AiIdentifyResponseDto = {
+export interface AiIdentifyResponseDto {
   queryId: AiQueryRow["id"];
   success: AiQueryRow["success"];
   latencyMs: AiQueryRow["latency_ms"];
   suggestions: AiIdentifySuggestionDto[];
   rawResponse: AiQueryRow["raw_response"];
   createdAt: AiQueryRow["created_at"];
-};
+}
 
-export type UserAiQueryListItemDto = {
+export interface UserAiQueryListItemDto {
   queryId: AiQueryRow["id"];
   prompt: AiQueryRow["prompt"];
   suggestedPokemonIds: AiQueryRow["suggested_pokemon_ids"];
   success: AiQueryRow["success"];
   latencyMs: AiQueryRow["latency_ms"];
   createdAt: AiQueryRow["created_at"];
-};
+}
 
 export type UserAiQueryListResponseDto = PaginatedDto<UserAiQueryListItemDto>;
 
-export type AdminAiQueryListItemDto = {
+export interface AdminAiQueryListItemDto {
   queryId: AiQueryRow["id"];
   userId: AiQueryRow["user_id"];
   success: AiQueryRow["success"];
   latencyMs: AiQueryRow["latency_ms"];
   createdAt: AiQueryRow["created_at"];
-};
+}
 
-export type AdminAiQueryTotalsDto = {
+export interface AdminAiQueryTotalsDto {
   count: number;
   successRate: number;
   avgLatencyMs: number;
-};
+}
 
-export type AdminAiQueriesResponseDto = {
+export interface AdminAiQueriesResponseDto {
   items: AdminAiQueryListItemDto[];
   totals: AdminAiQueryTotalsDto;
-};
+}
 
-export type AdminTrendingFavoriteDto = {
+export interface AdminTrendingFavoriteDto {
   pokemonId: FavoriteRow["pokemon_id"];
   count: number;
   delta: number;
-};
+}
 
-export type AdminTrendingFavoritesResponseDto = {
+export interface AdminTrendingFavoritesResponseDto {
   items: AdminTrendingFavoriteDto[];
   period: {
     from: FavoriteRow["created_at"];
     to: FavoriteRow["created_at"];
   };
-};
+}
 
-export type AdminCacheHealthDto = {
+export interface AdminCacheHealthDto {
   lastUpdated: PokemonRow["cached_at"];
   staleCount: number;
-};
+}
 
-export type AdminHealthResponseDto = {
+export interface AdminHealthResponseDto {
   pokemonCache: AdminCacheHealthDto;
   moveCache: AdminCacheHealthDto;
-};
+}

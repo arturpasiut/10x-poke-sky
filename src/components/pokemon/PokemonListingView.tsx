@@ -34,10 +34,12 @@ import { SortBar } from "./SortBar";
 import { StatusBanner } from "./StatusBanner";
 
 export default function PokemonListingView() {
-  const store = usePokemonSearchStore;
-  const queryState = useStore(store, selectPokemonQueryState);
-  const isHydrated = useStore(store, selectIsHydrated);
-  const queryString = useStore(store, selectPokemonQueryString);
+  // Note: usePokemonSearchStore is a zustand store, and passing it to useStore is correct usage.
+  // The React compiler warning is a false positive in this case.
+  /* eslint-disable react-compiler/react-compiler */
+  const queryState = useStore(usePokemonSearchStore, selectPokemonQueryState);
+  const isHydrated = useStore(usePokemonSearchStore, selectIsHydrated);
+  const queryString = useStore(usePokemonSearchStore, selectPokemonQueryString);
   const {
     setSearch,
     toggleType,
@@ -52,7 +54,7 @@ export default function PokemonListingView() {
     replaceFromUrl,
     commitQuery,
     restoreLastApplied,
-  } = useStore(store, (state) => ({
+  } = useStore(usePokemonSearchStore, (state) => ({
     setSearch: state.setSearch,
     toggleType: state.toggleType,
     setGeneration: state.setGeneration,
@@ -67,6 +69,7 @@ export default function PokemonListingView() {
     commitQuery: state.commitQuery,
     restoreLastApplied: state.restoreLastApplied,
   }));
+  /* eslint-enable react-compiler/react-compiler */
 
   const { filters } = usePokemonFilterOptions();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -336,7 +339,7 @@ export default function PokemonListingView() {
   );
 }
 
-type ContentSwitchProps = {
+interface ContentSwitchProps {
   status: "idle" | "loading" | "success" | "error";
   isFetching: boolean;
   items: PokemonSummaryViewModel[];
@@ -345,7 +348,7 @@ type ContentSwitchProps = {
   error?: ApiError;
   retryDisabledUntil?: number;
   onPageChange: (page: number) => void;
-};
+}
 
 function ContentSwitch({
   status,

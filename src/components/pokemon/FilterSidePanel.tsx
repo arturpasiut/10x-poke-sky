@@ -10,7 +10,7 @@ import type {
   PokemonTypeValue,
 } from "@/lib/pokemon/types";
 
-type FilterSidePanelProps = {
+interface FilterSidePanelProps {
   filters: PokemonAvailableFilters;
   selectedTypes: PokemonTypeValue[];
   selectedGeneration: PokemonGenerationValue | null;
@@ -21,7 +21,7 @@ type FilterSidePanelProps = {
   onResetFilters: () => void;
   onClose?: () => void;
   variant?: "default" | "drawer";
-};
+}
 
 export function FilterSidePanel({
   filters,

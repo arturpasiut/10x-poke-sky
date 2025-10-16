@@ -1,4 +1,4 @@
-import { expect, type Locator } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 /**
@@ -19,7 +19,7 @@ export class LoginPage extends BasePage {
   readonly statusBanner: Locator;
   readonly heading: Locator;
 
-  constructor(page: any) {
+  constructor(page: Page) {
     super(page);
 
     // Form elements
@@ -48,7 +48,7 @@ export class LoginPage extends BasePage {
   /**
    * Fill in login form and submit
    */
-  async login(email: string, password: string, rememberMe: boolean = false): Promise<void> {
+  async login(email: string, password: string, rememberMe = false): Promise<void> {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
 
@@ -83,7 +83,7 @@ export class LoginPage extends BasePage {
   /**
    * Assert login was successful (redirected to target page)
    */
-  async expectLoginSuccess(expectedUrl: string = "/"): Promise<void> {
+  async expectLoginSuccess(expectedUrl = "/"): Promise<void> {
     await expect(this.page).toHaveURL(expectedUrl, { timeout: 10000 });
   }
 

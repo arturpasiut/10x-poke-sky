@@ -17,15 +17,17 @@ export const TEST_EMPTY_FAVS_CREDENTIALS = {
 /**
  * Custom fixtures for authentication
  */
-type AuthFixtures = {
+interface AuthFixtures {
   authenticatedPage: Page;
   emptyFavsAuthenticatedPage: Page;
   loginPage: LoginPage;
-};
+}
 
 /**
  * Extend Playwright test with custom fixtures
+ * Note: The "use" parameter in fixtures is not a React hook, it's a Playwright fixture function
  */
+/* eslint-disable react-hooks/rules-of-hooks */
 export const test = base.extend<AuthFixtures>({
   /**
    * Fixture: authenticated page with regular test user
@@ -76,6 +78,7 @@ export const test = base.extend<AuthFixtures>({
     await use(loginPage);
   },
 });
+/* eslint-enable react-hooks/rules-of-hooks */
 
 // Re-export expect
 export { expect };

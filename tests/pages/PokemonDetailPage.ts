@@ -1,4 +1,4 @@
-import { expect, type Locator } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 /**
@@ -16,7 +16,7 @@ export class PokemonDetailPage extends BasePage {
   readonly pokemonName: Locator;
   readonly backButton: Locator;
 
-  constructor(page: any) {
+  constructor(page: Page) {
     super(page);
 
     // Favorite actions (dynamic based on pokemonId)

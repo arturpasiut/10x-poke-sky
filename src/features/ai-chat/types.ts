@@ -14,26 +14,26 @@ export type AiChatMessageRole = "user" | "assistant";
 
 export type AiChatMessageStatus = "pending" | "delivered" | "error";
 
-export type AiChatMessage = {
+export interface AiChatMessage {
   id: string;
   role: AiChatMessageRole;
   content: string;
   createdAt: string;
   status: AiChatMessageStatus;
   caution?: "off-domain";
-};
+}
 
-export type SuggestionChip = {
+export interface SuggestionChip {
   id: string;
   label: string;
   prompt: string;
   icon?: string;
   tone?: "neutral" | "info" | "alert";
-};
+}
 
 export type AiChatSuggestionConfidenceTier = "low" | "medium" | "high";
 
-export type AiChatSuggestionViewModel = {
+export interface AiChatSuggestionViewModel {
   id: string;
   pokemonId: number;
   name: string;
@@ -48,22 +48,22 @@ export type AiChatSuggestionViewModel = {
     status: "idle" | "saving" | "saved" | "error";
     errorMessage?: string;
   };
-};
+}
 
 export type AiChatErrorKind = "rate-limit" | "validation" | "unauthorized" | "network" | "server" | "unknown";
 
-export type AiChatErrorState = {
+export interface AiChatErrorState {
   kind: AiChatErrorKind;
   message: string;
   title?: string;
   retryAfterSeconds?: number;
   details?: string;
   requiresAuthentication?: boolean;
-};
+}
 
 export type AiChatSessionStatus = "idle" | "initializing" | "ready" | "awaiting-response" | "error";
 
-export type AiChatSessionState = {
+export interface AiChatSessionState {
   status: AiChatSessionStatus;
   isSubmitting: boolean;
   promptValue: string;
@@ -74,7 +74,7 @@ export type AiChatSessionState = {
   pendingCommand: AiIdentifyCommand | null;
   latestResponse: AiIdentifyResponseDto | null;
   rateLimitResetAt: number | null;
-};
+}
 
 export const DEFAULT_SUGGESTION_CHIPS: SuggestionChip[] = [
   {

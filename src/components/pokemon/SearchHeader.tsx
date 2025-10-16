@@ -4,14 +4,14 @@ import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
 
-type SearchHeaderProps = {
+interface SearchHeaderProps {
   search: string;
   total?: number;
   onSearchChange: (value: string) => void;
   onSubmit: () => void;
   onReset: () => void;
   isLoading?: boolean;
-};
+}
 
 export function SearchHeader({
   search,

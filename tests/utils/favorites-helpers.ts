@@ -38,6 +38,16 @@ export async function removeFavoriteViaAPI(page: Page, pokemonId: number): Promi
   await page.waitForTimeout(300);
 }
 
+interface FavoriteItem {
+  pokemonId: number;
+  addedAt: string;
+  pokemon: {
+    name: string;
+    types: string[];
+    spriteUrl: string | null;
+  };
+}
+
 /**
  * Check if a pokemon is in favorites via API
  */
@@ -48,23 +58,23 @@ export async function isFavoriteViaAPI(page: Page, pokemonId: number): Promise<b
     throw new Error(`Failed to fetch favorites: ${response.status()}`);
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as { items: FavoriteItem[] };
   const items = data.items || [];
 
-  return items.some((item: any) => item.pokemonId === pokemonId);
+  return items.some((item) => item.pokemonId === pokemonId);
 }
 
 /**
  * Get all favorites via API
  */
-export async function getAllFavoritesViaAPI(page: Page): Promise<any[]> {
+export async function getAllFavoritesViaAPI(page: Page): Promise<FavoriteItem[]> {
   const response = await page.request.get(`/api/users/me/favorites`);
 
   if (!response.ok()) {
     throw new Error(`Failed to fetch favorites: ${response.status()}`);
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as { items: FavoriteItem[] };
   return data.items || [];
 }
 

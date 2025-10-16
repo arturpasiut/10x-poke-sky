@@ -13,11 +13,13 @@ import { test as setup } from "@playwright/test";
  * - Authentication state setup
  */
 
-setup("global setup", async ({}) => {
+setup("global setup", async () => {
+  // eslint-disable-next-line no-console
   console.log("Running global setup...");
 
   // Future setup tasks can go here
   // For now, we just log that setup is running
 
+  // eslint-disable-next-line no-console
   console.log("Global setup completed");
 });

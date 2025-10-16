@@ -65,16 +65,29 @@ export function MobileFilterDrawer({ open, onOpenChange, children }: MobileFilte
     [onOpenChange]
   );
 
+  const handleOverlayKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        if (event.target === event.currentTarget) {
+          onOpenChange(false);
+        }
+      }
+    },
+    [onOpenChange]
+  );
+
   if (!open || typeof document === "undefined") {
     return null;
   }
 
   return createPortal(
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="fixed inset-0 z-50 flex h-full w-full origin-bottom bg-black/70 backdrop-blur-sm transition"
       role="dialog"
       aria-modal="true"
       onMouseDown={handleOverlayClick}
+      onKeyDown={handleOverlayKeyDown}
     >
       <div
         ref={panelRef}

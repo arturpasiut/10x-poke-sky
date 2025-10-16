@@ -10,7 +10,8 @@ import type { Database } from "../src/db/database.types";
  * Using Option 1: Project Dependencies (recommended approach)
  */
 
-teardown("cleanup favorites table in Supabase", async ({}) => {
+teardown("cleanup favorites table in Supabase", async () => {
+  // eslint-disable-next-line no-console
   console.log("Starting global teardown: cleaning favorites table...");
 
   // Get credentials from environment
@@ -34,16 +35,14 @@ teardown("cleanup favorites table in Supabase", async ({}) => {
   try {
     // Delete all favorites for the test user
     if (testUserId) {
-      const { data, error } = await supabase
-        .from("favorites")
-        .delete()
-        .eq("user_id", testUserId);
+      const { error } = await supabase.from("favorites").delete().eq("user_id", testUserId);
 
       if (error) {
         console.error("Error deleting favorites:", error);
         throw error;
       }
 
+      // eslint-disable-next-line no-console
       console.log(`Successfully deleted favorites for user: ${testUserId}`);
     }
 
@@ -63,6 +62,7 @@ teardown("cleanup favorites table in Supabase", async ({}) => {
     console.log("Successfully deleted all favorites");
     */
 
+    // eslint-disable-next-line no-console
     console.log("Global teardown completed successfully");
   } catch (error) {
     console.error("Global teardown failed:", error);

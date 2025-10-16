@@ -42,10 +42,10 @@ export function PokemonEvolutionTimeline({ chain }: PokemonEvolutionTimelineProp
   );
 }
 
-type FlattenedStep = {
+interface FlattenedStep {
   species: string;
   triggers: string[];
-};
+}
 
 const flattenChain = (node: ChainLink | null, acc: FlattenedStep[] = []): FlattenedStep[] => {
   if (!node) return acc;

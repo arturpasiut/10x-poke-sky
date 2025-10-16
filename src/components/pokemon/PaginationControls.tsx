@@ -3,11 +3,11 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react
 import { Button } from "@/components/ui/button";
 import type { PaginationViewModel } from "@/lib/pokemon/types";
 
-type PaginationControlsProps = {
+interface PaginationControlsProps {
   pagination: PaginationViewModel;
   onPageChange: (page: number) => void;
   isLoading?: boolean;
-};
+}
 
 export function PaginationControls({ pagination, onPageChange, isLoading = false }: PaginationControlsProps) {
   const { page, pageCount, hasNext, hasPrevious } = pagination;

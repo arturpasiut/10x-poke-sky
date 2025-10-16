@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- Logging in edge functions aids observability during development */
 import { config, handleOptions, jsonResponse } from "../_shared/config.ts";
 import { fetchPokemonList } from "../_shared/pokeapi.ts";
 
