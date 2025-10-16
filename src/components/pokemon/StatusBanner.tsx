@@ -1,11 +1,11 @@
-import clsx from "clsx"
+import clsx from "clsx";
 
 type StatusBannerProps = {
-  title: string
-  description?: string
-  tone?: "info" | "warning"
-  onDismiss?: () => void
-}
+  title: string;
+  description?: string;
+  tone?: "info" | "warning";
+  onDismiss?: () => void;
+};
 
 export function StatusBanner({ title, description, tone = "info", onDismiss }: StatusBannerProps) {
   const palette =
@@ -17,13 +17,13 @@ export function StatusBanner({ title, description, tone = "info", onDismiss }: S
       : {
           container: "border-primary-400/60 bg-primary-400/10 text-primary-100",
           accent: "text-primary-200",
-        }
+        };
 
   return (
     <section
       className={clsx(
         "flex flex-col gap-3 rounded-2xl border px-6 py-4 shadow-[0_20px_50px_-40px_rgba(12,174,255,0.5)]",
-        palette.container,
+        palette.container
       )}
       role="status"
       aria-live="polite"
@@ -47,5 +47,5 @@ export function StatusBanner({ title, description, tone = "info", onDismiss }: S
 
       {description ? <p className="text-sm">{description}</p> : null}
     </section>
-  )
+  );
 }

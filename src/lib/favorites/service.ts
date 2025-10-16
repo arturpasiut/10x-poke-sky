@@ -197,14 +197,10 @@ const fetchPokemonDataFromPokeApi = async (pokemonId: number) => {
   });
 
   if (!response.ok) {
-    throw new FavoritesServiceError(
-      502,
-      `Nie udało się pobrać danych Pokemona #${pokemonId} z PokeAPI.`,
-      {
-        code: `POKEAPI_${response.status}`,
-        details: `PokeAPI returned status ${response.status}`,
-      }
-    );
+    throw new FavoritesServiceError(502, `Nie udało się pobrać danych Pokemona #${pokemonId} z PokeAPI.`, {
+      code: `POKEAPI_${response.status}`,
+      details: `PokeAPI returned status ${response.status}`,
+    });
   }
 
   const payload = (await response.json()) as Record<string, unknown>;

@@ -52,4 +52,3 @@ supabase/functions/
 
 - Anonymous/public requests can call these functions because they only proxy/cache public PokeAPI data.
 - When the caching logic is added (Phase 2) the functions will use the Supabase service role key (stored as `SUPABASE_SERVICE_ROLE_KEY` in function secrets) to read/write the cache tables.
-

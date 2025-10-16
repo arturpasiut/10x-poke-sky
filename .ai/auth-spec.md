@@ -3,6 +3,7 @@
 ## 1. Architektura interfejsu użytkownika
 
 ### 1.1 Layout i nawigacja
+
 - `src/layouts/MainLayout.astro` pozostaje głównym szkieletem stron aplikacji, ale zyskuje górny pasek typu app-shell renderowany przed obecnym slotem `header`. Pasek renderuje się server-side (Astro) z danymi użytkownika pobranymi z `Astro.locals.supabase.auth.getUser()` i przekazanymi jako prop. Dzięki temu SSR zachowuje świadomość sesji, a dolna nawigacja „dock” nie ulega regresji.
 - Nowy komponent `AppTopBar.astro` (server component) odpowiada za:
   - renderowanie logo/skrótów (z zachowaniem obecnego tonu UI),
@@ -11,6 +12,7 @@
 - `AuthLayout.astro` pozostaje kontenerem formularzy auth; dodajemy opcjonalny slot na komponent powiadomień (toast) obsługiwany przez React, aby komunikaty o błędach/sukcesie były spójne dla rejestracji, logowania i resetu hasła.
 
 ### 1.2 Strony Astro w trybie auth
+
 - `src/pages/auth/login.astro`, `register.astro`, `forgot.astro` zachowują dotychczasowy markup formularzy (zgodnie z gotowym UI), ale:
   - importują odpowiadające komponenty React (`LoginForm`, `RegisterForm`, `ForgotPasswordForm`) z `client:load`; komponent przechwytuje submit i zarządza stanem, a fallbackowym mechanizmem pozostaje natywne przesłanie formularza.
   - odczytują parametry `redirectTo` i `message` z query stringa (Astro side) i przekazują do Reacta, aby móc komunikować powrót do docelowej ścieżki (US-003) oraz wiadomości po resetach.
@@ -20,6 +22,7 @@
   - gdy użytkownik jest zalogowany, `favorites.astro` pobiera SSR listę ulubionych poprzez `Astro.locals.supabase.from("favorites").select("pokemon_id, created_at")` (z joinem do cache w kolejnych etapach) i przekazuje dane do komponentu React `FavoritesList`.
 
 ### 1.3 Komponenty React i stan klienta
+
 - Folder `src/components/auth/`:
   - `AuthProvider.tsx`: React context bazujący na `@supabase/supabase-js` (browser client z `src/db/supabase.client.ts`) i `useEffect`, subskrybuje `onAuthStateChange`, utrzymuje `user` oraz status inicjalizacji (`loading/signed-in/signed-out`). Provider używany w `AppTopBar`, `FavoritesList` i formularzach do natychmiastowego odświeżenia UI po zmianie sesji.
   - `AuthSessionHydrator.tsx`: otrzymuje dane usera z SSR (props) i wstępnie ustawia stan w `AuthProvider`, aby uniknąć efektu „blink” przy pierwszym renderze.
@@ -32,6 +35,7 @@
   - `AuthProvider` opakowuje store i synchronizuje go, dzięki czemu `AIChatPanel` oraz inne Reactowe komponenty (np. przyszłe listy ulubionych) konsumują te same dane zamiast wywoływać `supabase.auth.getUser()` ad hoc.
 
 ### 1.4 Walidacja i komunikaty błędów
+
 - Walidacja client-side: `zod` schematy współdzielone w `src/lib/auth/validation.ts`. Dla formularzy:
   - Logowanie: `email` (`email()`), `password` (`min(8)`), `rememberMe` (boolean).
   - Rejestracja: `email`, `password` (`min(12)`, reguły siły), `confirmPassword` (refine equality), zgoda na regulamin (opcjonalna flaga bool, jeśli dojdzie).
@@ -42,10 +46,11 @@
   - Komunikaty UI (PL) zgodnie z tone-of-voice aplikacji („Niepoprawne dane logowania”, „Sprawdź skrzynkę – wysłaliśmy link resetujący”).
 
 ### 1.5 Obsługa scenariuszy użytkownika
+
 - **Logowanie z redirectem**: formularz rozpoznaje `redirectTo`; po sukcesie `AuthProvider` aktualizuje stan, a komponent przekierowuje (`window.location.replace`) na docelową podstronę (fallback `/favorites` jeśli redirect do strefy wymagającej auth).
 - **Logowanie błędne**: UI podświetla oba pola + wyświetla baner błędu na górze formularza; checkbox „Zapamiętaj mnie” zachowuje wartość (persist w Zustand).
 - **Rejestracja**: po sukcesie pokazuje toast „Sprawdź maila, aby potwierdzić rejestrację” (Supabase wymaga potwierdzenia mailowego jeśli włączone). Automatycznie loguje i przekierowuje, jeśli auto-confirm włączony.
-- **Reset hasła**: 
+- **Reset hasła**:
   - `ForgotPasswordForm` po udanym wywołaniu endpointu blokuje przycisk (cooldown) i informuje, że mail został wysłany.
   - `ResetPasswordForm` po przetworzeniu tokenu przekierowuje do `/auth/login?message=reset-success` i pokazuje komunikat na stronie logowania.
 - **Wylogowanie**: kliknięcie w `UserMenu` wywołuje `supabase.auth.signOut()` przez `/api/auth/logout`, czyści Zustand oraz czyści cookies (SSR); bottom navigation automatycznie reaguje (np. `Ulubione` może przełączyć się w tryb CTA do logowania).
@@ -54,6 +59,7 @@
 ## 2. Logika backendowa
 
 ### 2.1 Struktura endpointów API (Astro server routes)
+
 - `POST /api/auth/login`: body `{ email, password, rememberMe }`.
   - Używa `createServerClient` (szczegóły w sekcji 3) z cookie store requestu.
   - Po sukcesie zwraca 200 z `user` (wybrane pola: `id`, `email`, `user_metadata`) i `session` (`expires_at`, `access_token` – token nie trafia do klienta, tylko informacja o czasie) oraz ustawia cookie sesyjne przez Supabase helper.
@@ -66,6 +72,7 @@
 - `DELETE /api/favorites/:pokemonId`: alternatywny (obok istniejącego klienta Supabase) mechanizm usuwania. Wersja MVP może pozostać przy bezpośrednim wywołaniu supabase z klienta, lecz endpoint ułatwi przyszłe uszczelnienie logiki i limitowanie (np. audyt).
 
 ### 2.2 Walidacja danych wejściowych
+
 - Każdy endpoint importuje `zod` schematy z `src/lib/auth/validation.ts`.
 - Błędy walidacji -> `return new Response(JSON.stringify({ fieldErrors, formError }), { status: 422 })`.
 - Dodatkowe sanity checks:
@@ -74,6 +81,7 @@
   - Rejestracja sprawdza, czy hasło nie zawiera emaila (`refine`).
 
 ### 2.3 Obsługa wyjątków i logowanie zdarzeń
+
 - Przy błędach Supabase (`error.status`, `error.message`) mapujemy:
   - `AuthApiError` z kodem `invalid_credentials` → 401.
   - `AuthApiError` z kodem `user_already_exists` → 409.
@@ -82,6 +90,7 @@
 - Wysyłka maila resetującego → po sukcesie `console.info("[auth/forgot] reset link requested", { userId/emailHash })` dla audytu.
 
 ### 2.4 Renderowanie server-side
+
 - `src/middleware/index.ts` przestaje wstrzykiwać globalny klient; zamiast tego:
   ```ts
   import { createServerClient } from "@supabase/ssr";
@@ -101,6 +110,7 @@
 - `astro.config.mjs` pozostaje bez zmian (już `output: "server"` i adapter node). W konfiguracji produkcyjnej Cloudflare Pages -> Worker: zapewnić propagację nagłówków `Set-Cookie`.
 
 ### 2.5 Wpływ na istniejącą logikę domenową
+
 - `src/lib/favorites/client.ts`:
   - zastępujemy obecne `supabaseClient` (browser) sprawdzaniem stanu z `useAuthStore`; w przypadku braku klienta – fallback do dotychczasowego błędu o konfiguracji env.
   - `requireAuthenticatedUser` w pierwszej kolejności próbuje odczytać `useAuthStore.getState().user`; dopiero gdy `null`, odwołuje się do `supabaseClient.auth.getUser()` (utrzymanie kompatybilności).
@@ -112,6 +122,7 @@
 ## 3. System autentykacji z Supabase
 
 ### 3.1 Konfiguracja Supabase
+
 - W środowisku `.env` nadal wymagane `SUPABASE_URL`, `SUPABASE_KEY`; `runtimeConfig` (`src/lib/env.ts`) eksportuje wartości do middleware i klienta.
 - Dodajemy zależność `@supabase/ssr` (pozwala obsłużyć cookie-based auth). `package.json` → dependencies.
 - Na projekcie Supabase:
@@ -120,6 +131,7 @@
   - Konfigurujemy `Redirect URLs` → `https://<domain>/auth/reset`.
 
 ### 3.2 Przepływy autoryzacji
+
 - **Rejestracja** (`signUp`):
   - Input: email, hasło, optional metadata (`preferredGeneration` w przyszłości).
   - Po `signUp` (jeśli `session` zwrócony) – natychmiastowe logowanie, `AuthProvider` aktualizuje store.
@@ -137,6 +149,7 @@
   - Middleware SSR zapewnia, że każda prośba ma odczytane cookies i tym samym `Astro.locals.supabase` reprezentuje aktualnego użytkownika.
 
 ### 3.3 Integracja z istniejącymi modułami
+
 - `US-003` (Ulubione):
   - `favorites.astro` wymaga sesji → w razie braku redirect + fallback message.
   - `addFavorite`, `removeFavorite` korzystają z aktualnego tokenu użytkownika; brak zmian w RLS (już ogranicza do `auth.uid()`).
@@ -147,12 +160,14 @@
 - `Settings` strona docelowo wypełni się danymi z `profiles` (wyświetlenie email, możliwość zmiany preferencji). Spec uwzględnia to, aby layout miał już slot na sekcję konta.
 
 ### 3.4 Bezpieczeństwo i zgodność
+
 - Supabase przechowuje hasła w Bcrypt (zgodnie z wymaganiami PRD); aplikacja nie dotyka surowych haseł poza przesłaniem do Supabase.
 - Wszystkie endpointy API weryfikują CSRF poprzez nagłówek `Origin`/`Referer` (proste sprawdzenie względem `runtimeConfig.supabaseUrl` + dozwolone hosty). Formy auth działają w tym samym pochodzeniu, więc check przechodzi.
 - RLS pozostaje włączone dla `favorites`, `profiles`. BACKEND nie używa service role ani nie generuje tokenów manualnie.
 - Rate limiting: prosta ochrona `POST /api/auth/*` (np. `src/lib/rate-limit.ts` – limiter w pamięci + w przyszłości KV storage). Klucz = IP + endpoint; limity: logowanie 5/min, reset 3/min.
 
 ### 3.5 Testy i monitoring
+
 - Testy jednostkowe (Vitest):
   - `AuthProvider` – symulacja eventów `onAuthStateChange`.
   - Funkcje walidujące (`validation.ts`) – sprawdzenie edge cases.

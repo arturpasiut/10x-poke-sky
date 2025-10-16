@@ -9,15 +9,15 @@ const POKEMON_ID_MIN = 1;
 const POKEMON_ID_MAX = 1025;
 
 export const FavoritesQuerySchema = z.object({
-  page: z
-    .coerce.number({
+  page: z.coerce
+    .number({
       invalid_type_error: "Parametr page musi być liczbą.",
     })
     .int("Parametr page musi być liczbą całkowitą.")
     .min(PAGE_MIN, `Parametr page musi być większy lub równy ${PAGE_MIN}.`)
     .default(PAGE_MIN),
-  pageSize: z
-    .coerce.number({
+  pageSize: z.coerce
+    .number({
       invalid_type_error: "Parametr pageSize musi być liczbą.",
     })
     .int("Parametr pageSize musi być liczbą całkowitą.")
@@ -43,8 +43,8 @@ export const FavoritesQuerySchema = z.object({
 export type FavoritesQueryInput = z.infer<typeof FavoritesQuerySchema>;
 
 export const AddFavoriteSchema = z.object({
-  pokemonId: z
-    .coerce.number({
+  pokemonId: z.coerce
+    .number({
       invalid_type_error: "Pole pokemonId musi być liczbą.",
       required_error: "Pole pokemonId jest wymagane.",
     })
@@ -55,8 +55,8 @@ export const AddFavoriteSchema = z.object({
 
 export type AddFavoriteInput = z.infer<typeof AddFavoriteSchema>;
 
-export const PokemonIdParamSchema = z
-  .coerce.number({
+export const PokemonIdParamSchema = z.coerce
+  .number({
     invalid_type_error: "Parametr pokemonId musi być liczbą.",
   })
   .int("Parametr pokemonId musi być liczbą całkowitą.")

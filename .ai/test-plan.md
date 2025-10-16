@@ -3,11 +3,13 @@
 ## 1. Zakres i cele testów
 
 ### 1.1 Cel testowania
+
 Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikację wszystkich kluczowych funkcjonalności, wydajności, bezpieczeństwa i zgodności z wymaganiami biznesowymi określonymi w PRD.
 
 ### 1.2 Zakres testów - CO BĘDZIE TESTOWANE
 
 #### Frontend (Astro + React)
+
 - Wszystkie strony Astro (routing, SSR, renderowanie)
 - Interaktywne komponenty React (stan, interakcje użytkownika)
 - Responsywność UI (desktop, tablet, mobile)
@@ -16,6 +18,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - Integracja komponentów UI (shadcn/ui)
 
 #### Backend i API
+
 - Endpointy API Astro (`/api/*`)
 - Autentykacja i autoryzacja (Supabase Auth)
 - Operacje CRUD na bazie danych PostgreSQL
@@ -24,6 +27,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - Middleware i ochrona CSRF
 
 #### Funkcjonalności kluczowe (User Stories)
+
 - **US-001**: Wyszukiwanie pokemonów (nazwa, typ, generacja, region)
 - **US-002**: Wyświetlanie szczegółów pokemona (statystyki, ewolucje, ruchy)
 - **US-003**: Zarządzanie ulubionymi pokemonami (dodawanie/usuwanie)
@@ -32,12 +36,14 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **US-006**: Przeglądanie i filtrowanie ruchów pokemonów
 
 #### Bezpieczeństwo
+
 - Ochrona przed XSS, CSRF, SQL Injection
 - Bezpieczne przechowywanie haseł (bcrypt via Supabase)
 - Weryfikacja tokenów JWT
 - Walidacja danych wejściowych (Zod)
 
 #### Wydajność
+
 - Czas ładowania strony głównej < 2s
 - Czas odpowiedzi wyszukiwania < 1s
 - Optymalizacja zapytań do bazy danych
@@ -56,6 +62,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ## 2. Rodzaje testów
 
 ### 2.1 Testy jednostkowe (Unit Tests) - Vitest + React Testing Library
+
 - **Cel**: Weryfikacja poprawności działania pojedynczych funkcji, hooków i komponentów w izolacji
 - **Zakres**:
   - Komponenty React (UI logic, props, state)
@@ -67,6 +74,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Pokrycie kodu**: Cel minimalny 70%, optymalny 85%
 
 ### 2.2 Testy integracyjne (Integration Tests) - Vitest + MSW
+
 - **Cel**: Weryfikacja współpracy między modułami, komponentami i API
 - **Zakres**:
   - Integracja komponentów React z hookami i store'ami (Zustand)
@@ -78,6 +86,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Narzędzia**: Vitest, MSW (Mock Service Worker), Supabase test client
 
 ### 2.3 Testy end-to-end (E2E Tests) - Playwright
+
 - **Cel**: Symulacja pełnych ścieżek użytkownika w przeglądarce
 - **Zakres**:
   - Krytyczne user stories (US-001 do US-006)
@@ -92,6 +101,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Automatyzacja**: Uruchamianie w pipeline CI/CD (GitHub Actions)
 
 ### 2.4 Testy API (API Tests) - Vitest
+
 - **Cel**: Weryfikacja poprawności endpointów API
 - **Zakres**:
   - Wszystkie endpointy `/api/*`
@@ -102,6 +112,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Narzędzia**: Vitest
 
 ### 2.5 Testy bezpieczeństwa (Security Tests) - Manualne
+
 - **Cel**: Identyfikacja luk bezpieczeństwa
 - **Zakres**:
   - Weryfikacja ochrony CSRF
@@ -112,6 +123,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Narzędzia**: Manualne testowanie
 
 ### 2.6 Testy wydajności (Performance Tests) - Lighthouse CI
+
 - **Cel**: Weryfikacja spełnienia wymagań niefunkcjonalnych dotyczących wydajności
 - **Zakres**:
   - Czas ładowania strony głównej < 2s
@@ -121,6 +133,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Narzędzia**: Lighthouse CI
 
 ### 2.7 Testy dostępności (Accessibility Tests) - axe-core, Playwright
+
 - **Cel**: Zapewnienie zgodności z WCAG 2.1 poziom AA
 - **Zakres**:
   - Nawigacja klawiaturą
@@ -131,6 +144,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Narzędzia**: axe-core, Playwright accessibility testing, WAVE
 
 ### 2.8 Testy responsywności (Responsive Tests) - Playwright
+
 - **Cel**: Weryfikacja poprawnego wyświetlania na różnych urządzeniach
 - **Zakres**:
   - Desktop (1920x1080, 1366x768)
@@ -144,6 +158,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.1 Autentykacja i autoryzacja
 
 #### TC-AUTH-001 - Rejestracja nowego użytkownika (Wysoki)
+
 - **Warunki wstępne**: Użytkownik nie jest zalogowany
 - **Kroki**:
   1. Przejdź do `/auth/register`
@@ -158,6 +173,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-AUTH-002 - Walidacja formularza rejestracji (Średni)
+
 - **Warunki wstępne**: Użytkownik nie jest zalogowany
 - **Kroki**:
   1. Przejdź do `/auth/register`
@@ -173,6 +189,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-AUTH-003 - Logowanie z poprawnymi danymi (Wysoki)
+
 - **Warunki wstępne**: Użytkownik ma aktywne konto (email: test@example.com, hasło: Haslo123!)
 - **Kroki**:
   1. Przejdź do `/auth/login`
@@ -187,6 +204,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-AUTH-004 - Logowanie z niepoprawnymi danymi (Wysoki)
+
 - **Warunki wstępne**: Użytkownik nie jest zalogowany
 - **Kroki**:
   1. Przejdź do `/auth/login`
@@ -199,6 +217,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-AUTH-005 - Wylogowanie (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest zalogowany
 - **Kroki**:
   1. Kliknij przycisk "Wyloguj" w prawym górnym rogu
@@ -211,6 +230,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-AUTH-006 - Reset hasła (Średni)
+
 - **Warunki wstępne**: Użytkownik ma aktywne konto (email: test@example.com)
 - **Kroki**:
   1. Przejdź do `/auth/login`
@@ -229,6 +249,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-AUTH-007 - Ochrona CSRF (Wysoki)
+
 - **Warunki wstępne**: Użytkownik nie jest zalogowany
 - **Kroki**:
   1. Wyślij request POST do `/api/auth/login` bez nagłówka Origin/Referer
@@ -239,6 +260,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-AUTH-008 - Dostęp do chronionych zasobów bez logowania (Wysoki)
+
 - **Warunki wstępne**: Użytkownik nie jest zalogowany
 - **Kroki**:
   1. Spróbuj uzyskać dostęp do `/favorites`
@@ -251,6 +273,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.2 Wyszukiwanie pokemonów (US-001)
 
 #### TC-SEARCH-001 - Wyszukiwanie pokemona po nazwie (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. W polu wyszukiwania wpisz "pikachu"
@@ -263,6 +286,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-SEARCH-002 - Wyszukiwanie z pustym zapytaniem (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. Pole wyszukiwania pozostaw puste
@@ -273,6 +297,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-SEARCH-003 - Filtrowanie po typie (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. Otwórz panel filtrów (przycisk "Filtry" lub panel boczny)
@@ -285,6 +310,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-SEARCH-004 - Filtrowanie po generacji (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. Otwórz panel filtrów
@@ -296,6 +322,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-SEARCH-005 - Filtrowanie wielokryteriowe (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. Otwórz panel filtrów
@@ -308,6 +335,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-SEARCH-006 - Brak wyników wyszukiwania (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. W polu wyszukiwania wpisz "nieistniejacypokemon123"
@@ -319,6 +347,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-SEARCH-007 - Paginacja wyników (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`, wyniki wyszukiwania > 1 strona
 - **Kroki**:
   1. Wyszukaj pokemony (lub pozostaw puste dla wszystkich)
@@ -333,6 +362,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-SEARCH-008 - Sortowanie wyników (Niski)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. Kliknij rozwijane menu sortowania
@@ -346,6 +376,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.3 Szczegóły pokemona (US-002)
 
 #### TC-DETAIL-001 - Wyświetlenie szczegółów pokemona (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/pokemon`
 - **Kroki**:
   1. Wyszukaj pokemona "Pikachu"
@@ -364,6 +395,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-DETAIL-002 - Wyświetlenie ewolucji pokemona (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie szczegółów pokemona z ewolucjami (np. Charmander)
 - **Kroki**:
   1. Przejdź do `/pokemon/charmander`
@@ -376,6 +408,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-DETAIL-003 - Wyświetlenie ruchów pokemona (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie szczegółów pokemona (np. Pikachu)
 - **Kroki**:
   1. Przejdź do `/pokemon/pikachu`
@@ -388,6 +421,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-DETAIL-004 - Powrót do listy wyszukiwania (Niski)
+
 - **Warunki wstępne**: Użytkownik jest na stronie szczegółów pokemona
 - **Kroki**:
   1. Kliknij przycisk "Wróć" lub "Powrót do listy" lub nawigacja wstecz przeglądarki
@@ -397,6 +431,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Niski
 
 #### TC-DETAIL-005 - Bezpośredni dostęp do szczegółów pokemona (Średni)
+
 - **Warunki wstępne**: Brak
 - **Kroki**:
   1. Wpisz w przeglądarce URL `/pokemon/charizard`
@@ -407,6 +442,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-DETAIL-006 - Obsługa nieistniejącego pokemona (Niski)
+
 - **Warunki wstępne**: Brak
 - **Kroki**:
   1. Wpisz w przeglądarce URL `/pokemon/nieistniejacypokemon`
@@ -420,6 +456,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.4 Ulubione pokemony (US-003)
 
 #### TC-FAV-001 - Dodanie pokemona do ulubionych (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest zalogowany, jest na stronie szczegółów pokemona (np. Pikachu), pokemon nie jest w ulubionych
 - **Kroki**:
   1. Kliknij przycisk "Dodaj do ulubionych" (ikona serca lub tekst)
@@ -432,6 +469,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-FAV-002 - Usunięcie pokemona z ulubionych (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest zalogowany, pokemon (np. Pikachu) jest w ulubionych
 - **Kroki**:
   1. Przejdź do strony szczegółów pokemona lub `/favorites`
@@ -444,6 +482,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-FAV-003 - Wyświetlenie listy ulubionych (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest zalogowany i ma ulubione pokemony (min. 3)
 - **Kroki**:
   1. Przejdź do `/favorites`
@@ -456,6 +495,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-FAV-004 - Pusta lista ulubionych (Średni)
+
 - **Warunki wstępne**: Użytkownik jest zalogowany i nie ma ulubionych pokemonów
 - **Kroki**:
   1. Przejdź do `/favorites`
@@ -467,6 +507,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-FAV-005 - Dostęp do ulubionych bez logowania (Wysoki)
+
 - **Warunki wstępne**: Użytkownik nie jest zalogowany
 - **Kroki**:
   1. Przejdź do `/favorites`
@@ -478,6 +519,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-FAV-006 - Synchronizacja ulubionych między sesjami (Średni)
+
 - **Warunki wstępne**: Użytkownik jest zalogowany i ma ulubione pokemony
 - **Kroki**:
   1. Zaloguj się na koncie (test@example.com)
@@ -493,6 +535,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.5 Czat AI - rozpoznawanie pokemonów (US-004)
 
 #### TC-AI-001 - Rozpoznanie pokemona po opisie (Wysoki)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/ai`
 - **Kroki**:
   1. W polu czatu wpisz: "Żółty elektryczny pokemon z czerwonymi policzkami i błyskawicznym ogonem"
@@ -506,6 +549,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-AI-002 - Wieloetapowa konwersacja z AI (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/ai`
 - **Kroki**:
   1. Wpisz: "Szukam pokemona typu woda"
@@ -519,6 +563,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-AI-003 - Obsługa pytań spoza świata Pokemon (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/ai`
 - **Kroki**:
   1. Wpisz: "Jaka jest stolica Francji?"
@@ -531,6 +576,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-AI-004 - Wyświetlanie karty sugerowanego pokemona (Średni)
+
 - **Warunki wstępne**: AI zasugerował pokemona (np. TC-AI-001)
 - **Kroki**:
   1. Kliknij na kartę sugerowanego pokemona (Pikachu)
@@ -540,6 +586,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-AI-005 - Obsługa błędów AI (rate limit, timeout) (Niski)
+
 - **Warunki wstępne**: Użytkownik wysłał wiele zapytań w krótkim czasie (przekroczono rate limit)
 - **Kroki**:
   1. Wyślij kilkanaście zapytań w ciągu minuty
@@ -551,6 +598,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Niski
 
 #### TC-AI-006 - Dostęp do czatu AI bez logowania (Średni)
+
 - **Warunki wstępne**: Użytkownik nie jest zalogowany
 - **Kroki**:
   1. Przejdź do `/ai`
@@ -561,6 +609,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-AI-007 - Skeleton/loading state podczas oczekiwania na odpowiedź AI (Niski)
+
 - **Warunki wstępne**: Użytkownik wysłał zapytanie do AI
 - **Kroki**:
   1. Wyślij zapytanie i natychmiast sprawdź UI
@@ -573,6 +622,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.6 Przeglądanie ruchów pokemonów (US-006)
 
 #### TC-MOVES-001 - Wyświetlenie listy ruchów (Średni)
+
 - **Warunki wstępne**: Użytkownik przechodzi na stronę `/moves`
 - **Kroki**:
   1. Przejdź do `/moves`
@@ -584,6 +634,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-MOVES-002 - Sortowanie ruchów po typie (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/moves`
 - **Kroki**:
   1. Kliknij rozwijane menu sortowania
@@ -595,6 +646,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-MOVES-003 - Sortowanie ruchów po mocy (Średni)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/moves`
 - **Kroki**:
   1. Kliknij rozwijane menu sortowania
@@ -606,6 +658,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-MOVES-004 - Filtrowanie ruchów po typie (Niski)
+
 - **Warunki wstępne**: Użytkownik jest na stronie `/moves`
 - **Kroki**:
   1. Otwórz panel filtrów lub rozwijane menu filtrowania
@@ -619,6 +672,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.7 Responsywność i dostępność
 
 #### TC-RESP-001 - Wyświetlanie na desktop (1920x1080) (Średni)
+
 - **Warunki wstępne**: Przeglądarka ustawiona na rozdzielczość 1920x1080
 - **Kroki**:
   1. Przejdź przez kluczowe strony: `/`, `/pokemon`, `/pokemon/pikachu`, `/favorites`, `/ai`
@@ -631,6 +685,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-RESP-002 - Wyświetlanie na tablet (768x1024) (Średni)
+
 - **Warunki wstępne**: Przeglądarka/emulator ustawiony na rozdzielczość 768x1024
 - **Kroki**:
   1. Przejdź przez kluczowe strony
@@ -643,6 +698,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-RESP-003 - Wyświetlanie na mobile (375x667) (Wysoki)
+
 - **Warunki wstępne**: Przeglądarka/emulator ustawiony na rozdzielczość 375x667 (iPhone SE)
 - **Kroki**:
   1. Przejdź przez kluczowe strony
@@ -658,6 +714,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-ACCESS-001 - Nawigacja klawiaturą (Wysoki)
+
 - **Warunki wstępne**: Użytkownik na stronie `/pokemon`
 - **Kroki**:
   1. Używaj klawisza Tab do nawigacji między elementami
@@ -672,6 +729,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-ACCESS-002 - Testowanie ze screen readerem (Średni)
+
 - **Warunki wstępne**: Screen reader włączony (NVDA, JAWS, VoiceOver)
 - **Kroki**:
   1. Przejdź przez stronę główną `/`
@@ -687,6 +745,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-ACCESS-003 - Kontrast kolorów (Niski)
+
 - **Warunki wstępne**: Użyj narzędzia do sprawdzania kontrastu (axe DevTools, WAVE)
 - **Kroki**:
   1. Przejdź przez kluczowe strony
@@ -701,6 +760,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.8 Wydajność
 
 #### TC-PERF-001 - Czas ładowania strony głównej (Wysoki)
+
 - **Warunki wstępne**: Przeglądarka z czystym cache, połączenie sieciowe: Fast 3G
 - **Kroki**:
   1. Wyczyść cache przeglądarki
@@ -714,6 +774,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-PERF-002 - Czas odpowiedzi wyszukiwania (Wysoki)
+
 - **Warunki wstępne**: Użytkownik na stronie `/pokemon`
 - **Kroki**:
   1. Otwórz Chrome DevTools > Network
@@ -726,6 +787,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-PERF-003 - Lighthouse audit (Średni)
+
 - **Warunki wstępne**: Chrome DevTools Lighthouse
 - **Kroki**:
   1. Otwórz Chrome DevTools > Lighthouse
@@ -740,6 +802,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Średni
 
 #### TC-PERF-004 - Core Web Vitals (Średni)
+
 - **Warunki wstępne**: Chrome DevTools > Performance
 - **Kroki**:
   1. Zmierz LCP, FID, CLS dla kluczowych stron
@@ -753,6 +816,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 3.9 Bezpieczeństwo
 
 #### TC-SEC-001 - Ochrona przed XSS (Cross-Site Scripting) (Wysoki)
+
 - **Warunki wstępne**: Użytkownik ma dostęp do formularzy (wyszukiwanie, czat AI)
 - **Kroki**:
   1. W polu wyszukiwania wpisz: `<script>alert('XSS')</script>`
@@ -765,6 +829,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-SEC-002 - Walidacja danych wejściowych (Wysoki)
+
 - **Warunki wstępne**: Użytkownik na stronie rejestracji
 - **Kroki**:
   1. Wypełnij formularz z niebezpiecznymi znakami:
@@ -780,6 +845,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-SEC-003 - Weryfikacja tokenów JWT (Wysoki)
+
 - **Warunki wstępne**: Użytkownik zalogowany
 - **Kroki**:
   1. Zaloguj się i skopiuj JWT token (z cookies/localStorage)
@@ -793,6 +859,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-SEC-004 - Haszowanie haseł (Wysoki)
+
 - **Warunki wstępne**: Dostęp do bazy danych Supabase (środowisko dev/test)
 - **Kroki**:
   1. Zarejestruj użytkownika z hasłem: `Haslo123!`
@@ -805,6 +872,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet**: Wysoki
 
 #### TC-SEC-005 - Rate limiting dla API (Niski)
+
 - **Warunki wstępne**: Dostęp do endpointów API
 - **Kroki**:
   1. Wyślij 100 requestów do `/api/auth/login` w ciągu 10 sekund
@@ -818,6 +886,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ## 4. Narzędzia i frameworki testowe
 
 ### 4.1 Testy jednostkowe i integracyjne
+
 - **Vitest 3.2.4**: Runner testów, kompatybilny z Vite/Astro
 - **React Testing Library 16.3.0**: Testowanie komponentów React
 - **@testing-library/dom**: Testowanie statycznych komponentów Astro
@@ -828,30 +897,37 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Vitest Coverage (v8)**: Generowanie raportów pokrycia kodu
 
 ### 4.2 Testy end-to-end
+
 - **Playwright 1.56.0**: Framework E2E, wieloprzeglądarkowy (Chromium, Firefox, WebKit)
 - **Playwright Test**: Wbudowany test runner
 - **Playwright Accessibility Testing**: Audyty dostępności (axe-core integration)
 
 ### 4.3 Testy API
+
 - **Vitest**: Testowanie endpointów API
 
 ### 4.4 Lintowanie i formatowanie
+
 - **ESLint 9.23.0**: Statyczna analiza kodu
 - **Prettier 0.14.1**: Formatowanie kodu
 - **eslint-plugin-jsx-a11y 6.10.2**: Linting dostępności dla JSX
 
 ### 4.5 CI/CD
+
 - **GitHub Actions**: Pipeline CI/CD (workflow master.yml)
 - **Husky 9.1.7**: Git hooks (pre-commit)
 - **lint-staged 15.5.0**: Lintowanie staged files
 
 ### 4.6 Testy wydajności
+
 - **Lighthouse CI**: Audyty wydajności w pipeline CI/CD - do skonfigurowania
 
 ### 4.7 Testy bezpieczeństwa
+
 - **Manualne testowanie**: Weryfikacja CSRF, XSS, SQL Injection
 
 ### 4.8 Testy dostępności
+
 - **axe-core**: Audyty dostępności (zintegrowane z Playwright)
 - **WAVE** (zewnętrzne): Browser extension dla manualnych testów
 - **NVDA/JAWS/VoiceOver**: Screen readery do manualnych testów
@@ -859,6 +935,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ## 5. Wymagania środowiska testowego
 
 ### 5.1 Środowisko lokalne (Development)
+
 - **Node.js**: 22.x (zgodnie z .nvmrc)
 - **Package manager**: npm (package-lock.json)
 - **Przeglądarka**: Chrome/Chromium najnowsza wersja
@@ -873,6 +950,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
   - `PLAYWRIGHT_BASE_URL` (dla E2E testów)
 
 ### 5.2 Środowisko CI/CD (GitHub Actions)
+
 - **Runner**: Ubuntu latest
 - **Node.js**: 22.x
 - **Supabase CLI**: Najnowsza wersja
@@ -884,12 +962,14 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
   - `CLOUDFLARE_API_TOKEN` (dla deployment)
 
 ### 5.3 Środowisko staging (Cloudflare Pages Preview)
+
 - **Deployment**: Automatyczny dla każdego PR
 - **URL**: `https://<branch>.<project>.pages.dev`
 - **Baza danych**: Supabase Cloud (staging project)
 - **Testy E2E**: Uruchamiane przeciwko preview URL
 
 ### 5.4 Środowisko produkcyjne (Cloudflare Pages)
+
 - **URL**: `https://<domain>.pages.dev` lub custom domain
 - **Baza danych**: Supabase Cloud (production project)
 - **Monitoring**: Cloudflare Analytics
@@ -898,6 +978,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ## 6. Wymagania dotyczące danych testowych
 
 ### 6.1 Użytkownicy testowi
+
 - **User 1 - Regular User**:
   - Email: `test-user@example.com`
   - Hasło: `TestUser123!`
@@ -914,6 +995,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
   - Tworzony dynamicznie podczas testów rejestracji
 
 ### 6.2 Dane pokemonów
+
 - **Źródło**: PokeAPI (https://pokeapi.co/)
 - **Mock data** (dla testów jednostkowych/integracyjnych):
   - Minimum 10 pokemonów z różnych generacji
@@ -923,6 +1005,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
   - JSON fixtures w `src/lib/__fixtures__/pokemon.json`
 
 ### 6.3 Dane ruchów
+
 - **Źródło**: PokeAPI
 - **Mock data**:
   - Minimum 20 ruchów różnych typów
@@ -930,6 +1013,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
   - JSON fixtures w `src/lib/__fixtures__/moves.json`
 
 ### 6.4 Dane AI (OpenRouter.ai)
+
 - **Mock responses** (dla testów):
   - Pomyślna odpowiedź: sugestia Pikachu dla "żółty elektryczny pokemon"
   - Off-domain response: odpowiedź na pytanie spoza świata Pokemon
@@ -937,6 +1021,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
   - JSON fixtures w `src/lib/__fixtures__/ai-responses.json`
 
 ### 6.5 Seed data dla bazy danych
+
 - **Lokalizacja**: `supabase/seeds/` (do utworzenia)
 - **Zawartość**:
   - 3 użytkowników testowych (jak w 6.1)
@@ -944,6 +1029,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
   - Tabela ai_queries (historia zapytań AI dla testów)
 
 ### 6.6 Zarządzanie danymi testowymi
+
 - **Setup**: Przed testami E2E uruchom seed script
   ```bash
   supabase db reset
@@ -957,15 +1043,17 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 7.1 Obszary wysokiego ryzyka
 
 #### 7.1.1 Autentykacja i autoryzacja (Krytyczny)
+
 - **Ryzyko**: Luki w autentykacji mogą prowadzić do nieautoryzowanego dostępu do kont użytkowników i danych osobowych
 - **Mitygacja**:
-  - Intensywne testowanie flow logowania/rejestracji (TC-AUTH-*)
+  - Intensywne testowanie flow logowania/rejestracji (TC-AUTH-\*)
   - Testy bezpieczeństwa (TC-SEC-001 do TC-SEC-005)
   - Code review przez doświadczonego developera
   - Weryfikacja implementacji JWT przez Supabase
 - **Priorytet testowania**: Wysoki
 
 #### 7.1.2 Integracja z zewnętrznymi API (Wysoki)
+
 - **Ryzyko**: PokeAPI i OpenRouter.ai mogą być niedostępne, zwracać nieprawidłowe dane lub zmieniać format odpowiedzi
 - **Mitygacja**:
   - Mockowanie API w testach jednostkowych/integracyjnych (MSW)
@@ -975,6 +1063,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet testowania**: Wysoki
 
 #### 7.1.3 Czat AI - rozpoznawanie pokemonów (Wysoki)
+
 - **Ryzyko**: AI może generować nieprawidłowe lub off-domain odpowiedzi, przekraczać rate limity, lub zwracać wrażliwe treści
 - **Mitygacja**:
   - Testy scenariuszy edge case (TC-AI-003, TC-AI-005)
@@ -985,6 +1074,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet testowania**: Wysoki
 
 #### 7.1.4 Wydajność wyszukiwania (Średni-Wysoki)
+
 - **Ryzyko**: Wolne wyszukiwanie (> 1s) może frustrować użytkowników i obniżać adopcję aplikacji
 - **Mitygacja**:
   - Testy wydajności (TC-PERF-002)
@@ -996,6 +1086,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 7.2 Obszary średniego ryzyka
 
 #### 7.2.1 Responsywność (Średni)
+
 - **Ryzyko**: Aplikacja może być trudna w użyciu na urządzeniach mobilnych
 - **Mitygacja**:
   - Testy responsywności (TC-RESP-001 do TC-RESP-003)
@@ -1004,6 +1095,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet testowania**: Średni
 
 #### 7.2.2 Dostępność (Średni)
+
 - **Ryzyko**: Użytkownicy z niepełnosprawnościami mogą mieć trudności w korzystaniu z aplikacji
 - **Mitygacja**:
   - Testy dostępności (TC-ACCESS-001 do TC-ACCESS-003)
@@ -1012,6 +1104,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet testowania**: Średni
 
 #### 7.2.3 Migracje bazy danych (Średni)
+
 - **Ryzyko**: Błędy w migracjach mogą prowadzić do utraty danych lub niespójności
 - **Mitygacja**:
   - Code review migracji
@@ -1023,6 +1116,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 7.3 Obszary niskiego ryzyka
 
 #### 7.3.1 Przeglądanie ruchów pokemonów (Niski)
+
 - **Ryzyko**: Funkcjonalność nice-to-have, błędy nie blokują kluczowych flow
 - **Mitygacja**:
   - Podstawowe testy (TC-MOVES-001 do TC-MOVES-004)
@@ -1030,6 +1124,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Priorytet testowania**: Niski
 
 #### 7.3.2 Estetyka UI (Niski)
+
 - **Ryzyko**: Drobne problemy wizualne nie wpływają na funkcjonalność
 - **Mitygacja**:
   - Manualne code review
@@ -1038,6 +1133,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ## 8. Harmonogram testów i kamienie milowe
 
 ### 8.1 Faza 1: Setup środowiska testowego (Sprint 0 - 1 tydzień)
+
 - **Zadania**:
   - Konfiguracja Vitest i React Testing Library
   - Konfiguracja Playwright (browsers, viewports)
@@ -1053,6 +1149,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Kamień milowy**: Środowisko testowe gotowe do użycia
 
 ### 8.2 Faza 2: Testy jednostkowe - komponenty podstawowe (Sprint 1 - 2 tygodnie)
+
 - **Zakres**:
   - Komponenty UI: Button, Badge, Input (shadcn/ui)
   - Komponenty Pokemon: PokemonCard, PokemonGrid, FilterSidePanel
@@ -1065,6 +1162,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Kamień milowy**: Podstawowe komponenty pokryte testami
 
 ### 8.3 Faza 3: Testy jednostkowe - hooki i store'y (Sprint 2 - 1 tydzień)
+
 - **Zakres**:
   - Custom hooki: usePokemonListQuery, useAiChatSession, usePokemonFilterOptions
   - Zustand stores: usePokemonSearchStore, useSessionStore
@@ -1076,6 +1174,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Kamień milowy**: Hooki i logika biznesowa pokryte testami
 
 ### 8.4 Faza 4: Testy integracyjne - API i backend (Sprint 3 - 2 tygodnie)
+
 - **Zakres**:
   - Endpointy autentykacji: `/api/auth/login`, `/api/auth/register`, `/api/auth/logout`, `/api/auth/reset-password`
   - Endpointy pokemonów: `/api/pokemon`, `/api/pokemon/summary`, `/api/pokemon/details`
@@ -1088,6 +1187,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Kamień milowy**: API endpoints pokryte testami
 
 ### 8.5 Faza 5: Testy E2E - kluczowe user stories (Sprint 4 - 2 tygodnie)
+
 - **Zakres**:
   - US-001: Wyszukiwanie pokemonów (TC-SEARCH-001 do TC-SEARCH-008)
   - US-002: Szczegóły pokemona (TC-DETAIL-001 do TC-DETAIL-006)
@@ -1100,6 +1200,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Kamień milowy**: Kluczowe user stories pokryte testami E2E
 
 ### 8.6 Faza 6: Testy niefunkcjonalne (Sprint 5 - 1 tydzień)
+
 - **Zakres**:
   - Responsywność (TC-RESP-001 do TC-RESP-003)
   - Dostępność (TC-ACCESS-001 do TC-ACCESS-003)
@@ -1112,6 +1213,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - **Kamień milowy**: Wymagania niefunkcjonalne zweryfikowane
 
 ### 8.7 Faza 7: Regression testing i stabilizacja (Sprint 6 - 1 tydzień)
+
 - **Zakres**:
   - Uruchomienie pełnej suity testów
   - Naprawa flaky tests
@@ -1125,16 +1227,17 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 
 ### 8.8 Kamienie milowe kluczowe
 
-| Kamień milowy | Termin (Sprint) | Kryteria akceptacji |
-|---------------|-----------------|---------------------|
-| **M1: Środowisko testowe gotowe** | Sprint 0 (tydzień 1) | CI/CD pipeline uruchamia testy, fixtures przygotowane |
-| **M2: Komponenty pokryte testami jednostkowymi** | Sprint 1 (tydzień 3) | ≥70% pokrycia kodu komponentów |
-| **M3: API endpoints pokryte testami** | Sprint 3 (tydzień 6) | Wszystkie endpointy `/api/*` przetestowane |
-| **M4: Kluczowe user stories pokryte E2E** | Sprint 4 (tydzień 8) | US-001 do US-005 w pełni przetestowane |
-| **M5: Wymagania niefunkcjonalne zweryfikowane** | Sprint 5 (tydzień 9) | Wydajność, dostępność, bezpieczeństwo zatwierdzone |
-| **M6: Ready for MVP Release** | Sprint 6 (tydzień 10) | Wszystkie testy przechodzą, brak critical bugs |
+| Kamień milowy                                    | Termin (Sprint)       | Kryteria akceptacji                                   |
+| ------------------------------------------------ | --------------------- | ----------------------------------------------------- |
+| **M1: Środowisko testowe gotowe**                | Sprint 0 (tydzień 1)  | CI/CD pipeline uruchamia testy, fixtures przygotowane |
+| **M2: Komponenty pokryte testami jednostkowymi** | Sprint 1 (tydzień 3)  | ≥70% pokrycia kodu komponentów                        |
+| **M3: API endpoints pokryte testami**            | Sprint 3 (tydzień 6)  | Wszystkie endpointy `/api/*` przetestowane            |
+| **M4: Kluczowe user stories pokryte E2E**        | Sprint 4 (tydzień 8)  | US-001 do US-005 w pełni przetestowane                |
+| **M5: Wymagania niefunkcjonalne zweryfikowane**  | Sprint 5 (tydzień 9)  | Wydajność, dostępność, bezpieczeństwo zatwierdzone    |
+| **M6: Ready for MVP Release**                    | Sprint 6 (tydzień 10) | Wszystkie testy przechodzą, brak critical bugs        |
 
 ### 8.9 Harmonogram równoległy z developmentem
+
 - **Podejście**: Testy są pisane równolegle z implementacją funkcjonalności (TDD/BDD approach preferowany)
 - **Code review**: Każdy PR wymaga testów (unit + integration + E2E jeśli dotyczy)
 - **CI/CD**: Testy blokują merge do brancha develop jeśli nie przechodzą
@@ -1145,18 +1248,21 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 9.1 Kryteria wejścia (Entry Criteria) - Kiedy testowanie może się rozpocząć
 
 #### 9.1.1 Dla testów jednostkowych
+
 - ✅ Kod źródłowy komponentu/funkcji jest gotowy i zatwierdony w code review
 - ✅ Vitest i React Testing Library są skonfigurowane
 - ✅ Fixtures i mock data są przygotowane (jeśli wymagane)
 - ✅ Dokumentacja komponentu/funkcji jest dostępna (TSDoc lub README)
 
 #### 9.1.2 Dla testów integracyjnych
+
 - ✅ Wszystkie moduły do integracji są gotowe i przetestowane jednostkowo
 - ✅ MSW jest skonfigurowany z mock handlers dla zewnętrznych API
 - ✅ Supabase local development działa poprawnie
 - ✅ Zmienne środowiskowe są skonfigurowane (`.env`)
 
 #### 9.1.3 Dla testów E2E
+
 - ✅ Aplikacja jest deployowana w środowisku testowym (local/staging)
 - ✅ Wszystkie kluczowe funkcjonalności są zaimplementowane i działają
 - ✅ Playwright jest skonfigurowany z browsers
@@ -1164,12 +1270,14 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ User stories są zdefiniowane z jasnymi kryteriami akceptacji
 
 #### 9.1.4 Dla testów wydajności
+
 - ✅ Aplikacja jest deployowana w środowisku staging/produkcyjnym
 - ✅ Wszystkie optymalizacje kodu są zaimplementowane
 - ✅ Lighthouse CI jest skonfigurowany
 - ✅ Baseline metrics są ustalone (jeśli to nie pierwszy audyt)
 
 #### 9.1.5 Dla testów bezpieczeństwa
+
 - ✅ Wszystkie funkcjonalności autentykacji/autoryzacji są zaimplementowane
 - ✅ Walidacja danych wejściowych (Zod) jest gotowa
 - ✅ CSRF protection jest zaimplementowana
@@ -1178,6 +1286,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 ### 9.2 Kryteria wyjścia (Exit Criteria) - Kiedy testowanie jest zakończone
 
 #### 9.2.1 Dla testów jednostkowych
+
 - ✅ Wszystkie testy jednostkowe przechodzą (0 failures)
 - ✅ Pokrycie kodu ≥ 70% (optymalnie 85%)
 - ✅ Brak flaky tests (testy są deterministyczne)
@@ -1185,6 +1294,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ Code review testów jest zakończone i zatwierdzone
 
 #### 9.2.2 Dla testów integracyjnych
+
 - ✅ Wszystkie testy integracyjne przechodzą (0 failures)
 - ✅ Wszystkie endpointy API są przetestowane
 - ✅ Integracje z Supabase działają poprawnie
@@ -1192,6 +1302,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ Obsługa błędów (error handling) jest przetestowana
 
 #### 9.2.3 Dla testów E2E
+
 - ✅ Wszystkie kluczowe user stories (US-001 do US-006) są przetestowane i przechodzą
 - ✅ Minimum 40 testów E2E przechodzi
 - ✅ Testy działają w trzech przeglądarkach (Chromium, Firefox, WebKit)
@@ -1200,6 +1311,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ Wszystkie critical i high priority scenariusze są pokryte
 
 #### 9.2.4 Dla testów wydajności
+
 - ✅ Czas ładowania strony głównej < 2s (spełnione)
 - ✅ Czas odpowiedzi wyszukiwania < 1s (spełnione)
 - ✅ Lighthouse Performance score ≥ 85
@@ -1207,6 +1319,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ Brak błędów konsoli (critical/high severity)
 
 #### 9.2.5 Dla testów bezpieczeństwa
+
 - ✅ Wszystkie testy bezpieczeństwa (TC-SEC-001 do TC-SEC-005) przechodzą
 - ✅ Brak critical security vulnerabilities (XSS, SQL Injection, CSRF)
 - ✅ Hasła są haszowane w bazie danych (zweryfikowane)
@@ -1214,6 +1327,7 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ Walidacja danych wejściowych działa poprawnie (Zod)
 
 #### 9.2.6 Dla testów dostępności
+
 - ✅ Wszystkie testy dostępności (TC-ACCESS-001 do TC-ACCESS-003) przechodzą
 - ✅ Lighthouse Accessibility score ≥ 90
 - ✅ Brak critical axe-core violations
@@ -1221,12 +1335,14 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ Nawigacja klawiaturą działa poprawnie na kluczowych stronach
 
 #### 9.2.7 Dla testów responsywności
+
 - ✅ Wszystkie testy responsywności (TC-RESP-001 do TC-RESP-003) przechodzą
 - ✅ Aplikacja działa poprawnie na desktop, tablet, mobile
 - ✅ Brak horizontal scroll na żadnym urządzeniu
 - ✅ Touch targets są ≥ 44x44px na mobile
 
 ### 9.3 Kryteria akceptacji dla release MVP
+
 - ✅ **Wszystkie testy przechodzą**: Unit (100%), Integration (100%), E2E (100%), Performance, Security, Accessibility
 - ✅ **Pokrycie kodu**: ≥ 70% (optymalnie 85%)
 - ✅ **Brak critical bugs**: 0 critical, 0 high (medium i low mogą być w backlog)
@@ -1238,7 +1354,9 @@ Zapewnienie wysokiej jakości aplikacji webowej 10x-poke-sky poprzez weryfikacj�
 - ✅ **Sign-off**: Product Owner i Tech Lead zatwierdzają release
 
 ### 9.4 Proces wstrzymania testów (Suspension Criteria)
+
 Testowanie może zostać wstrzymane w następujących sytuacjach:
+
 - 🛑 **Critical bug blokujący testy**: Np. aplikacja się nie uruchamia, baza danych jest niedostępna
 - 🛑 **Środowisko testowe jest niestabilne**: Problemy z CI/CD, Supabase local development nie działa
 - 🛑 **Brak kluczowej funkcjonalności**: User story nie jest zaimplementowana, testy nie mogą być wykonane
@@ -1247,7 +1365,9 @@ Testowanie może zostać wstrzymane w następujących sytuacjach:
 **Akcje**: Zgłoszenie do Tech Lead, naprawa blokerów, wznowienie testów po rozwiązaniu problemu
 
 ### 9.5 Proces wznowienia testów (Resumption Criteria)
+
 Testowanie może zostać wznowione gdy:
+
 - ✅ Critical bugs są naprawione i zweryfikowane
 - ✅ Środowisko testowe jest stabilne i gotowe
 - ✅ Kluczowa funkcjonalność jest zaimplementowana i gotowa do testowania
@@ -1258,6 +1378,7 @@ Testowanie może zostać wznowione gdy:
 ## 10. Metryki i raportowanie
 
 ### 10.1 Kluczowe metryki testów
+
 - **Test pass rate**: (Passed tests / Total tests) × 100% - Cel: ≥ 95%
 - **Code coverage**: % pokrycia kodu testami - Cel: ≥ 70% (optymalnie 85%)
 - **Flaky test rate**: (Flaky tests / Total tests) × 100% - Cel: ≤ 2%
@@ -1267,6 +1388,7 @@ Testowanie może zostać wznowione gdy:
 - **Mean time to repair (MTTR)**: Średni czas naprawy buga
 
 ### 10.2 Raportowanie
+
 - **Częstotliwość**:
   - Raport dzienny (daily standup): Status testów, blockers
   - Raport tygodniowy (sprint review): Podsumowanie testów, metryki, postęp
@@ -1287,30 +1409,35 @@ Testowanie może zostać wznowione gdy:
 ## 11. Role i odpowiedzialności
 
 ### 11.1 Test Lead / QA Lead
+
 - Koordynacja działań testowych
 - Przegląd i akceptacja planu testów
 - Raportowanie postępów i ryzyka
 - Utrzymanie jakości testów
 
 ### 11.2 Frontend Developers
+
 - Pisanie testów jednostkowych dla komponentów React/Astro
 - Pisanie testów integracyjnych dla hooków i store'ów
 - Code review testów
 - Naprawa bugów znalezionych w testach
 
 ### 11.3 Backend Developers
+
 - Pisanie testów API
 - Testowanie integracji z Supabase
 - Testowanie middleware i autentykacji
 - Code review testów
 
 ### 11.4 DevOps / CI/CD Engineer
+
 - Konfiguracja pipeline CI/CD (GitHub Actions)
 - Utrzymanie środowisk testowych
 - Setup Lighthouse CI
 - Monitoring testów w CI/CD
 
 ### 11.5 Product Owner
+
 - Przegląd i akceptacja user stories
 - Walidacja kryteriów akceptacji
 - Priorytetyzacja bugów

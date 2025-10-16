@@ -1,7 +1,7 @@
-import { defineConfig } from "vitest/config"
-import react from "@vitejs/plugin-react"
-import { fileURLToPath } from "node:url"
-import { resolve } from "node:path"
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
 export default defineConfig({
   plugins: [react()],
@@ -31,4 +31,4 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
     },
   },
-})
+});

@@ -5,16 +5,16 @@ import {
   type PokemonSortKey,
   type PokemonTypeValue,
   type SortOption,
-} from "./types"
+} from "./types";
 
-export const MAX_SELECTED_TYPES = 3
+export const MAX_SELECTED_TYPES = 3;
 
 export type PokemonTypeMeta = FilterOption<PokemonTypeValue> & {
-  gradientFrom: string
-  gradientTo: string
-  badgeClass: string
-  textClass: string
-}
+  gradientFrom: string;
+  gradientTo: string;
+  badgeClass: string;
+  textClass: string;
+};
 
 const pokemonTypeMetaList = [
   {
@@ -161,15 +161,17 @@ const pokemonTypeMetaList = [
     badgeClass: "bg-pokemon-fairy text-white",
     textClass: "text-white",
   },
-] satisfies readonly PokemonTypeMeta[]
+] satisfies readonly PokemonTypeMeta[];
 
-export const POKEMON_TYPE_META = Object.fromEntries(
-  pokemonTypeMetaList.map((meta) => [meta.value, meta]),
-) as Record<PokemonTypeValue, PokemonTypeMeta>
+export const POKEMON_TYPE_META = Object.fromEntries(pokemonTypeMetaList.map((meta) => [meta.value, meta])) as Record<
+  PokemonTypeValue,
+  PokemonTypeMeta
+>;
 
-export const POKEMON_TYPE_OPTIONS: FilterOption<PokemonTypeValue>[] = pokemonTypeMetaList.map(
-  ({ value, label }) => ({ value, label }),
-)
+export const POKEMON_TYPE_OPTIONS: FilterOption<PokemonTypeValue>[] = pokemonTypeMetaList.map(({ value, label }) => ({
+  value,
+  label,
+}));
 
 const generationOptions: FilterOption<PokemonGenerationValue>[] = [
   { value: "generation-i", label: "Generacja I" },
@@ -181,9 +183,9 @@ const generationOptions: FilterOption<PokemonGenerationValue>[] = [
   { value: "generation-vii", label: "Generacja VII" },
   { value: "generation-viii", label: "Generacja VIII" },
   { value: "generation-ix", label: "Generacja IX" },
-]
+];
 
-export const POKEMON_GENERATION_OPTIONS = generationOptions
+export const POKEMON_GENERATION_OPTIONS = generationOptions;
 
 const regionOptions: FilterOption<PokemonRegionValue>[] = [
   { value: "kanto", label: "Kanto" },
@@ -196,87 +198,87 @@ const regionOptions: FilterOption<PokemonRegionValue>[] = [
   { value: "galar", label: "Galar" },
   { value: "paldea", label: "Paldea" },
   { value: "hisui", label: "Hisui" },
-]
+];
 
-export const POKEMON_REGION_OPTIONS = regionOptions
+export const POKEMON_REGION_OPTIONS = regionOptions;
 
 export const POKEMON_SORT_OPTIONS: SortOption[] = [
   { value: "pokedex", label: "Numer Pokédexu", description: "Domyślna kolejność 001 → 999" },
   { value: "name", label: "Nazwa", description: "Sortuj alfabetycznie" },
   { value: "cachedAt", label: "Ostatnio aktualizowane", description: "Najnowsze wpisy na początku" },
-]
+];
 
-const validTypeValues = new Set<PokemonTypeValue>(pokemonTypeMetaList.map((option) => option.value))
-const validGenerationValues = new Set<PokemonGenerationValue>(generationOptions.map((option) => option.value))
-const validRegionValues = new Set<PokemonRegionValue>(regionOptions.map((option) => option.value))
-const validSortKeys = new Set<PokemonSortKey>(POKEMON_SORT_OPTIONS.map((option) => option.value))
+const validTypeValues = new Set<PokemonTypeValue>(pokemonTypeMetaList.map((option) => option.value));
+const validGenerationValues = new Set<PokemonGenerationValue>(generationOptions.map((option) => option.value));
+const validRegionValues = new Set<PokemonRegionValue>(regionOptions.map((option) => option.value));
+const validSortKeys = new Set<PokemonSortKey>(POKEMON_SORT_OPTIONS.map((option) => option.value));
 
 export function isValidPokemonType(value: string): value is PokemonTypeValue {
-  return validTypeValues.has(value as PokemonTypeValue)
+  return validTypeValues.has(value as PokemonTypeValue);
 }
 
 export function isValidGeneration(value: string): value is PokemonGenerationValue {
-  return validGenerationValues.has(value as PokemonGenerationValue)
+  return validGenerationValues.has(value as PokemonGenerationValue);
 }
 
 export function isValidRegion(value: string): value is PokemonRegionValue {
-  return validRegionValues.has(value as PokemonRegionValue)
+  return validRegionValues.has(value as PokemonRegionValue);
 }
 
 export function isValidSortKey(value: string): value is PokemonSortKey {
-  return validSortKeys.has(value as PokemonSortKey)
+  return validSortKeys.has(value as PokemonSortKey);
 }
 
 export function sanitizeSelectedTypes(values: readonly string[]): PokemonTypeValue[] {
-  const deduped: PokemonTypeValue[] = []
+  const deduped: PokemonTypeValue[] = [];
 
   for (const value of values) {
     if (!isValidPokemonType(value)) {
-      continue
+      continue;
     }
 
     if (deduped.includes(value)) {
-      continue
+      continue;
     }
 
-    deduped.push(value)
+    deduped.push(value);
 
     if (deduped.length === MAX_SELECTED_TYPES) {
-      break
+      break;
     }
   }
 
-  return deduped
+  return deduped;
 }
 
 export function getPokemonTypeMeta(value: PokemonTypeValue): PokemonTypeMeta {
-  return POKEMON_TYPE_META[value]
+  return POKEMON_TYPE_META[value];
 }
 
 export function getTypeGradientClasses(types: readonly PokemonTypeValue[]): string {
-  const [primaryType] = types
-  const meta = primaryType ? getPokemonTypeMeta(primaryType) : POKEMON_TYPE_META.normal
-  return `bg-gradient-to-br ${meta.gradientFrom} ${meta.gradientTo}`
+  const [primaryType] = types;
+  const meta = primaryType ? getPokemonTypeMeta(primaryType) : POKEMON_TYPE_META.normal;
+  return `bg-gradient-to-br ${meta.gradientFrom} ${meta.gradientTo}`;
 }
 
 export function getTypeBadgeClass(value: PokemonTypeValue): string {
-  return getPokemonTypeMeta(value).badgeClass
+  return getPokemonTypeMeta(value).badgeClass;
 }
 
 export function getTypeTextClass(value: PokemonTypeValue): string {
-  return getPokemonTypeMeta(value).textClass
+  return getPokemonTypeMeta(value).textClass;
 }
 
 export function getTypeLabel(value: PokemonTypeValue): string {
-  return getPokemonTypeMeta(value).label
+  return getPokemonTypeMeta(value).label;
 }
 
 export function getGenerationLabel(value: PokemonGenerationValue): string {
-  const option = generationOptions.find((item) => item.value === value)
-  return option?.label ?? value
+  const option = generationOptions.find((item) => item.value === value);
+  return option?.label ?? value;
 }
 
 export function getRegionLabel(value: PokemonRegionValue): string {
-  const option = regionOptions.find((item) => item.value === value)
-  return option?.label ?? value
+  const option = regionOptions.find((item) => item.value === value);
+  return option?.label ?? value;
 }

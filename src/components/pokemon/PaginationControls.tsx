@@ -1,56 +1,56 @@
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react"
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button"
-import type { PaginationViewModel } from "@/lib/pokemon/types"
+import { Button } from "@/components/ui/button";
+import type { PaginationViewModel } from "@/lib/pokemon/types";
 
 type PaginationControlsProps = {
-  pagination: PaginationViewModel
-  onPageChange: (page: number) => void
-  isLoading?: boolean
-}
+  pagination: PaginationViewModel;
+  onPageChange: (page: number) => void;
+  isLoading?: boolean;
+};
 
 export function PaginationControls({ pagination, onPageChange, isLoading = false }: PaginationControlsProps) {
-  const { page, pageCount, hasNext, hasPrevious } = pagination
-  const [inputValue, setInputValue] = useState(() => String(page))
+  const { page, pageCount, hasNext, hasPrevious } = pagination;
+  const [inputValue, setInputValue] = useState(() => String(page));
 
   useEffect(() => {
-    setInputValue(String(page))
-  }, [page])
+    setInputValue(String(page));
+  }, [page]);
 
   const handlePrevious = useCallback(() => {
     if (hasPrevious) {
-      onPageChange(page - 1)
+      onPageChange(page - 1);
     }
-  }, [hasPrevious, onPageChange, page])
+  }, [hasPrevious, onPageChange, page]);
 
   const handleNext = useCallback(() => {
     if (hasNext) {
-      onPageChange(page + 1)
+      onPageChange(page + 1);
     }
-  }, [hasNext, onPageChange, page])
+  }, [hasNext, onPageChange, page]);
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-      const parsed = Number.parseInt(inputValue, 10)
+      event.preventDefault();
+      const parsed = Number.parseInt(inputValue, 10);
       if (!Number.isFinite(parsed)) {
-        return
+        return;
       }
       if (parsed < 1 || (pageCount > 0 && parsed > pageCount)) {
-        return
+        return;
       }
 
-      onPageChange(parsed)
+      onPageChange(parsed);
     },
-    [inputValue, onPageChange, pageCount],
-  )
+    [inputValue, onPageChange, pageCount]
+  );
 
   const helperText = useMemo(() => {
     if (pageCount <= 0) {
-      return "Brak wyników do paginacji"
+      return "Brak wyników do paginacji";
     }
-    return `Strona ${page} z ${pageCount}`
-  }, [page, pageCount])
+    return `Strona ${page} z ${pageCount}`;
+  }, [page, pageCount]);
 
   return (
     <nav
@@ -91,5 +91,5 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
         </form>
       ) : null}
     </nav>
-  )
+  );
 }

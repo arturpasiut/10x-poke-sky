@@ -35,72 +35,72 @@ Projekt 10x-poke-sky to nowoczesna aplikacja webowa umożliwiająca poszerzanie 
 - **Tytuł**: Wyszukiwanie pokemona po nazwie i parametrach
 - **Opis**: Jako użytkownik chcę wyszukać pokemona po jego nazwie lub innych parametrach (typ, generacja, region), aby szybko znaleźć interesujące mnie informacje.
 - **Kryteria akceptacji**:
-   - Użytkownik widzi pole wyszukiwarki na stronie głównej.
-   - Użytkownik może wpisać nazwę pokemona lub użyć filtrów (typ, generacja, region).
-   - System wyświetla listę pokemonów spełniających kryteria wyszukiwania.
-   - Użytkownik może kliknąć na pokemona z listy, aby zobaczyć szczegółowe informacje.
-   - System wyświetla komunikat gdy brak wyników wyszukiwania z sugestią użycia czatu AI.
+  - Użytkownik widzi pole wyszukiwarki na stronie głównej.
+  - Użytkownik może wpisać nazwę pokemona lub użyć filtrów (typ, generacja, region).
+  - System wyświetla listę pokemonów spełniających kryteria wyszukiwania.
+  - Użytkownik może kliknąć na pokemona z listy, aby zobaczyć szczegółowe informacje.
+  - System wyświetla komunikat gdy brak wyników wyszukiwania z sugestią użycia czatu AI.
 
 ### US-002: Szczegółowe informacje o pokemonie
 
 - **Tytuł**: Podgląd szczegółowych statystyk pokemona
 - **Opis**: Jako użytkownik chcę zobaczyć szczegółowe informacje o wybranym pokemonie (statystyki, typ, ewolucje, ruchy), aby poznać jego możliwości i charakterystykę.
 - **Kryteria akceptacji**:
-   - Użytkownik widzi stronę szczegółową pokemona zawierającą: obraz, nazwę, typ/typy, podstawowe statystyki (HP, atak, obrona, etc.).
-   - System wyświetla informacje o ewolucjach pokemona (jeśli istnieją).
-   - System wyświetla listę dostępnych ruchów pokemona.
-   - Użytkownik może powrócić do listy wyszukiwania lub strony głównej.
+  - Użytkownik widzi stronę szczegółową pokemona zawierającą: obraz, nazwę, typ/typy, podstawowe statystyki (HP, atak, obrona, etc.).
+  - System wyświetla informacje o ewolucjach pokemona (jeśli istnieją).
+  - System wyświetla listę dostępnych ruchów pokemona.
+  - Użytkownik może powrócić do listy wyszukiwania lub strony głównej.
 
 ### US-003: Ulubione pokemony
 
 - **Tytuł**: Zarządzanie ulubionymi pokemonami
 - **Opis**: Jako zalogowany użytkownik chcę dodawać i usuwać pokemony z listy ulubionych, aby mieć szybki dostęp do moich ulubionych jednostek.
 - **Kryteria akceptacji**:
-   - Użytkownik widzi przycisk "Dodaj do ulubionych" na stronie szczegółowej pokemona.
-   - Użytkownik może dodać pokemona do ulubionych jednym kliknięciem.
-   - Użytkownik może usunąć pokemona z listy ulubionych.
-   - Użytkownik widzi dedykowaną zakładkę/stronę z listą swoich ulubionych pokemonów.
-   - Funkcjonalność ulubionych nie jest dostępna bez logowania się do systemu (US-005).
+  - Użytkownik widzi przycisk "Dodaj do ulubionych" na stronie szczegółowej pokemona.
+  - Użytkownik może dodać pokemona do ulubionych jednym kliknięciem.
+  - Użytkownik może usunąć pokemona z listy ulubionych.
+  - Użytkownik widzi dedykowaną zakładkę/stronę z listą swoich ulubionych pokemonów.
+  - Funkcjonalność ulubionych nie jest dostępna bez logowania się do systemu (US-005).
 
 ### US-004: Rozpoznawanie pokemona przez AI
 
 - **Tytuł**: Rozpoznawanie pokemona na podstawie opisu
 - **Opis**: Jako użytkownik chcę opisać pokemona w czacie AI (wygląd, kolory, cechy charakterystyczne), aby system pomógł mi zidentyfikować pokemona, którego nazwy nie pamiętam.
 - **Kryteria akceptacji**:
-   - Użytkownik widzi przycisk/zakładkę uruchamiającą czat AI.
-   - Użytkownik może opisać pokemona w języku naturalnym.
-   - System AI analizuje opis i sugeruje najbardziej pasujące pokemony.
-   - System wyświetla listę sugerowanych pokemonów z miniaturkami i krótkimi opisami.
-   - Użytkownik może kliknąć na sugerowanego pokemona, aby zobaczyć szczegółowe informacje.
-   - Czat AI nie odpowiada na pytania niezwiązane ze światem Pokemon.
+  - Użytkownik widzi przycisk/zakładkę uruchamiającą czat AI.
+  - Użytkownik może opisać pokemona w języku naturalnym.
+  - System AI analizuje opis i sugeruje najbardziej pasujące pokemony.
+  - System wyświetla listę sugerowanych pokemonów z miniaturkami i krótkimi opisami.
+  - Użytkownik może kliknąć na sugerowanego pokemona, aby zobaczyć szczegółowe informacje.
+  - Czat AI nie odpowiada na pytania niezwiązane ze światem Pokemon.
 
 ### US-005: Bezpieczny dostęp i uwierzytelnianie
 
 - **Tytuł**: Bezpieczny dostęp
 - **Opis**: Jako użytkownik chcę mieć możliwość rejestracji i logowania się do systemu w sposób zapewniający bezpieczeństwo moich danych.
 - **Kryteria akceptacji**:
-   - Logowanie i rejestracja odbywają się na dedykowanych stronach.
-   - Logowanie wymaga podania adresu email i hasła.
-   - Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
-   - Użytkownik MOŻE korzystać z wyszukiwania pokemonów i czatu AI bez logowania się do systemu (US-001, US-004).
-   - Użytkownik NIE MOŻE korzystać z funkcji ulubionych pokemonów bez logowania się do systemu (US-003).
-   - Użytkownik może logować się do systemu poprzez przycisk w prawym górnym rogu.
-   - Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu.
-   - Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
-   - Użytkownik może zainicjować proces odzyskiwania hasła poprzez link "Zapomniałem hasła".
-   - System wysyła link do resetowania hasła na zarejestrowany adres email.
-   - Hasła są przechowywane w formie zahashowanej (np. bcrypt).
+  - Logowanie i rejestracja odbywają się na dedykowanych stronach.
+  - Logowanie wymaga podania adresu email i hasła.
+  - Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
+  - Użytkownik MOŻE korzystać z wyszukiwania pokemonów i czatu AI bez logowania się do systemu (US-001, US-004).
+  - Użytkownik NIE MOŻE korzystać z funkcji ulubionych pokemonów bez logowania się do systemu (US-003).
+  - Użytkownik może logować się do systemu poprzez przycisk w prawym górnym rogu.
+  - Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu.
+  - Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
+  - Użytkownik może zainicjować proces odzyskiwania hasła poprzez link "Zapomniałem hasła".
+  - System wysyła link do resetowania hasła na zarejestrowany adres email.
+  - Hasła są przechowywane w formie zahashowanej (np. bcrypt).
 
 ### US-006: Przeglądanie ruchów pokemonów
 
 - **Tytuł**: Kolekcje ruchów pokemon
 - **Opis**: Jako użytkownik chcę przeglądać listę ruchów pokemonów z możliwością sortowania i filtrowania (po typie, regionie, mocy), aby poznać dostępne ataki i ich charakterystyki.
 - **Kryteria akceptacji**:
-   - Użytkownik widzi dedykowaną zakładkę/stronę z listą ruchów.
-   - Użytkownik może sortować ruchy według: typu, regionu, mocy.
-   - System wyświetla podstawowe informacje o każdym ruchu (nazwa, typ, moc, dokładność).
+  - Użytkownik widzi dedykowaną zakładkę/stronę z listą ruchów.
+  - Użytkownik może sortować ruchy według: typu, regionu, mocy.
+  - System wyświetla podstawowe informacje o każdym ruchu (nazwa, typ, moc, dokładność).
 - **Nice to have** (poza MVP):
-   - Użytkownik może kliknąć na ruch, aby zobaczyć szczegółowy opis i listę pokemonów, które mogą się go nauczyć.
+  - Użytkownik może kliknąć na ruch, aby zobaczyć szczegółowy opis i listę pokemonów, które mogą się go nauczyć.
 
 ## 6. Metryki sukcesu
 

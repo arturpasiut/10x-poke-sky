@@ -135,8 +135,8 @@ allowedBackKeys.forEach((key) => {
 const backHref = preservedBackParams.size > 0 ? `/pokemon?${preservedBackParams.toString()}` : "/pokemon";
 const spriteUrl = summary?.spriteUrl ?? detail?.pokemon?.sprites?.other?.["official-artwork"]?.front_default ?? null;
 
-const typeGradientStart = types[0] ? TYPE_COLORS[types[0]] ?? "#1f2937" : "#1f2937";
-const typeGradientEnd = types[1] ? TYPE_COLORS[types[1]] ?? "#111827" : "#111827";
+const typeGradientStart = types[0] ? (TYPE_COLORS[types[0]] ?? "#1f2937") : "#1f2937";
+const typeGradientEnd = types[1] ? (TYPE_COLORS[types[1]] ?? "#111827") : "#111827";
 const gradientStyle = `background: radial-gradient(circle at 20% 20%, ${typeGradientStart} 0%, ${typeGradientEnd} 45%, rgba(17,23,39,0.95) 70%);`;
 
 const seoDescription = summary
@@ -145,15 +145,12 @@ const seoDescription = summary
 ---
 
 <MainLayout title={pageTitle}>
-
   <nav class="flex items-center justify-between gap-6 text-sm text-muted-foreground">
     <a class="inline-flex items-center gap-2 text-primary transition hover:text-primary/80" href={backHref}>
       <span aria-hidden="true">←</span>
       Wróć do wyników
     </a>
-    <a class="inline-flex items-center gap-2 transition hover:text-primary/80" href="/pokemon">
-      Cały Pokédex →
-    </a>
+    <a class="inline-flex items-center gap-2 transition hover:text-primary/80" href="/pokemon"> Cały Pokédex → </a>
   </nav>
 
   {
@@ -177,7 +174,10 @@ const seoDescription = summary
           class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br text-white shadow-2xl shadow-black/20"
           style={gradientStyle}
         >
-          <div class="absolute inset-0 opacity-50" style="background-image: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);"></div>
+          <div
+            class="absolute inset-0 opacity-50"
+            style="background-image: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);"
+          />
           <div class="relative grid gap-8 p-8 md:grid-cols-[minmax(0,360px)_1fr] md:gap-12 md:p-12">
             <header class="flex flex-col justify-between gap-6">
               <div class="flex items-center justify-between gap-6">
@@ -186,11 +186,7 @@ const seoDescription = summary
                 </p>
 
                 <div class="flex items-center gap-3 text-white">
-                  <PokemonFavoriteAction
-                    client:load
-                    pokemonId={summary!.pokemonId}
-                    pokemonName={formattedName}
-                  />
+                  <PokemonFavoriteAction client:load pokemonId={summary!.pokemonId} pokemonName={formattedName} />
                 </div>
               </div>
               {spriteUrl ? (
@@ -211,7 +207,9 @@ const seoDescription = summary
               <div class="space-y-3">
                 <div class="space-y-2">
                   <p class="text-sm uppercase tracking-[0.35em] text-white/60">Pokémon</p>
-                  <h1 class="text-4xl font-semibold capitalize tracking-tight text-white sm:text-5xl">{formattedName}</h1>
+                  <h1 class="text-4xl font-semibold capitalize tracking-tight text-white sm:text-5xl">
+                    {formattedName}
+                  </h1>
                   {dexNumber ? <p class="text-sm font-medium text-white/70">{dexNumber}</p> : null}
                 </div>
                 <div class="flex flex-wrap items-center justify-center gap-3">

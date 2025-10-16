@@ -1,30 +1,30 @@
-import { useMemo } from "react"
+import { useMemo } from "react";
 
-import { Button } from "@/components/ui/button"
-import type { ApiError } from "@/lib/pokemon/types"
+import { Button } from "@/components/ui/button";
+import type { ApiError } from "@/lib/pokemon/types";
 
 type ErrorCalloutProps = {
-  error: ApiError
-  onRetry: () => void
-  isRetrying?: boolean
-  retryDisabledUntil?: number
-}
+  error: ApiError;
+  onRetry: () => void;
+  isRetrying?: boolean;
+  retryDisabledUntil?: number;
+};
 
 export function ErrorCallout({ error, onRetry, isRetrying = false, retryDisabledUntil }: ErrorCalloutProps) {
   const isThrottled = useMemo(() => {
     if (!retryDisabledUntil) {
-      return false
+      return false;
     }
 
     if (Number.isNaN(retryDisabledUntil)) {
-      return false
+      return false;
     }
 
-    return Date.now() < retryDisabledUntil
-  }, [retryDisabledUntil])
+    return Date.now() < retryDisabledUntil;
+  }, [retryDisabledUntil]);
 
-  const disabled = isRetrying || isThrottled
-  const retryLabel = isRetrying ? "Ponawianie..." : isThrottled ? "Odczekaj chwilę" : "Spróbuj ponownie"
+  const disabled = isRetrying || isThrottled;
+  const retryLabel = isRetrying ? "Ponawianie..." : isThrottled ? "Odczekaj chwilę" : "Spróbuj ponownie";
 
   return (
     <section
@@ -53,5 +53,5 @@ export function ErrorCallout({ error, onRetry, isRetrying = false, retryDisabled
         </Button>
       </div>
     </section>
-  )
+  );
 }
