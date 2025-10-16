@@ -6,6 +6,16 @@ This directory contains E2E tests with global setup and teardown functionality.
 
 The test suite uses Playwright's Project Dependencies approach (recommended by Playwright docs) to implement global setup and teardown. This provides better integration with test reports, traces, and fixtures.
 
+## Important: Sequential Execution
+
+**Tests run SEQUENTIALLY (not in parallel)** to avoid race conditions. All tests share the same test user and Supabase database, so parallel execution causes conflicts when modifying the `favorites` table simultaneously.
+
+Configuration:
+- `fullyParallel: false`
+- `workers: 1`
+
+This ensures stable, predictable test execution.
+
 ## Architecture
 
 ```
@@ -52,12 +62,17 @@ E2E_USERNAME_ID=your_test_user_id
 # Run all tests (includes setup and teardown)
 npm run test:e2e
 
+# Run only favorites tests
+npx playwright test tests/e2e/favorites/
+
 # Run without dependencies (skip setup and teardown)
 npx playwright test --no-deps
 
 # List all tests including setup/teardown
 npx playwright test --list
 ```
+
+**Note:** Tests run sequentially (1 worker) to prevent database conflicts. Expect ~1 minute runtime for full suite.
 
 ## Test Execution Order
 
@@ -96,6 +111,14 @@ setup("database seeding", async ({}) => {
 
 ## Troubleshooting
 
+### Tests failing randomly / race conditions
+
+**Solution:** Tests must run sequentially (already configured). Verify:
+```bash
+# Check config has workers: 1 and fullyParallel: false
+grep -E "workers|fullyParallel" playwright.config.ts
+```
+
 ### Teardown not running
 
 - Ensure tests complete successfully
@@ -107,6 +130,11 @@ setup("database seeding", async ({}) => {
 - Verify `E2E_USERNAME_ID` matches the test user
 - Check Supabase connection credentials
 - Look at console output for error messages
+
+### "Auth session missing" errors
+
+- Ensure proper wait after login: `await page.waitForURL("/")`
+- Add extra delay if needed: `await page.waitForTimeout(500)`
 
 ### Skip teardown during development
 

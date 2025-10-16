@@ -77,6 +77,12 @@ test.describe("US-003: Ulubione Pokemony - Autentykacja i Synchronizacja", () =>
     await loginPage.goto();
     await loginPage.login(TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
 
+    // Wait for successful login and redirect
+    await page.waitForURL("/", { timeout: 10000 });
+
+    // Extra wait to ensure session is fully established
+    await page.waitForTimeout(500);
+
     // Clean existing favorites first
     await clearAllFavoritesViaAPI(page);
 

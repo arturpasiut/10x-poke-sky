@@ -6,13 +6,15 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
   testDir: "./tests",
-  fullyParallel: true,
+  // Disable parallel execution - favorites tests share the same user/database
+  // Running in parallel causes race conditions with favorites table
+  fullyParallel: false,
 
   // Retry flaky tests automatically (standard for E2E)
   retries: process.env.CI ? 2 : 1,
 
-  // Limit workers to reduce race conditions
-  workers: process.env.CI ? 2 : 3,
+  // Run tests serially (1 worker) to avoid database conflicts
+  workers: 1,
 
   // Test timeouts
   timeout: 60000, // 60s per test
