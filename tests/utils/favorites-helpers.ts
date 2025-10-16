@@ -28,7 +28,8 @@ export async function addFavoriteViaAPI(page: Page, pokemonId: number): Promise<
 export async function removeFavoriteViaAPI(page: Page, pokemonId: number): Promise<void> {
   const response = await page.request.delete(`/api/users/me/favorites/${pokemonId}`);
 
-  if (!response.ok()) {
+  // 404 is OK - favorite already doesn't exist
+  if (!response.ok() && response.status() !== 404) {
     const body = await response.text();
     throw new Error(`Failed to remove favorite ${pokemonId}: ${response.status()} - ${body}`);
   }
@@ -76,7 +77,12 @@ export async function clearAllFavoritesViaAPI(page: Page): Promise<void> {
     const favorites = await getAllFavoritesViaAPI(page);
 
     for (const favorite of favorites) {
-      await removeFavoriteViaAPI(page, favorite.pokemonId);
+      try {
+        await removeFavoriteViaAPI(page, favorite.pokemonId);
+      } catch (error) {
+        // Log but continue - we want to remove as many as possible
+        console.warn(`Could not remove favorite ${favorite.pokemonId}:`, error);
+      }
     }
 
     // Extra delay after clearing all to ensure state is clean
@@ -84,7 +90,8 @@ export async function clearAllFavoritesViaAPI(page: Page): Promise<void> {
       await page.waitForTimeout(500);
     }
   } catch (error) {
-    // If fetching favorites fails (e.g., not authenticated), that's OK for cleanup
+    // If fetching favorites fails (e.g., not authenticated or already cleared), that's OK for cleanup
+    // This is expected when running tests in parallel or after logout
     console.warn("Could not fetch favorites for cleanup:", error);
   }
 }

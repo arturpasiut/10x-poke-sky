@@ -98,7 +98,8 @@ export class FavoritesPage extends BasePage {
    */
   async clickBrowseLink(): Promise<void> {
     await this.browseLink.click();
-    await expect(this.page).toHaveURL("/pokemon");
+    // URL can contain query params like ?sort=pokedex&order=asc
+    await expect(this.page).toHaveURL(/\/pokemon/);
   }
 
   /**

@@ -83,8 +83,8 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
     // Click "Przejdź do Pokédexu"
     await favoritesPage.clickBrowseLink();
 
-    // Assert - Should navigate to pokemon list
-    await expect(authenticatedPage).toHaveURL("/pokemon");
+    // Assert - Should navigate to pokemon list (URL can contain query params)
+    await expect(authenticatedPage).toHaveURL(/\/pokemon/);
   });
 
   test("TC-FAV-004c: should navigate to AI from empty state", async ({ authenticatedPage }) => {
@@ -104,8 +104,7 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
   });
 
   test("TC-FAV-003b: should display single favorite correctly", async ({ authenticatedPage }) => {
-    // Arrange - Clear first, then add only one favorite
-    await clearAllFavoritesViaAPI(authenticatedPage);
+    // Arrange - Add only one favorite (beforeEach already cleared)
     await addMultipleFavoritesViaAPI(authenticatedPage, [PIKACHU_ID]);
 
     const favoritesPage = new FavoritesPage(authenticatedPage);
@@ -120,8 +119,7 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
   });
 
   test("TC-FAV-003c: should display many favorites correctly", async ({ authenticatedPage }) => {
-    // Arrange - Clear first, then add 6 favorites to test grid layout
-    await clearAllFavoritesViaAPI(authenticatedPage);
+    // Arrange - Add 6 favorites to test grid layout (beforeEach already cleared)
     const manyFavorites = [1, 4, 7, 25, 150, 6]; // Bulbasaur, Charmander, Squirtle, Pikachu, Mewtwo, Charizard
     await addMultipleFavoritesViaAPI(authenticatedPage, manyFavorites);
 

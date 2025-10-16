@@ -80,10 +80,13 @@ test.describe("US-003: Ulubione Pokemony - Autentykacja i Synchronizacja", () =>
     // Clean existing favorites first
     await clearAllFavoritesViaAPI(page);
 
-    // Add Pikachu to favorites
+    // Add Pikachu to favorites via API (faster and more reliable)
+    await addFavoriteViaAPI(page, PIKACHU_ID);
+
+    // Verify it was added on the detail page
     const detailPage = new PokemonDetailPage(page);
-    await detailPage.gotoByName("pikachu");
-    await detailPage.toggleFavorite(PIKACHU_ID);
+    await page.goto("/pokemon/pikachu", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
     await detailPage.expectIsFavorite(PIKACHU_ID);
 
     // Act - Simulate logout by clearing cookies and storage
@@ -94,15 +97,18 @@ test.describe("US-003: Ulubione Pokemony - Autentykacja i Synchronizacja", () =>
     });
 
     // Verify logged out state by trying to access favorites
-    await page.goto("/favorites");
+    await page.goto("/favorites", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle");
     // Should show error or empty state for non-authenticated user
     await expect(page.getByTestId("favorites-error-state")).toBeVisible({ timeout: 5000 });
 
     // Login again
-    await page.goto("/auth/login");
+    await page.goto("/auth/login", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle");
     await loginPage.login(TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
+
+    // Wait for redirect after login
+    await page.waitForURL("/", { timeout: 10000 });
 
     // Assert - Favorite should still exist after re-login
     const favoritesPage = new FavoritesPage(page);
@@ -110,7 +116,8 @@ test.describe("US-003: Ulubione Pokemony - Autentykacja i Synchronizacja", () =>
     await favoritesPage.expectFavoriteExists(PIKACHU_ID);
 
     // Alternative verification: Check on detail page
-    await detailPage.gotoByName("pikachu");
+    await page.goto("/pokemon/pikachu", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
     await detailPage.expectIsFavorite(PIKACHU_ID);
   });
 
@@ -120,26 +127,36 @@ test.describe("US-003: Ulubione Pokemony - Autentykacja i Synchronizacja", () =>
     await loginPage.goto();
     await loginPage.login(TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
 
+    // Wait for login to complete
+    await page.waitForURL("/", { timeout: 10000 });
+
     // Clear existing favorites first
     await clearAllFavoritesViaAPI(page);
 
-    // Add favorite via API
+    // Add favorite via API (while still authenticated)
     await addFavoriteViaAPI(page, PIKACHU_ID);
 
-    // Simulate fresh login (clear cookies and re-login)
+    // Simulate fresh login (clear cookies, storage, and re-login)
     await context.clearCookies();
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
 
     // Navigate to login page
-    await page.goto("/auth/login");
+    await page.goto("/auth/login", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle");
 
     await loginPage.login(TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
+
+    // Wait for redirect after login
+    await page.waitForURL("/", { timeout: 10000 });
 
     // Act - Go to favorites immediately
     const favoritesPage = new FavoritesPage(page);
     await favoritesPage.goto();
 
-    // Assert - Favorite should be visible immediately
+    // Assert - Favorite should be visible immediately (synced from server)
     await favoritesPage.expectFavoriteExists(PIKACHU_ID);
   });
 

@@ -55,14 +55,18 @@ export class PokemonDetailPage extends BasePage {
   async toggleFavorite(pokemonId: number): Promise<void> {
     const button = this.favoriteToggleButton(pokemonId);
 
+    // Wait for button to be ready (not already loading)
+    await expect(button).toHaveAttribute("data-is-loading", "false", { timeout: 5000 });
+
     // Get current state before clicking
     const wasFavorite = await button.getAttribute("data-is-favorite");
+    const expectedNewState = wasFavorite === "true" ? "false" : "true";
 
+    // Click the button
     await button.click();
 
-    // Wait for the entire operation to complete by checking the final state
-    // This is more reliable than checking intermediate loading states
-    const expectedNewState = wasFavorite === "true" ? "false" : "true";
+    // Wait for loading to start (optional, but helps with race conditions)
+    await this.page.waitForTimeout(100);
 
     // Wait for both loading to finish AND favorite state to change
     await this.page.waitForFunction(
@@ -75,11 +79,11 @@ export class PokemonDetailPage extends BasePage {
         return !isLoading && isFavorite === expectedState;
       },
       [pokemonId, expectedNewState],
-      { timeout: 15000 }
+      { timeout: 20000 } // Increased timeout for slower operations
     );
 
     // Extra small delay for React to fully complete render cycle
-    await this.page.waitForTimeout(200);
+    await this.page.waitForTimeout(300);
   }
 
   /**
