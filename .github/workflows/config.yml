@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - develop
+      - develop-10xdevs
+      - PS-16-configure-github-action
 
 jobs:
   test:
