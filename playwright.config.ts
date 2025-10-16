@@ -33,9 +33,25 @@ export default defineConfig({
   },
 
   projects: [
+    // Setup project (runs before tests)
+    // Currently empty but can be used for global setup in the future
+    {
+      name: "setup",
+      testMatch: /global\.setup\.ts/,
+      teardown: "teardown",
+    },
+
+    // Teardown project (runs after all tests complete)
+    {
+      name: "teardown",
+      testMatch: /global\.teardown\.ts/,
+    },
+
+    // Main test project
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
     },
   ],
 });
