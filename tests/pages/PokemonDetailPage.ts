@@ -56,21 +56,30 @@ export class PokemonDetailPage extends BasePage {
     const button = this.favoriteToggleButton(pokemonId);
 
     // Get current state before clicking
-    const wasLoading = await button.getAttribute("data-is-loading");
+    const wasFavorite = await button.getAttribute("data-is-favorite");
 
     await button.click();
 
-    // Wait for loading to start (button changes state)
-    if (wasLoading !== "true") {
-      await expect(button)
-        .toHaveAttribute("data-is-loading", "true", { timeout: 2000 })
-        .catch(() => {
-          // If it didn't start loading, that's OK - might have been instant
-        });
-    }
+    // Wait for the entire operation to complete by checking the final state
+    // This is more reliable than checking intermediate loading states
+    const expectedNewState = wasFavorite === "true" ? "false" : "true";
 
-    // Wait for action to complete (loading stops)
-    await expect(button).toHaveAttribute("data-is-loading", "false", { timeout: 10000 });
+    // Wait for both loading to finish AND favorite state to change
+    await this.page.waitForFunction(
+      ([id, expectedState]) => {
+        const btn = document.querySelector(`[data-testid="favorite-toggle-button-${id}"]`);
+        if (!btn) return false;
+        const isLoading = btn.getAttribute("data-is-loading") === "true";
+        const isFavorite = btn.getAttribute("data-is-favorite");
+        // Return true when loading is done AND state matches expected
+        return !isLoading && isFavorite === expectedState;
+      },
+      [pokemonId, expectedNewState],
+      { timeout: 15000 }
+    );
+
+    // Extra small delay for React to fully complete render cycle
+    await this.page.waitForTimeout(200);
   }
 
   /**
@@ -106,6 +115,9 @@ export class PokemonDetailPage extends BasePage {
     const button = this.favoriteToggleButton(pokemonId);
     await expect(button).toBeVisible({ timeout: 10000 });
 
+    // Wait for loading to finish first
+    await expect(button).toHaveAttribute("data-is-loading", "false", { timeout: 10000 });
+
     // Wait for the button to have the correct state
     await expect(button).toHaveAttribute("data-is-favorite", "true", { timeout: 5000 });
 
@@ -119,6 +131,9 @@ export class PokemonDetailPage extends BasePage {
   async expectIsNotFavorite(pokemonId: number): Promise<void> {
     const button = this.favoriteToggleButton(pokemonId);
     await expect(button).toBeVisible({ timeout: 10000 });
+
+    // Wait for loading to finish first
+    await expect(button).toHaveAttribute("data-is-loading", "false", { timeout: 10000 });
 
     // Wait for the button to have the correct state
     await expect(button).toHaveAttribute("data-is-favorite", "false", { timeout: 5000 });

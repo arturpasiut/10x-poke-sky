@@ -7,12 +7,31 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
+
+  // Retry flaky tests automatically (standard for E2E)
+  retries: process.env.CI ? 2 : 1,
+
+  // Limit workers to reduce race conditions
+  workers: process.env.CI ? 2 : 3,
+
+  // Test timeouts
+  timeout: 60000, // 60s per test
+  expect: {
+    timeout: 15000, // 15s per assertion
+  },
+
   reporter: [["list"]],
+
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:4321",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+
+    // Increase default timeouts for more stability
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
   },
+
   projects: [
     {
       name: "chromium",

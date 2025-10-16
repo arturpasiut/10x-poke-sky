@@ -20,7 +20,8 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
   });
 
   test("TC-FAV-003: should display favorites list with multiple pokemon", async ({ authenticatedPage }) => {
-    // Arrange - Add 3 favorites via API
+    // Arrange - Clear first, then add 3 favorites via API
+    await clearAllFavoritesViaAPI(authenticatedPage);
     const favoriteIds = [PIKACHU_ID, CHARIZARD_ID, MEWTWO_ID];
     await addMultipleFavoritesViaAPI(authenticatedPage, favoriteIds);
 
@@ -28,6 +29,9 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
 
     // Act - Navigate to favorites page
     await favoritesPage.goto();
+
+    // Assert - Grid should be visible
+    await favoritesPage.expectFavoritesGridVisible();
 
     // Assert - All 3 pokemon should be displayed
     expect(await favoritesPage.getFavoritesCount()).toBe(3);
@@ -37,18 +41,17 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
       await favoritesPage.expectFavoriteExists(id);
     }
 
-    // Assert - Grid should be visible
-    await favoritesPage.expectFavoritesGridVisible();
-
     // Assert - Each card should have remove button
     for (const id of favoriteIds) {
       await expect(favoritesPage.getRemoveButton(id)).toBeVisible();
     }
   });
 
-  test("TC-FAV-004: should display empty state when no favorites", async ({ emptyFavsAuthenticatedPage }) => {
-    // Arrange
-    const favoritesPage = new FavoritesPage(emptyFavsAuthenticatedPage);
+  test("TC-FAV-004: should display empty state when no favorites", async ({ authenticatedPage }) => {
+    // Arrange - Use regular authenticated page and clear favorites
+    await clearAllFavoritesViaAPI(authenticatedPage);
+
+    const favoritesPage = new FavoritesPage(authenticatedPage);
 
     // Act - Navigate to favorites page
     await favoritesPage.goto();
@@ -57,7 +60,7 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
     await favoritesPage.expectEmptyState();
 
     // Assert - Empty message should be visible
-    await expect(favoritesPage.emptyStateMessage).toContainText(/brak ulubionych pokémonów/i);
+    await expect(favoritesPage.emptyStateMessage).toContainText(/dodaj pokémony do ulubionych/i);
 
     // Assert - Browse link should be visible and functional
     await expect(favoritesPage.browseLink).toBeVisible();
@@ -101,7 +104,8 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
   });
 
   test("TC-FAV-003b: should display single favorite correctly", async ({ authenticatedPage }) => {
-    // Arrange - Add only one favorite
+    // Arrange - Clear first, then add only one favorite
+    await clearAllFavoritesViaAPI(authenticatedPage);
     await addMultipleFavoritesViaAPI(authenticatedPage, [PIKACHU_ID]);
 
     const favoritesPage = new FavoritesPage(authenticatedPage);
@@ -116,7 +120,8 @@ test.describe("US-003: Ulubione Pokemony - Lista", () => {
   });
 
   test("TC-FAV-003c: should display many favorites correctly", async ({ authenticatedPage }) => {
-    // Arrange - Add 6 favorites to test grid layout
+    // Arrange - Clear first, then add 6 favorites to test grid layout
+    await clearAllFavoritesViaAPI(authenticatedPage);
     const manyFavorites = [1, 4, 7, 25, 150, 6]; // Bulbasaur, Charmander, Squirtle, Pikachu, Mewtwo, Charizard
     await addMultipleFavoritesViaAPI(authenticatedPage, manyFavorites);
 

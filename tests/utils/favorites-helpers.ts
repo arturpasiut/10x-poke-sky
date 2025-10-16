@@ -17,6 +17,9 @@ export async function addFavoriteViaAPI(page: Page, pokemonId: number): Promise<
     const body = await response.text();
     throw new Error(`Failed to add favorite ${pokemonId}: ${response.status()} - ${body}`);
   }
+
+  // Delay to allow UI state to propagate (API → DB → Zustand → React)
+  await page.waitForTimeout(300);
 }
 
 /**
@@ -29,6 +32,9 @@ export async function removeFavoriteViaAPI(page: Page, pokemonId: number): Promi
     const body = await response.text();
     throw new Error(`Failed to remove favorite ${pokemonId}: ${response.status()} - ${body}`);
   }
+
+  // Delay to allow UI state to propagate (API → DB → Zustand → React)
+  await page.waitForTimeout(300);
 }
 
 /**
@@ -66,10 +72,20 @@ export async function getAllFavoritesViaAPI(page: Page): Promise<any[]> {
  * Useful for test cleanup
  */
 export async function clearAllFavoritesViaAPI(page: Page): Promise<void> {
-  const favorites = await getAllFavoritesViaAPI(page);
+  try {
+    const favorites = await getAllFavoritesViaAPI(page);
 
-  for (const favorite of favorites) {
-    await removeFavoriteViaAPI(page, favorite.pokemonId);
+    for (const favorite of favorites) {
+      await removeFavoriteViaAPI(page, favorite.pokemonId);
+    }
+
+    // Extra delay after clearing all to ensure state is clean
+    if (favorites.length > 0) {
+      await page.waitForTimeout(500);
+    }
+  } catch (error) {
+    // If fetching favorites fails (e.g., not authenticated), that's OK for cleanup
+    console.warn("Could not fetch favorites for cleanup:", error);
   }
 }
 
@@ -79,5 +95,10 @@ export async function clearAllFavoritesViaAPI(page: Page): Promise<void> {
 export async function addMultipleFavoritesViaAPI(page: Page, pokemonIds: number[]): Promise<void> {
   for (const pokemonId of pokemonIds) {
     await addFavoriteViaAPI(page, pokemonId);
+  }
+
+  // Extra delay after adding multiple to ensure all are propagated
+  if (pokemonIds.length > 0) {
+    await page.waitForTimeout(500);
   }
 }

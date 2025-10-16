@@ -47,7 +47,7 @@ Ten folder zawiera testy end-to-end dla funkcjonalności ulubionych pokemonów (
    - Plik `.env.test` musi zawierać:
      - `TEST_USER_EMAIL`
      - `TEST_USER_PASSWORD`
-     - `PLAYWRIGHT_BASE_URL` (domyślnie: http://localhost:4321)
+     - `PLAYWRIGHT_BASE_URL` (domyślnie: http://localhost:3000)
 
 3. **Konto testowe:**
    - Musisz mieć utworzone konto testowe w Supabase

@@ -8,6 +8,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     cookies: context.cookies,
   });
 
+  // Odśwież sesję przed wysłaniem odpowiedzi
+  await supabase.auth.getUser();
+
   context.locals.supabase = supabase;
 
   return next();

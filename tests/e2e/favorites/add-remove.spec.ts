@@ -13,13 +13,10 @@ test.describe("US-003: Ulubione Pokemony - Dodawanie i Usuwanie", () => {
   // Pikachu ID for consistent testing
   const PIKACHU_ID = 25;
 
-  test.beforeEach(async ({ authenticatedPage }) => {
-    // Ensure clean state - remove all favorites before each test
-    await clearAllFavoritesViaAPI(authenticatedPage);
-  });
-
   test("TC-FAV-001: should add pokemon to favorites when logged in", async ({ authenticatedPage }) => {
-    // Arrange
+    // Arrange - Clear all favorites first
+    await clearAllFavoritesViaAPI(authenticatedPage);
+
     const detailPage = new PokemonDetailPage(authenticatedPage);
     const favoritesPage = new FavoritesPage(authenticatedPage);
 
@@ -44,7 +41,8 @@ test.describe("US-003: Ulubione Pokemony - Dodawanie i Usuwanie", () => {
   });
 
   test("TC-FAV-002: should remove pokemon from favorites from detail page", async ({ authenticatedPage }) => {
-    // Arrange - Add Pikachu to favorites first via API
+    // Arrange - Clear all, then add Pikachu to favorites via API
+    await clearAllFavoritesViaAPI(authenticatedPage);
     await addFavoriteViaAPI(authenticatedPage, PIKACHU_ID);
 
     const detailPage = new PokemonDetailPage(authenticatedPage);
@@ -70,7 +68,8 @@ test.describe("US-003: Ulubione Pokemony - Dodawanie i Usuwanie", () => {
   });
 
   test("TC-FAV-002b: should remove pokemon from favorites list", async ({ authenticatedPage }) => {
-    // Arrange - Add Pikachu to favorites
+    // Arrange - Clear favorites first, then add Pikachu
+    await clearAllFavoritesViaAPI(authenticatedPage);
     await addFavoriteViaAPI(authenticatedPage, PIKACHU_ID);
 
     const favoritesPage = new FavoritesPage(authenticatedPage);
@@ -97,7 +96,9 @@ test.describe("US-003: Ulubione Pokemony - Dodawanie i Usuwanie", () => {
   });
 
   test("TC-FAV-001b: should handle multiple add/remove cycles", async ({ authenticatedPage }) => {
-    // Arrange
+    // Arrange - Clear all favorites first
+    await clearAllFavoritesViaAPI(authenticatedPage);
+
     const detailPage = new PokemonDetailPage(authenticatedPage);
 
     await detailPage.gotoByName("pikachu");

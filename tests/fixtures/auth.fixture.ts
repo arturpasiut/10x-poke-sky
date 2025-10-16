@@ -32,12 +32,18 @@ export const test = base.extend<AuthFixtures>({
    * Automatically logs in before each test
    */
   authenticatedPage: async ({ page }, use) => {
+    // Small delay to avoid race conditions between parallel tests
+    await page.waitForTimeout(Math.random() * 100);
+
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.login(TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
 
     // Wait for successful login (redirect to home page)
     await expect(page).toHaveURL("/", { timeout: 10000 });
+
+    // Extra wait to ensure session is fully established
+    await page.waitForTimeout(300);
 
     // Use the authenticated page
     await use(page);
