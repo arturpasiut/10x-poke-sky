@@ -33,7 +33,7 @@ jobs:
         run: npm run lint
 
       - name: Run unit and integration tests
-        run: npm run test:coverage
+        run: npm run test
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
