@@ -15,13 +15,6 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    env:
-      # Supabase configuration for E2E tests
-      PUBLIC_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
-      PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
-      SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
-      NODE_ENV: test
 
     steps:
       - name: Checkout code
@@ -44,10 +37,18 @@ jobs:
 
       - name: Create .env.test file for E2E tests
         run: |
-          cat > .env.test << EOF
+          cat << 'ENVFILE' > .env.test
+          # Playwright Configuration
           PLAYWRIGHT_BASE_URL=http://localhost:3000
+
+          # Supabase Configuration
           SUPABASE_URL=${{ secrets.TEST_SUPABASE_URL }}
           SUPABASE_PUBLIC_KEY=${{ secrets.TEST_SUPABASE_ANON_KEY }}
+          SUPABASE_ANON_KEY=${{ secrets.TEST_SUPABASE_ANON_KEY }}
+          PUBLIC_SUPABASE_URL=${{ secrets.TEST_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY=${{ secrets.TEST_SUPABASE_ANON_KEY }}
+
+          # Test Users Configuration
           E2E_USERNAME_ID=${{ secrets.E2E_USERNAME_ID }}
           E2E_USERNAME=${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}
@@ -55,7 +56,14 @@ jobs:
           TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
           TEST_USER_EMPTY_FAVS_EMAIL=${{ secrets.TEST_USER_EMPTY_FAVS_EMAIL }}
           TEST_USER_EMPTY_FAVS_PASSWORD=${{ secrets.TEST_USER_EMPTY_FAVS_PASSWORD }}
-          EOF
+
+          # Environment
+          NODE_ENV=test
+          ENVFILE
+
+          echo "✓ Created .env.test file with $(wc -l < .env.test) lines"
+          echo "Variables defined (keys only):"
+          grep -v "^#" .env.test | grep "=" | cut -d= -f1
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -83,9 +91,6 @@ jobs:
 
       - name: Run E2E tests
         run: npm run test:e2e
-        env:
-          CI: true
-          # Supabase credentials are inherited from job-level env
 
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
