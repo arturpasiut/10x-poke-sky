@@ -127,7 +127,7 @@ describe("PokemonEvolutionTimeline", () => {
   });
 
   it('should show generic "Ewolucja" when trigger has no name', () => {
-    const chainWithNoTrigger: EvolutionChain = {
+    const chainWithNoTrigger = {
       id: 5,
       chain: {
         species: { name: "pokemon1", url: "" },
@@ -137,14 +137,14 @@ describe("PokemonEvolutionTimeline", () => {
             species: { name: "pokemon2", url: "" },
             evolution_details: [
               {
-                trigger: null as any,
+                trigger: null as unknown as { name: string; url: string },
               },
             ],
             evolves_to: [],
           },
         ],
       },
-    };
+    } as EvolutionChain;
 
     render(<PokemonEvolutionTimeline chain={chainWithNoTrigger} />);
 
@@ -161,8 +161,8 @@ describe("PokemonEvolutionTimeline", () => {
   it("should show empty state when chain.chain is missing", () => {
     const emptyChain = {
       id: 1,
-      chain: null as any,
-    };
+      chain: null as unknown as EvolutionChain["chain"],
+    } as EvolutionChain;
 
     render(<PokemonEvolutionTimeline chain={emptyChain} />);
 
@@ -170,14 +170,14 @@ describe("PokemonEvolutionTimeline", () => {
   });
 
   it("should render unknown species when species.name is null", () => {
-    const invalidChain: EvolutionChain = {
+    const invalidChain = {
       id: 1,
       chain: {
-        species: null as any,
+        species: null as unknown as { name: string; url: string },
         evolution_details: [],
         evolves_to: [],
       },
-    };
+    } as EvolutionChain;
 
     render(<PokemonEvolutionTimeline chain={invalidChain} />);
 
@@ -256,7 +256,7 @@ describe("PokemonEvolutionTimeline", () => {
 
   // Edge case with missing evolution details
   it("should handle missing evolution_details array", () => {
-    const chainWithNoDetails: EvolutionChain = {
+    const chainWithNoDetails = {
       id: 7,
       chain: {
         species: { name: "pokemon1", url: "" },
@@ -264,12 +264,12 @@ describe("PokemonEvolutionTimeline", () => {
         evolves_to: [
           {
             species: { name: "pokemon2", url: "" },
-            evolution_details: null as any,
+            evolution_details: null as unknown as EvolutionChain["chain"]["evolves_to"][0]["evolution_details"],
             evolves_to: [],
           },
         ],
       },
-    };
+    } as EvolutionChain;
 
     render(<PokemonEvolutionTimeline chain={chainWithNoDetails} />);
 

@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 
-import type { Json, Tables } from "@/db/database.types";
+import type { Tables } from "@/db/database.types";
 import type { FavoriteListItemDto, FavoritesListResponseDto, PokemonFavoriteSnapshot } from "@/types";
 
 type SupabaseServerClient = App.Locals["supabase"];
@@ -19,7 +19,7 @@ export interface FavoritesQueryOptions {
 }
 
 export interface FetchFavoritesResult {
-  rows: Array<Pick<FavoriteRow, "pokemon_id" | "created_at">>;
+  rows: Pick<FavoriteRow, "pokemon_id" | "created_at">[];
   total: number;
 }
 
@@ -37,11 +37,11 @@ export interface DeleteFavoriteResult {
   deleted: boolean;
 }
 
-type ServiceErrorOptions = {
+interface ServiceErrorOptions {
   code?: string;
   details?: unknown;
   cause?: unknown;
-};
+}
 
 export class FavoritesServiceError extends Error {
   readonly status: number;
@@ -61,7 +61,6 @@ export class FavoritesServiceError extends Error {
 }
 
 const FAVORITES_TABLE = "favorites";
-const POKEMON_CACHE_TABLE = "pokemon_cache";
 const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>

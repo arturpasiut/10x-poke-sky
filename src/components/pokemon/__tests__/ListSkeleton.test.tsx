@@ -131,7 +131,7 @@ describe("ListSkeleton", () => {
     expect(items.length).toBe(5);
 
     // Each item should be distinct
-    items.forEach((item, index) => {
+    items.forEach((item) => {
       expect(item).toBeInTheDocument();
     });
   });

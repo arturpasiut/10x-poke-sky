@@ -3,12 +3,12 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import type { ApiError } from "@/lib/pokemon/types";
 
-type ErrorCalloutProps = {
+interface ErrorCalloutProps {
   error: ApiError;
   onRetry: () => void;
   isRetrying?: boolean;
   retryDisabledUntil?: number;
-};
+}
 
 export function ErrorCallout({ error, onRetry, isRetrying = false, retryDisabledUntil }: ErrorCalloutProps) {
   const isThrottled = useMemo(() => {

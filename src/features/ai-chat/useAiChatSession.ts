@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- Surface network and parsing issues during AI chat development */
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
 import {

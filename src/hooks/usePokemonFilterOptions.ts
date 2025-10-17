@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { POKEMON_GENERATION_OPTIONS, POKEMON_REGION_OPTIONS, POKEMON_TYPE_OPTIONS } from "@/lib/pokemon/filters";
 import type { PokemonAvailableFilters } from "@/lib/pokemon/types";
 
-type UsePokemonFilterOptionsResult = {
+interface UsePokemonFilterOptionsResult {
   filters: PokemonAvailableFilters;
   isLoading: false;
   error: undefined;
@@ -11,7 +11,7 @@ type UsePokemonFilterOptionsResult = {
    * API compatibility – future async implementation may expose a refresh handler.
    */
   refetch: () => void;
-};
+}
 
 const staticFilters: PokemonAvailableFilters = {
   types: POKEMON_TYPE_OPTIONS,

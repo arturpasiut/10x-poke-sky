@@ -7,12 +7,12 @@ import type { PokemonListResponseDto, PokemonSummaryDto } from "@/types";
 const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 const MAX_POKEDEX_ID = 1025;
 
-type GenerationRange = {
+interface GenerationRange {
   generation: PokemonGenerationValue;
   region: PokemonRegionValue;
   from: number;
   to: number;
-};
+}
 
 const GENERATION_RANGES: GenerationRange[] = [
   { generation: "generation-i", region: "kanto", from: 1, to: 151 },
@@ -29,6 +29,34 @@ const GENERATION_RANGES: GenerationRange[] = [
 ];
 
 const HISUI_IDS = new Set<number>([899, 900, 901, 902, 903, 904, 905]);
+
+interface PokemonApiDetail {
+  id: number;
+  name: string;
+  types: { type: { name: string } }[];
+  sprites: {
+    front_default?: string | null;
+    other?: {
+      "official-artwork"?: { front_default?: string | null };
+      home?: { front_default?: string | null };
+      dream_world?: { front_default?: string | null };
+    };
+  };
+}
+
+interface PokemonSpeciesVariety {
+  is_default: boolean;
+  pokemon: {
+    name: string;
+    url: string;
+  };
+}
+
+interface PokemonTypeEntry {
+  pokemon: {
+    url: string;
+  };
+}
 
 export const GET: APIRoute = async ({ url }) => {
   const state = parseQueryState(url.searchParams);
@@ -197,7 +225,7 @@ function sortCandidateIds(
 }
 
 export async function fetchPokemonSummary(idOrName: number | string): Promise<PokemonSummaryDto | null> {
-  let detail: any;
+  let detail: PokemonApiDetail | null;
 
   try {
     detail = await fetchPokemonDetail(idOrName);
@@ -212,7 +240,7 @@ export async function fetchPokemonSummary(idOrName: number | string): Promise<Po
     return null;
   }
 
-  const types = detail.types.map((entry: { type: { name: string } }) => entry.type.name as PokemonTypeValue);
+  const types = detail.types.map((entry) => entry.type.name as PokemonTypeValue);
   const { generation, region } = mapGenerationAndRegion(detail.id);
 
   return {
@@ -226,7 +254,7 @@ export async function fetchPokemonSummary(idOrName: number | string): Promise<Po
   };
 }
 
-async function fetchPokemonDetail(idOrName: number | string): Promise<any> {
+async function fetchPokemonDetail(idOrName: number | string): Promise<PokemonApiDetail | null> {
   const url = `${POKEAPI_BASE_URL}/pokemon/${idOrName}`;
   const response = await fetch(url, { headers: { Accept: "application/json" } });
 
@@ -286,8 +314,8 @@ async function fetchPokemonDetailViaSpecies(idOrName: number | string, contentTy
     );
   }
 
-  const species = await speciesResponse.json();
-  const defaultVarietyName = species?.varieties?.find((variant: any) => variant?.is_default)?.pokemon?.name;
+  const species = (await speciesResponse.json()) as { varieties?: PokemonSpeciesVariety[] };
+  const defaultVarietyName = species?.varieties?.find((variant) => variant?.is_default)?.pokemon?.name;
 
   if (!defaultVarietyName || defaultVarietyName === identifier) {
     throw new Error(`Nie udało się ustalić domyślnej odmiany Pokémona ${identifier}.`);
@@ -311,14 +339,14 @@ async function fetchTypeIds(type: PokemonTypeValue): Promise<number[]> {
     throw new Error(`PokeAPI type request failed with status ${response.status}`);
   }
 
-  const payload = await response.json();
+  const payload = (await response.json()) as { pokemon?: PokemonTypeEntry[] };
   if (!payload.pokemon) {
     return [];
   }
 
   const ids = payload.pokemon
-    .map((entry: { pokemon: { url: string } }) => extractIdFromUrl(entry.pokemon.url))
-    .filter((id: number | null): id is number => typeof id === "number" && id <= MAX_POKEDEX_ID);
+    .map((entry) => extractIdFromUrl(entry.pokemon.url))
+    .filter((id): id is number => typeof id === "number" && id <= MAX_POKEDEX_ID);
 
   return Array.from(new Set(ids)).sort((a, b) => a - b);
 }
@@ -372,7 +400,7 @@ function mapRegionForId(id: number): PokemonRegionValue {
   return range?.region ?? "paldea";
 }
 
-function resolveSpriteUrl(detail: any): string | null {
+function resolveSpriteUrl(detail: PokemonApiDetail): string | null {
   const artwork = detail.sprites?.other?.["official-artwork"]?.front_default;
   if (artwork) {
     return artwork;

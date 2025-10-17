@@ -37,18 +37,28 @@ describe("FilterSidePanel", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: baseFilters.types[0]!.label }));
+    const firstType = baseFilters.types[0];
+    if (firstType) {
+      await user.click(screen.getByRole("button", { name: firstType.label }));
+    }
 
     const generationGroup = screen.getByRole("radiogroup", { name: /generacji/i });
     await user.click(within(generationGroup).getByRole("button", { name: "Wszystkie" }));
 
     const regionGroup = screen.getByRole("radiogroup", { name: /regionu/i });
-    await user.click(within(regionGroup).getByRole("button", { name: baseFilters.regions[0]!.label }));
+    const firstRegion = baseFilters.regions[0];
+    if (firstRegion) {
+      await user.click(within(regionGroup).getByRole("button", { name: firstRegion.label }));
+    }
     await user.click(screen.getByRole("button", { name: /resetuj/i }));
 
-    expect(toggleType).toHaveBeenCalledWith(baseFilters.types[0]!.value);
+    if (firstType) {
+      expect(toggleType).toHaveBeenCalledWith(firstType.value);
+    }
     expect(setGeneration).toHaveBeenCalledWith(null);
-    expect(setRegion).toHaveBeenCalledWith(baseFilters.regions[0]!.value);
+    if (firstRegion) {
+      expect(setRegion).toHaveBeenCalledWith(firstRegion.value);
+    }
     expect(resetFilters).toHaveBeenCalled();
   });
 
@@ -68,7 +78,10 @@ describe("FilterSidePanel", () => {
       />
     );
 
-    const nextTypeButton = screen.getByRole("button", { name: baseFilters.types[3]!.label });
-    expect(nextTypeButton).toBeDisabled();
+    const thirdType = baseFilters.types[3];
+    if (thirdType) {
+      const nextTypeButton = screen.getByRole("button", { name: thirdType.label });
+      expect(nextTypeButton).toBeDisabled();
+    }
   });
 });

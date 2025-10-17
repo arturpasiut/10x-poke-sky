@@ -14,10 +14,10 @@ import type { FavoritePokemonViewModel } from "@/lib/favorites/transformers";
 
 type RequestStatus = "idle" | "loading" | "success" | "error";
 
-type RemovalState = {
+interface RemovalState {
   status: "idle" | "removing" | "error";
   error?: string;
-};
+}
 
 const DEFAULT_REMOVAL_STATE: RemovalState = { status: "idle" };
 

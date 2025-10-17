@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { PokemonCard } from "../PokemonCard";
 import type { PokemonSummaryViewModel } from "@/lib/pokemon/types";
 
@@ -23,8 +23,8 @@ describe("PokemonCard", () => {
   };
 
   beforeEach(() => {
-    delete (window as any).location;
-    (window as any).location = { search: "" };
+    delete (window as unknown as { location?: unknown }).location;
+    (window as unknown as { location: { search: string } }).location = { search: "" };
   });
 
   // Rendering tests
@@ -46,7 +46,7 @@ describe("PokemonCard", () => {
   });
 
   it("should preserve search params in link href", () => {
-    (window as any).location.search = "?page=2&type=electric";
+    (window as unknown as { location: { search: string } }).location.search = "?page=2&type=electric";
 
     render(<PokemonCard pokemon={mockPokemon} />);
 

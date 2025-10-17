@@ -1,6 +1,6 @@
-type ListSkeletonProps = {
+interface ListSkeletonProps {
   count?: number;
-};
+}
 
 export function ListSkeleton({ count = 6 }: ListSkeletonProps) {
   const items = Array.from({ length: count });

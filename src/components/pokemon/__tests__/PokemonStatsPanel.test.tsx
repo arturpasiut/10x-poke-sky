@@ -72,13 +72,13 @@ describe("PokemonStatsPanel", () => {
   });
 
   it("should show empty state when stats is undefined", () => {
-    render(<PokemonStatsPanel stats={undefined as any} />);
+    render(<PokemonStatsPanel stats={undefined as unknown as PokemonStat[]} />);
 
     expect(screen.getByText("Brak danych o statystykach dla wybranego Pokémona.")).toBeInTheDocument();
   });
 
   it("should show empty state when stats is null", () => {
-    render(<PokemonStatsPanel stats={null as any} />);
+    render(<PokemonStatsPanel stats={null as unknown as PokemonStat[]} />);
 
     expect(screen.getByText("Brak danych o statystykach dla wybranego Pokémona.")).toBeInTheDocument();
   });
@@ -153,7 +153,7 @@ describe("PokemonStatsPanel", () => {
       {
         base_stat: 50,
         effort: 0,
-        stat: { name: null as any, url: "" },
+        stat: { name: null as unknown as string, url: "" },
       },
     ];
 
@@ -167,7 +167,7 @@ describe("PokemonStatsPanel", () => {
       {
         base_stat: 50,
         effort: 0,
-        stat: null as any,
+        stat: null as unknown as { name: string; url: string },
       },
     ];
 
@@ -197,9 +197,6 @@ describe("PokemonStatsPanel", () => {
     render(<PokemonStatsPanel stats={mockStats} />);
 
     mockStats.forEach((stat) => {
-      const label = stat.stat.name === "hp" ? "HP" : stat.stat.name;
-      const ariaLabel = `${label === "hp" ? "HP" : label} ${stat.base_stat}`;
-
       const elements = screen.queryAllByLabelText(new RegExp(stat.base_stat.toString()));
       expect(elements.length).toBeGreaterThan(0);
     });

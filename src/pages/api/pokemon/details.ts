@@ -6,12 +6,12 @@ import type { MoveSummaryDto, PokemonDetailResponseDto } from "@/types";
 const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 const MAX_MOVES_PREVIEW = 12;
 
-type GenerationRange = {
+interface GenerationRange {
   generation: PokemonGenerationValue;
   region: PokemonRegionValue;
   from: number;
   to: number;
-};
+}
 
 const GENERATION_RANGES: GenerationRange[] = [
   { generation: "generation-i", region: "kanto", from: 1, to: 151 },
@@ -26,6 +26,31 @@ const GENERATION_RANGES: GenerationRange[] = [
 ];
 
 const HISUI_IDS = new Set<number>([899, 900, 901, 902, 903, 904, 905]);
+
+interface PokemonDetailSprites {
+  front_default?: string | null;
+  other?: {
+    "official-artwork"?: { front_default?: string | null };
+    home?: { front_default?: string | null };
+    dream_world?: { front_default?: string | null };
+  };
+}
+
+interface MoveDetail {
+  id?: number;
+  name?: string;
+  type?: { name?: string };
+  power?: number | null;
+  accuracy?: number | null;
+  pp?: number | null;
+  generation?: { name?: string };
+}
+
+interface PokemonMoveEntry {
+  move?: {
+    url?: string;
+  };
+}
 
 const jsonResponse = (body: unknown, init: ResponseInit): Response =>
   new Response(JSON.stringify(body), {
@@ -71,26 +96,27 @@ const mapGenerationAndRegion = (id: number) => {
   };
 };
 
-const resolveSpriteUrl = (detail: any): string | null => {
-  const artwork = detail?.sprites?.other?.["official-artwork"]?.front_default;
+const resolveSpriteUrl = (detail: Record<string, unknown>): string | null => {
+  const sprites = detail?.sprites as PokemonDetailSprites | undefined;
+  const artwork = sprites?.other?.["official-artwork"]?.front_default;
   if (artwork) {
     return artwork;
   }
 
-  const home = detail?.sprites?.other?.home?.front_default;
+  const home = sprites?.other?.home?.front_default;
   if (home) {
     return home;
   }
 
-  const dream = detail?.sprites?.other?.dream_world?.front_default;
+  const dream = sprites?.other?.dream_world?.front_default;
   if (dream) {
     return dream;
   }
 
-  return detail?.sprites?.front_default ?? null;
+  return sprites?.front_default ?? null;
 };
 
-const toMoveSummaryDto = (move: any): MoveSummaryDto => ({
+const toMoveSummaryDto = (move: MoveDetail): MoveSummaryDto => ({
   moveId: move.id ?? 0,
   name: move.name ?? "unknown",
   type: move.type?.name ?? null,
@@ -101,7 +127,7 @@ const toMoveSummaryDto = (move: any): MoveSummaryDto => ({
   cachedAt: new Date().toISOString(),
 });
 
-const buildMoveSummaries = async (moves: any[]): Promise<MoveSummaryDto[]> => {
+const buildMoveSummaries = async (moves: PokemonMoveEntry[]): Promise<MoveSummaryDto[]> => {
   const preview = moves.slice(0, MAX_MOVES_PREVIEW);
   const summaries: MoveSummaryDto[] = [];
 
@@ -112,7 +138,7 @@ const buildMoveSummaries = async (moves: any[]): Promise<MoveSummaryDto[]> => {
     }
 
     try {
-      const detail = await fetchJson(url);
+      const detail = (await fetchJson(url)) as MoveDetail;
       summaries.push(toMoveSummaryDto(detail));
     } catch (error) {
       console.warn("Failed to fetch move detail", error);
@@ -148,10 +174,10 @@ const buildDetailResponse = async (identifier: string): Promise<PokemonDetailRes
 
   const { generation, region } = mapGenerationAndRegion(pokemonId);
   const types = Array.isArray(pokemon?.types)
-    ? (pokemon.types as Array<{ type: { name: string } }>).map((entry) => entry.type.name as PokemonTypeValue)
+    ? (pokemon.types as { type: { name: string } }[]).map((entry) => entry.type.name as PokemonTypeValue)
     : [];
 
-  const moves = Array.isArray(pokemon?.moves) ? await buildMoveSummaries(pokemon.moves as any[]) : [];
+  const moves = Array.isArray(pokemon?.moves) ? await buildMoveSummaries(pokemon.moves as PokemonMoveEntry[]) : [];
 
   return {
     summary: {

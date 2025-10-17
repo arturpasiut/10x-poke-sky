@@ -10,8 +10,8 @@ export default defineConfig({
   // Running in parallel causes race conditions with favorites table
   fullyParallel: false,
 
-  // Retry flaky tests automatically (standard for E2E)
-  retries: process.env.CI ? 2 : 1,
+  // No retries - tests should pass on first try
+  retries: 0,
 
   // Run tests serially (1 worker) to avoid database conflicts
   workers: 1,
@@ -25,8 +25,8 @@ export default defineConfig({
   reporter: [["list"]],
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:4321",
-    trace: "on-first-retry",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
+    trace: "retain-on-failure",
     screenshot: "only-on-failure",
 
     // Increase default timeouts for more stability

@@ -1,11 +1,11 @@
 import clsx from "clsx";
 
-type StatusBannerProps = {
+interface StatusBannerProps {
   title: string;
   description?: string;
   tone?: "info" | "warning";
   onDismiss?: () => void;
-};
+}
 
 export function StatusBanner({ title, description, tone = "info", onDismiss }: StatusBannerProps) {
   const palette =

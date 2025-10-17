@@ -11,7 +11,7 @@ import type {
 } from "@/lib/pokemon/types";
 import type { PokemonListResponseDto } from "@/types";
 
-type UsePokemonListQueryOptions = {
+interface UsePokemonListQueryOptions {
   enabled?: boolean;
   /**
    * Override fetch implementation for testing.
@@ -21,14 +21,14 @@ type UsePokemonListQueryOptions = {
    * Custom endpoint (defaults to `/api/pokemon`).
    */
   endpoint?: string;
-};
+}
 
 const DEFAULT_ENDPOINT = "/api/pokemon";
 
-type RequestSnapshot = {
+interface RequestSnapshot {
   state: PokemonListQueryState;
   url: string;
-};
+}
 
 type QueryStatus = PokemonListQueryResult["status"];
 
@@ -51,12 +51,15 @@ export function usePokemonListQuery(
   const [error, setError] = useState<ApiError | undefined>(undefined);
 
   const requestKey = toQueryString(queryState);
+  // Note: We intentionally use requestKey (serialized string) instead of queryState object
+  // to avoid unnecessary re-renders when queryState object reference changes but values are the same.
+  // This is a performance optimization that React Compiler should respect.
   const querySnapshot = useMemo<PokemonListQueryState>(
     () => ({
       ...queryState,
       types: [...queryState.types],
     }),
-    [requestKey]
+    [queryState, requestKey]
   );
   const latestQueryRef = useRef<PokemonListQueryState>(querySnapshot);
 

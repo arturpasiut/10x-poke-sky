@@ -46,19 +46,19 @@ export type PokemonRegionValue =
 export type PokemonSortKey = "pokedex" | "name" | "cachedAt";
 export type PokemonSortOrder = "asc" | "desc";
 
-export type FilterOption<TValue extends string = string> = {
+export interface FilterOption<TValue extends string = string> {
   value: TValue;
   label: string;
   count?: number;
   icon?: string;
-};
+}
 
-export type PokemonListQueryFilters = {
+export interface PokemonListQueryFilters {
   search: string;
   types: PokemonTypeValue[];
   generation: PokemonGenerationValue | null;
   region: PokemonRegionValue | null;
-};
+}
 
 export type PokemonListQueryState = PokemonListQueryFilters & {
   sort: PokemonSortKey;
@@ -67,7 +67,7 @@ export type PokemonListQueryState = PokemonListQueryFilters & {
   pageSize: number;
 };
 
-export type PokemonListQueryDto = {
+export interface PokemonListQueryDto {
   search?: string;
   type?: PokemonTypeValue[];
   generation?: PokemonGenerationValue;
@@ -76,25 +76,25 @@ export type PokemonListQueryDto = {
   order?: PokemonSortOrder;
   page?: number;
   pageSize?: number;
-};
+}
 
-export type FilterChipViewModel = {
+export interface FilterChipViewModel {
   id: string;
   label: string;
   onRemove: () => void;
-};
+}
 
-export type SortOption = {
+export interface SortOption {
   value: PokemonSortKey;
   label: string;
   description?: string;
-};
+}
 
-export type PokemonAvailableFilters = {
+export interface PokemonAvailableFilters {
   types: FilterOption<PokemonTypeValue>[];
   generations: FilterOption<PokemonGenerationValue>[];
   regions: FilterOption<PokemonRegionValue>[];
-};
+}
 
 export type PokemonSummaryViewModel = PokemonSummaryDto & {
   displayName: string;
@@ -102,30 +102,30 @@ export type PokemonSummaryViewModel = PokemonSummaryDto & {
   spriteAlt: string;
   routeHref: string;
   cardGradientClass: string;
-  typeBadges: Array<{
+  typeBadges: {
     value: PokemonTypeValue;
     label: string;
     className: string;
-  }>;
+  }[];
 };
 
-export type PaginationViewModel = {
+export interface PaginationViewModel {
   page: number;
   pageSize: number;
   total: number;
   hasNext: boolean;
   pageCount: number;
   hasPrevious: boolean;
-};
+}
 
-export type ApiError = {
+export interface ApiError {
   code: number;
   message: string;
   details?: string;
   retryAfterMs?: number;
-};
+}
 
-export type PokemonListQueryResult = {
+export interface PokemonListQueryResult {
   status: "idle" | "loading" | "success" | "error";
   data?: {
     list: PokemonListResponseDto;
@@ -135,6 +135,6 @@ export type PokemonListQueryResult = {
   error?: ApiError;
   isFetching: boolean;
   retry: () => void;
-};
+}
 
 export type PokemonSpriteVariant = "official-artwork" | "dream-world" | "home";

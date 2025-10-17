@@ -4,9 +4,9 @@ import clsx from "clsx";
 
 import type { PokemonSummaryViewModel } from "@/lib/pokemon/types";
 
-type PokemonCardProps = {
+interface PokemonCardProps {
   pokemon: PokemonSummaryViewModel;
-};
+}
 
 const fallbackSprite =
   "data:image/svg+xml;charset=UTF-8," +

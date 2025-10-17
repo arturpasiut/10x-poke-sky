@@ -23,10 +23,10 @@ Guidelines:
 - Limit the number of suggestions to 5, sorted by descending confidence.
 `.trim();
 
-type BuildUserPromptOptions = {
+interface BuildUserPromptOptions {
   prompt: string;
   preferredGeneration?: string;
-};
+}
 
 export const buildSystemPrompt = (): string => SYSTEM_PROMPT;
 
