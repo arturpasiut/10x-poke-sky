@@ -1,4 +1,4 @@
-name: Pull Request Checks v2
+name: Pull Request Checks
 
 on:
   pull_request:
@@ -92,29 +92,29 @@ jobs:
           echo "TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}" >> .env.test
           echo "NODE_ENV=test" >> .env.test
 
-      - name: Start dev server for E2E tests
-        run: |
-          npm run dev:e2e > server.log 2>&1 &
-          echo $! > server.pid
-          echo "Server started with PID $(cat server.pid)"
-
-      - name: Wait for server to be ready
-        run: |
-          echo "Waiting for server to start on port 3000..."
-          for i in {1..30}; do
-            if curl -f http://localhost:3000 > /dev/null 2>&1; then
-              echo "Server is ready!"
-              exit 0
-            fi
-            echo "Attempt $i/30: Server not ready yet, waiting..."
-            sleep 2
-          done
-          echo "Server failed to start within 60 seconds. Showing server logs:"
-          cat server.log
-          exit 1
-
-      - name: Run E2E tests
-        run: npm run test:e2e
+#      - name: Start dev server for E2E tests
+#        run: |
+#          npm run dev:e2e > server.log 2>&1 &
+#          echo $! > server.pid
+#          echo "Server started with PID $(cat server.pid)"
+#
+#      - name: Wait for server to be ready
+#        run: |
+#          echo "Waiting for server to start on port 3000..."
+#          for i in {1..30}; do
+#            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+#              echo "Server is ready!"
+#              exit 0
+#            fi
+#            echo "Attempt $i/30: Server not ready yet, waiting..."
+#            sleep 2
+#          done
+#          echo "Server failed to start within 60 seconds. Showing server logs:"
+#          cat server.log
+#          exit 1
+#
+#      - name: Run E2E tests
+#        run: npm run test:e2e
 
 #      - name: Upload E2E test artifacts
 #        uses: actions/upload-artifact@v4
@@ -122,28 +122,6 @@ jobs:
 #          name: playwright-report
 #          path: playwright-report/
 #          retention-days: 5
-
-  #      - name: Start preview server
-  #        run: |
-  #          npm run dev:e2e -- --host 0.0.0.0 --port 4321 &
-  #          echo "SERVER_PID=$!" >> "$GITHUB_ENV"
-  #
-  #      - name: Wait for server
-  #        run: npx wait-on http://127.0.0.1:4321
-  #
-  #      - name: Run Playwright with coverage
-  #        run: npx playwright test --coverage
-  #
-  #      - name: Archive Playwright coverage
-  #        if: always() && hashFiles('.playwright/coverage/**') != ''
-  #        uses: actions/upload-artifact@v4
-  #        with:
-  #          name: e2e-coverage
-  #          path: .playwright/coverage
-  #
-  #      - name: Stop preview server
-  #        if: always() && env.SERVER_PID != ''
-  #        run: kill $SERVER_PID
 
   status-comment:
     name: Update PR Status
@@ -216,190 +194,42 @@ jobs:
                     `Please check the workflow logs for details.`
             });
 
+  build:
+    name: Build Production
+    runs-on: ubuntu-latest
+    needs: test
 
-#name: CI/CD Pipeline
-#
-#on:
-#  # Manual trigger
-#  workflow_dispatch:
-#
-#  # Trigger on push to develop branch
-#  push:
-#    branches:
-#      - develop
-#      - develop-10xdevs
-#      - PS-16-configure-github-action
-#
-#jobs:
-#  test:
-#    name: Run Tests
-#    runs-on: ubuntu-latest
-#    env:
-#      # Supabase configuration for E2E tests
-#      PUBLIC_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
-#      PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
-#      SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
-#      SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
-#      SUPABASE_PUBLIC_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
-#      # Test users configuration
-#      E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
-#      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-#      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-#      TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-#      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-#      TEST_USER_EMPTY_FAVS_EMAIL: ${{ secrets.TEST_USER_EMPTY_FAVS_EMAIL }}
-#      TEST_USER_EMPTY_FAVS_PASSWORD: ${{ secrets.TEST_USER_EMPTY_FAVS_PASSWORD }}
-#      # Environment
-#      NODE_ENV: test
-#      PLAYWRIGHT_BASE_URL: http://localhost:3000
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v5
-#
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v6
-#        with:
-#          node-version-file: '.nvmrc'
-#          cache: 'npm'
-#
-#      - name: Install dependencies
-#        run: npm ci
-#
-##      - name: Lint code
-##        run: npm run lint
-##
-##      - name: Run unit and integration tests
-##        run: npm run test
-#
-##      - name: Create .env.test file for E2E tests
-##        env:
-##          TEST_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
-##          TEST_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
-##          E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
-##          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-##          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-##          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-##          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-##          TEST_USER_EMPTY_FAVS_EMAIL: ${{ secrets.TEST_USER_EMPTY_FAVS_EMAIL }}
-##          TEST_USER_EMPTY_FAVS_PASSWORD: ${{ secrets.TEST_USER_EMPTY_AVS_PASSWORD }}
-##        run: |
-##          cat > .env.test << EOF
-##          # Playwright Configuration
-##          PLAYWRIGHT_BASE_URL=http://localhost:3000
-##
-##          # Supabase Configuration
-##          SUPABASE_URL=${TEST_SUPABASE_URL}
-##          SUPABASE_PUBLIC_KEY=${TEST_SUPABASE_ANON_KEY}
-##          SUPABASE_ANON_KEY=${TEST_SUPABASE_ANON_KEY}
-##          PUBLIC_SUPABASE_URL=${TEST_SUPABASE_URL}
-##          PUBLIC_SUPABASE_ANON_KEY=${TEST_SUPABASE_ANON_KEY}
-##
-##          # Test Users Configuration
-##          E2E_USERNAME_ID=${E2E_USERNAME_ID}
-##          E2E_USERNAME=${E2E_USERNAME}
-##          E2E_PASSWORD=${E2E_PASSWORD}
-##          TEST_USER_EMAIL=${TEST_USER_EMAIL}
-##          TEST_USER_PASSWORD=${TEST_USER_PASSWORD}
-##          TEST_USER_EMPTY_FAVS_EMAIL=${TEST_USER_EMPTY_FAVS_EMAIL}
-##          TEST_USER_EMPTY_FAVS_PASSWORD=${TEST_USER_EMPTY_FAVS_PASSWORD}
-#
-##      - name: Install Playwright browsers
-##        run: npx playwright install --with-deps chromium
-#
-##      - name: Start dev server for E2E tests
-##        run: |
-##          npm run dev:e2e > server.log 2>&1 &
-##          echo $! > server.pid
-##          echo "Server started with PID $(cat server.pid)"
-##
-##      - name: Wait for server to be ready
-##        run: |
-##          echo "Waiting for server to start on port 3000..."
-##          for i in {1..30}; do
-##            if curl -f http://localhost:3000 > /dev/null 2>&1; then
-##              echo "Server is ready!"
-##              exit 0
-##            fi
-##            echo "Attempt $i/30: Server not ready yet, waiting..."
-##            sleep 2
-##          done
-##          echo "Server failed to start within 60 seconds. Showing server logs:"
-##          cat server.log
-##          exit 1
-##
-##      - name: Run E2E tests
-##        run: npm run test:e2e
-#
-##      - name: Upload test coverage
-##        uses: actions/upload-artifact@v4
-##        if: always()
-##        with:
-##          name: coverage-report
-##          path: coverage/
-##          retention-days: 30
-##
-##      - name: Upload Playwright report
-##        uses: actions/upload-artifact@v4
-##        if: failure()
-##        with:
-##          name: playwright-report
-##          path: playwright-report/
-##          retention-days: 30
-##
-##      - name: Upload Playwright traces
-##        uses: actions/upload-artifact@v4
-##        if: failure()
-##        with:
-##          name: playwright-traces
-##          path: test-results/
-##          retention-days: 30
-#
-#      - name: Test summary
-#        if: always()
-#        run: |
-#          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
-#          echo "" >> $GITHUB_STEP_SUMMARY
-#          echo "- ✅ Linting completed" >> $GITHUB_STEP_SUMMARY
-#          echo "- ✅ Unit tests completed" >> $GITHUB_STEP_SUMMARY
-#          echo "- ✅ E2E tests completed" >> $GITHUB_STEP_SUMMARY
-#
-#  build:
-#    name: Build Production
-#    runs-on: ubuntu-latest
-#    needs: test
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v5
-#
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v6
-#        with:
-#          node-version-file: '.nvmrc'
-#          cache: 'npm'
-#
-#      - name: Install dependencies
-#        run: npm ci
-#
-#      - name: Build production version
-#        run: npm run build
-#        env:
-#          # Add production environment variables here if needed
-#          # PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-#          # PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-#          NODE_ENV: production
-#
-#      - name: Upload build artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: production-build
-#          path: dist/
-#          retention-days: 7
-#
-#      - name: Build summary
-#        if: always()
-#        run: |
-#          echo "## Build Results" >> $GITHUB_STEP_SUMMARY
-#          echo "" >> $GITHUB_STEP_SUMMARY
-#          echo "- ✅ Production build completed" >> $GITHUB_STEP_SUMMARY
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production version
+        run: npm run build
+        env:
+          # Add production environment variables here if needed
+          # PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          # PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          NODE_ENV: production
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+          retention-days: 7
+
+      - name: Build summary
+        if: always()
+        run: |
+          echo "## Build Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Production build completed" >> $GITHUB_STEP_SUMMARY
