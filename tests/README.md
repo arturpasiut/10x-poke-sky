@@ -58,13 +58,42 @@ E2E_USERNAME_ID=your_test_user_id
 
 ## Running Tests
 
+### Prerequisites
+**IMPORTANT:** You must start the dev server before running tests!
+
 ```bash
-# Run all tests (includes setup and teardown)
+# Terminal 1: Start dev server for E2E tests
+npm run dev:e2e
+```
+
+Wait for the server to start (you'll see "Local: http://localhost:3000/"), then in another terminal:
+
+```bash
+# Terminal 2: Run all tests (includes setup and teardown)
 npm run test:e2e
 
 # Run only favorites tests
-npx playwright test tests/e2e/favorites/
+npm run test:e2e tests/e2e/favorites
 
+# Run tests with browser visible (headed mode) - useful for debugging
+npm run test:e2e:headed tests/e2e/favorites
+
+# Run tests with interactive UI (best for debugging)
+npm run test:e2e:ui
+```
+
+### Available Scripts
+
+| Command | Description | Use Case |
+|---------|-------------|----------|
+| `npm run test:e2e` | Run all tests headless | CI, final verification |
+| `npm run test:e2e:headed` | Run tests with visible browser | Debugging specific flows |
+| `npm run test:e2e:ui` | Open Playwright UI | Interactive debugging |
+| `npm run dev:e2e` | Start dev server for E2E | Required before running tests |
+
+### Advanced Commands
+
+```bash
 # Run without dependencies (skip setup and teardown)
 npx playwright test --no-deps
 
@@ -73,6 +102,26 @@ npx playwright test --list
 ```
 
 **Note:** Tests run sequentially (1 worker) to prevent database conflicts. Expect ~1 minute runtime for full suite.
+
+### Common Errors
+
+#### ❌ "Cannot navigate to invalid URL"
+
+**Cause:** Dev server is not running.
+
+**Solution:**
+1. Start dev server: `npm run dev:e2e` in a separate terminal
+2. Wait for server to be ready
+3. Run tests: `npm run test:e2e`
+
+#### ❌ Why can't I use `npx playwright test --headed` directly?
+
+**Answer:** The `npx` command doesn't use our `playwright.config.ts` properly:
+- Missing `baseURL` (server location)
+- Wrong number of workers (causes race conditions)
+- Doesn't run setup/teardown projects
+
+**Always use:** `npm run test:e2e:headed` instead.
 
 ## Test Execution Order
 
