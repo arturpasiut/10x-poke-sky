@@ -64,7 +64,7 @@ npm run test:e2e tests/e2e/favorites
 #### Uruchomienie w trybie headed (z UI przeglądarki)
 
 ```bash
-npx playwright test tests/e2e/favorites --headed
+npm run test:e2e:headed tests/e2e/favorites
 ```
 
 #### Uruchomienie konkretnego pliku testowego
