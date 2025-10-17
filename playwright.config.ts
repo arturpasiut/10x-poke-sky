@@ -25,7 +25,7 @@ export default defineConfig({
   reporter: [["list"]],
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:4321",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
 
