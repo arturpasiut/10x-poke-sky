@@ -5,10 +5,11 @@ import type { AstroCookies, CookieOptions } from "astro";
 import type { Database } from "../db/database.types.ts";
 
 const publicSupabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL ?? import.meta.env.SUPABASE_URL;
-const publicSupabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_KEY ?? import.meta.env.SUPABASE_KEY;
+const publicSupabaseAnonKey =
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? import.meta.env.SUPABASE_ANON_KEY ?? import.meta.env.SUPABASE_KEY;
 
 const serverSupabaseUrl = import.meta.env.SUPABASE_URL;
-const serverSupabaseKey = import.meta.env.SUPABASE_KEY;
+const serverSupabaseKey = import.meta.env.SUPABASE_ANON_KEY ?? import.meta.env.SUPABASE_KEY;
 
 export const supabaseClient =
   typeof publicSupabaseUrl === "string" &&
@@ -51,7 +52,7 @@ interface SupabaseServerContext {
 
 export const createSupabaseServerClient = ({ request, cookies, persistSession = true }: SupabaseServerContext) => {
   if (!serverSupabaseUrl || !serverSupabaseKey) {
-    throw new Error("Brak konfiguracji Supabase. Ustaw SUPABASE_URL oraz SUPABASE_KEY.");
+    throw new Error("Brak konfiguracji Supabase. Ustaw SUPABASE_URL oraz SUPABASE_ANON_KEY (lub SUPABASE_KEY).");
   }
 
   return createServerClient<Database>(serverSupabaseUrl, serverSupabaseKey, {

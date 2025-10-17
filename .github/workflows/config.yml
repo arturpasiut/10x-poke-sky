@@ -15,6 +15,13 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    env:
+      # Supabase configuration for E2E tests
+      PUBLIC_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+      PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+      SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+      NODE_ENV: test
 
     steps:
       - name: Checkout code
@@ -31,7 +38,7 @@ jobs:
 
 #      - name: Lint code
 #        run: npm run lint
-
+#
 #      - name: Run unit and integration tests
 #        run: npm run test
 
@@ -43,10 +50,6 @@ jobs:
           npm run dev:e2e > server.log 2>&1 &
           echo $! > server.pid
           echo "Server started with PID $(cat server.pid)"
-        env:
-          PUBLIC_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
-          NODE_ENV: test
 
       - name: Wait for server to be ready
         run: |
@@ -67,6 +70,7 @@ jobs:
         run: npm run test:e2e
         env:
           CI: true
+          # Supabase credentials are inherited from job-level env
 
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
