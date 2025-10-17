@@ -27,7 +27,7 @@ jobs:
       - name: Run ESLint
         run: npm run lint:check
 
-  unit-tests:
+  unit-test:
     name: Unit Tests
     needs: lint
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
           path: coverage/
           retention-days: 5
 
-  e2e-tests:
+  e2e-test:
     name: Playwright E2E
     needs: lint
     runs-on: ubuntu-latest
