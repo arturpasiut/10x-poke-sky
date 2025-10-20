@@ -1,3 +1,13 @@
+/**
+ * Zarządza logiką zapisów ulubionych Pokémonów, realizując komunikację z Supabase
+ * oraz integrację z PokeAPI. Udostępnia operacje do weryfikacji użytkowników,
+ * paginowanego pobierania, tworzenia, aktualizowania oraz usuwania zasobów ulubionych,
+ * a także transformacje wyników na kontrakty DTO wykorzystywane w interfejsie.
+ * Moduł działa po stronie serwera i wymaga aktywnego połączenia z Supabase oraz
+ * dostępności `https://pokeapi.co`.
+ *
+ * @module favorites/service
+ */
 import type { User } from "@supabase/supabase-js";
 
 import type { Tables } from "@/db/database.types";
@@ -8,9 +18,27 @@ type SupabaseServerClient = App.Locals["supabase"];
 type FavoriteRow = Tables<"favorites">;
 type PokemonCacheRow = Tables<"pokemon_cache">;
 
+/**
+ * Dostępne klucze sortowania obsługiwane przez {@link fetchFavorites}.
+ * Wartość `createdAt` sortuje według kolumny `created_at`, natomiast `name`
+ * sortuje deterministycznie według `pokemon_id`, co odpowiada naturalnej numeracji PokeAPI.
+ */
 export type FavoriteSortKey = "createdAt" | "name";
+/**
+ * Kolejność sortowania wykorzystywana przez {@link fetchFavorites}. `asc`
+ * oznacza sortowanie rosnące, a `desc` malejące.
+ */
 export type FavoriteSortOrder = "asc" | "desc";
 
+/**
+ * Parametry zapytania przekazywane do {@link fetchFavorites}. Wszystkie wartości
+ * są wymagane i oczekiwane w układzie 1-indeksowanej paginacji.
+ *
+ * @property {number} page Indeks bieżącej strony (wartości ujemne zostaną znormalizowane do 1).
+ * @property {number} pageSize Liczba elementów na stronie; wartości mniejsze niż 1 zostaną wymuszone na 1.
+ * @property {FavoriteSortKey} sort Klucz sortowania wykorzystywany przy zapytaniu Supabase.
+ * @property {FavoriteSortOrder} order Kierunek sortowania.
+ */
 export interface FavoritesQueryOptions {
   page: number;
   pageSize: number;
@@ -18,21 +46,39 @@ export interface FavoritesQueryOptions {
   order: FavoriteSortOrder;
 }
 
+/**
+ * Znormalizowany wynik zwracany przez {@link fetchFavorites}.
+ *
+ * @property rows Tablica rekordów ulubionych zawierająca identyfikator Pokémona oraz datę dodania.
+ * @property total Łączna liczba ulubionych znalezionych w Supabase dla danego użytkownika.
+ */
 export interface FetchFavoritesResult {
   rows: Pick<FavoriteRow, "pokemon_id" | "created_at">[];
   total: number;
 }
 
+/**
+ * Migawka danych ulubionego Pokémona rozszerzająca {@link PokemonFavoriteSnapshot}
+ * o identyfikator Pokémona wykorzystywany w kontekście interfejsu użytkownika.
+ */
 export interface FavoritePokemonSnapshot extends PokemonFavoriteSnapshot {
   pokemonId: number;
 }
 
+/**
+ * Wynik operacji {@link upsertFavorite}. Informuje o utworzonym lub zaktualizowanym
+ * zapisie oraz określa, czy operacja utworzyła nowy rekord (`isNew === true`).
+ */
 export interface UpsertFavoriteResult {
   pokemonId: number;
   createdAt: string;
   isNew: boolean;
 }
 
+/**
+ * Wynik operacji {@link deleteFavorite}. Własność `deleted` informuje, czy co najmniej
+ * jeden rekord został usunięty (Supabase zwraca `count > 0`).
+ */
 export interface DeleteFavoriteResult {
   deleted: boolean;
 }
@@ -43,11 +89,23 @@ interface ServiceErrorOptions {
   cause?: unknown;
 }
 
+/**
+ * Błąd specyficzny dla modułu ulubionych, niosący status HTTP oraz opcjonalny kod Supabase.
+ * W praktyce reprezentuje sytuacje, które powinna obsłużyć warstwa API lub interfejs
+ * użytkownika. Klasa rozszerza wbudowany {@link Error} o dodatkowe szczegóły.
+ */
 export class FavoritesServiceError extends Error {
   readonly status: number;
   readonly code?: string;
   readonly details?: unknown;
 
+  /**
+   * Tworzy instancję błędu serwisu ulubionych.
+   *
+   * @param {number} status Kod statusu HTTP odwzorowujący charakter błędu.
+   * @param {string} message Wiadomość przyjazna użytkownikowi końcowemu.
+   * @param {ServiceErrorOptions} [options] Dodatkowe szczegóły błędu, m.in. kod Supabase i oryginalna przyczyna.
+   */
   constructor(status: number, message: string, options: ServiceErrorOptions = {}) {
     super(message);
     this.name = "FavoritesServiceError";
@@ -89,6 +147,13 @@ const resolveStatusFromCode = (status: number | null | undefined, code?: string)
   return 500;
 };
 
+/**
+ * Zapewnia, że aktualny kontekst Supabase dysponuje uwierzytelnionym użytkownikiem.
+ *
+ * @param supabase Supabase Server Client powiązany z żądaniem HTTP.
+ * @returns {Promise<User>} Użytkownik uwierzytelniony w bieżącej sesji.
+ * @throws {FavoritesServiceError} Gdy weryfikacja użytkownika nie powiedzie się lub brak uprawnień.
+ */
 export const requireUser = async (supabase: SupabaseServerClient): Promise<User> => {
   const { data, error } = await supabase.auth.getUser();
 
@@ -121,6 +186,16 @@ export const requireUser = async (supabase: SupabaseServerClient): Promise<User>
   return user;
 };
 
+/**
+ * Pobiera paginowaną listę ulubionych Pokémonów dla wskazanego użytkownika.
+ *
+ * @param supabase Supabase Server Client wykorzystany do odczytu tabeli `favorites`.
+ * @param userId Identyfikator użytkownika (kolumna `user_id`).
+ * @param options Parametry zapytania opisane przez {@link FavoritesQueryOptions}.
+ * @returns {Promise<FetchFavoritesResult>} Rekordy ulubionych oraz łączna liczba dopasowań.
+ * @throws {FavoritesServiceError} Gdy Supabase zwraca błąd lub zapytanie narusza uprawnienia.
+ * @remarks Funkcja normalizuje zakres paginacji (limit i offset), co zapobiega negatywnym wartościom.
+ */
 export const fetchFavorites = async (
   supabase: SupabaseServerClient,
   userId: string,
@@ -248,6 +323,18 @@ const fetchPokemonDataFromPokeApi = async (pokemonId: number) => {
   };
 };
 
+/**
+ * Tworzy lub aktualizuje ulubionego Pokémona oraz synchronizuje metadane z PokeAPI.
+ *
+ * @param supabase Supabase Server Client wykorzystany do operacji UPSERT na tabeli `favorites`.
+ * @param userId Identyfikator użytkownika, któremu przypisywany jest ulubiony.
+ * @param pokemonId Identyfikator Pokémona zgodny ze schematem PokeAPI.
+ * @returns {Promise<UpsertFavoriteResult>} Szczegóły zapisanego rekordu wraz z informacją, czy był nowy.
+ * @throws {FavoritesServiceError}
+ * - Gdy Supabase odrzuci zapis (np. brak uprawnień, konflikty, naruszenie ograniczeń).
+ * - Gdy PokeAPI zwróci błąd lub jest niedostępne (status HTTP 502).
+ * @remarks Wywołanie wykonuje dodatkowe żądanie HTTP do PokeAPI; zalecane jest stosowanie cache w warstwie wyższej.
+ */
 export const upsertFavorite = async (
   supabase: SupabaseServerClient,
   userId: string,
@@ -321,6 +408,15 @@ export const upsertFavorite = async (
   };
 };
 
+/**
+ * Usuwa ulubionego Pokémona przypisanego do użytkownika.
+ *
+ * @param supabase Supabase Server Client wykorzystany do operacji DELETE na tabeli `favorites`.
+ * @param userId Identyfikator właściciela ulubionego.
+ * @param pokemonId Identyfikator Pokémona przechowywany w kolumnie `pokemon_id`.
+ * @returns {Promise<DeleteFavoriteResult>} Informacja, czy rekord został fizycznie usunięty.
+ * @throws {FavoritesServiceError} Gdy Supabase zwróci błąd lub wystąpi naruszenie uprawnień.
+ */
 export const deleteFavorite = async (
   supabase: SupabaseServerClient,
   userId: string,
@@ -353,6 +449,14 @@ export const deleteFavorite = async (
   };
 };
 
+/**
+ * Mapuje wynik bazy danych na kontrakt API {@link FavoritesListResponseDto}.
+ * Zapewnia wartości domyślne dla brakujących nazw, typów oraz oblicza flagę stronicowania.
+ *
+ * @param result Wynik zapytania otrzymany z {@link fetchFavorites}.
+ * @param options Parametry zapytania wykorzystane przy pobieraniu danych.
+ * @returns {FavoritesListResponseDto} Obiekt zgodny z kontraktem DTO używanym w UI/testach E2E.
+ */
 export const toFavoritesListResponse = (
   result: FetchFavoritesResult,
   options: FavoritesQueryOptions
@@ -405,6 +509,14 @@ const getNestedValue = (record: Record<string, unknown>, path: string[]): unknow
   }, record);
 };
 
+/**
+ * Próbuje wydobyć adres URL sprite'a Pokémona z bufora `pokemon_cache`.
+ * Obsługuje zarówno bezpośredni format PokeAPI, jak i wzbogacone obiekty zagnieżdżone.
+ *
+ * @param payload Surowe dane JSON (lub tekst JSON) zapisane w kolumnie `payload`.
+ * @returns {string | null} Adres URL sprite'a lub `null`, jeśli nie uda się go odnaleźć.
+ * @remarks Funkcja zakłada poprawną serializację JSON; błędne dane są bezpiecznie ignorowane.
+ */
 export const parseSpriteUrlFromPayload = (payload: PokemonCacheRow["payload"]): string | null => {
   const parsed = parseJson(payload);
 
