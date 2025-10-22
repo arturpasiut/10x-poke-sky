@@ -173,7 +173,7 @@ async function resolveCandidateIds(state: typeof DEFAULT_QUERY_STATE): Promise<n
   return candidateIds;
 }
 
-async function filterCandidateIdsBySearch(candidateIds: number[], searchTerm: string): Promise<number[]> {
+export async function filterCandidateIdsBySearch(candidateIds: number[], searchTerm: string): Promise<number[]> {
   if (!searchTerm) {
     return candidateIds;
   }
@@ -266,6 +266,11 @@ async function loadPokemonIndex(): Promise<PokemonIndexEntry[]> {
   } finally {
     pokemonIndexPromise = null;
   }
+}
+
+export function __resetPokemonIndexCache() {
+  pokemonIndexCache = null;
+  pokemonIndexPromise = null;
 }
 
 export async function fetchPokemonSummary(idOrName: number | string): Promise<PokemonSummaryDto | null> {
