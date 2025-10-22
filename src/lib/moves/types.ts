@@ -6,7 +6,7 @@ import type {
   PokemonRegionValue,
   PokemonTypeValue,
 } from "@/lib/pokemon/types";
-import type { MoveListResponseDto, MoveSummaryDto } from "@/types";
+import type { MoveDamageClassValue, MoveListResponseDto, MoveSummaryDto } from "@/types";
 
 export type MoveSortKey = "name" | "power" | "accuracy" | "cachedAt";
 export type MoveSortOrder = "asc" | "desc";
@@ -17,6 +17,7 @@ export interface MoveListQueryFilters {
   region: PokemonRegionValue | null;
   minPower: number | null;
   maxPower: number | null;
+  damageClasses: MoveDamageClassValue[];
 }
 
 export type MoveListQueryState = MoveListQueryFilters & {
@@ -44,6 +45,7 @@ export interface MoveListQueryDto {
   order?: MoveSortOrder;
   page?: number;
   pageSize?: number;
+  damageClass?: MoveDamageClassValue[];
 }
 
 export interface MoveQueryParseSuccess {
@@ -68,6 +70,7 @@ export interface MoveSummaryViewModel extends MoveSummaryDto {
   typeValue: PokemonTypeValue | null;
   generationLabel: string;
   cachedAtLabel: string;
+  damageClassLabel: string | null;
 }
 
 export interface MoveListViewModel {
@@ -87,6 +90,7 @@ export interface MoveListQueryResult {
 export interface MoveAvailableFilters {
   types: FilterOption<PokemonTypeValue>[];
   regions: FilterOption<PokemonRegionValue>[];
+  damageClasses: FilterOption<MoveDamageClassValue>[];
 }
 
 export interface MoveQueryResolvedFilters extends MoveListQueryState {

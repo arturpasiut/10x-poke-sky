@@ -33,16 +33,23 @@ export function MoveCard({ move }: MoveCardProps) {
             <p className="text-[11px] uppercase tracking-[0.4em] text-white/50">Ruch</p>
             <h3 className="text-2xl font-semibold tracking-tight leading-tight drop-shadow-sm">{move.displayName}</h3>
           </div>
-          {move.typeLabel ? (
-            <span
-              className={clsx(
-                "inline-flex min-w-[88px] items-center justify-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.45em]",
-                move.badgeClass ?? "bg-white/10 text-white"
-              )}
-            >
-              {move.typeLabel}
-            </span>
-          ) : null}
+          <div className="flex flex-col items-end gap-2">
+            {move.typeLabel ? (
+              <span
+                className={clsx(
+                  "inline-flex min-w-[88px] items-center justify-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.45em]",
+                  move.badgeClass ?? "bg-white/10 text-white"
+                )}
+              >
+                {move.typeLabel}
+              </span>
+            ) : null}
+            {move.damageClassLabel ? (
+              <span className="inline-flex min-w-[88px] items-center justify-center rounded-full border border-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.4em] text-white/80">
+                {move.damageClassLabel}
+              </span>
+            ) : null}
+          </div>
         </header>
 
         <dl className="grid grid-cols-2 gap-3 text-sm text-white/80 sm:gap-4">

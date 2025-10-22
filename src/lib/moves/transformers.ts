@@ -9,6 +9,7 @@ import {
   getGenerationLabel,
 } from "@/lib/pokemon/filters";
 import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
+import { MOVE_DAMAGE_CLASS_LABELS } from "./constants";
 import type { MoveListViewModel, MoveSummaryViewModel } from "./types";
 
 const normalizeType = (type: string | null | undefined): PokemonTypeValue | null => {
@@ -55,6 +56,7 @@ const toMoveSummaryViewModel = (dto: MoveSummaryDto): MoveSummaryViewModel => {
     typeValue: type,
     generationLabel: generationValue ? getGenerationLabel(generationValue) : "Brak danych",
     cachedAtLabel: formatCachedAt(dto.cachedAt),
+    damageClassLabel: dto.damageClass ? (MOVE_DAMAGE_CLASS_LABELS[dto.damageClass] ?? dto.damageClass) : null,
   };
 };
 

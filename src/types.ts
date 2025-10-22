@@ -56,6 +56,8 @@ export interface PokemonSummaryDto {
 
 export type PokemonListResponseDto = PaginatedDto<PokemonSummaryDto>;
 
+export type MoveDamageClassValue = "physical" | "special" | "status";
+
 export interface PokemonDetailDto {
   pokemonId: PokemonRow["pokemon_id"];
   name: PokemonRow["name"];
@@ -87,6 +89,7 @@ export interface MoveSummaryDto {
   pp: MoveRow["pp"];
   generation: MoveRow["generation"];
   cachedAt: MoveRow["cached_at"];
+  damageClass: MoveDamageClassValue | null;
 }
 
 export type MoveListResponseDto = PaginatedDto<MoveSummaryDto>;

@@ -13,6 +13,7 @@ export function MoveListSkeleton() {
             <header className="space-y-3">
               <div className={`h-3 w-16 rounded-full ${shimmerClass}`} />
               <div className={`h-7 w-40 rounded-full ${shimmerClass}`} />
+              <div className={`h-3 w-24 rounded-full ${shimmerClass}`} />
             </header>
 
             <dl className="grid grid-cols-2 gap-3">

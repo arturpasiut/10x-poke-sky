@@ -1,10 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/db/database.types.ts";
-import type { MoveListResponseDto, MoveSummaryDto } from "@/types";
+import type { MoveDamageClassValue, MoveListResponseDto, MoveSummaryDto } from "@/types";
 import { buildMoveQueryFilters } from "./query";
 import type { MoveListQueryState, MoveQueryResolvedFilters, MoveSortKey } from "./types";
 import { buildFallbackMoveList } from "./pokeapi";
+import { MOVE_DAMAGE_CLASS_VALUES } from "./constants";
 
 type Supabase = SupabaseClient<Database>;
 
@@ -27,16 +28,28 @@ export class MoveServiceError extends Error {
   }
 }
 
-const toMoveSummaryDto = (row: Database["public"]["Tables"]["moves_cache"]["Row"]): MoveSummaryDto => ({
-  moveId: row.move_id,
-  name: row.name,
-  type: row.type,
-  power: row.power,
-  accuracy: row.accuracy,
-  pp: row.pp,
-  generation: row.generation,
-  cachedAt: row.cached_at,
-});
+const toMoveSummaryDto = (row: Database["public"]["Tables"]["moves_cache"]["Row"]): MoveSummaryDto => {
+  const payload = (row.payload as Record<string, unknown> | null) ?? null;
+  const damage =
+    payload && typeof payload === "object" ? (payload.damage_class as Record<string, unknown> | undefined) : undefined;
+  const rawDamage = typeof damage?.name === "string" ? damage.name.toLowerCase() : null;
+  const damageName =
+    rawDamage && (MOVE_DAMAGE_CLASS_VALUES as readonly string[]).includes(rawDamage)
+      ? (rawDamage as MoveDamageClassValue)
+      : null;
+
+  return {
+    moveId: row.move_id,
+    name: row.name,
+    type: row.type,
+    power: row.power,
+    accuracy: row.accuracy,
+    pp: row.pp,
+    generation: row.generation,
+    cachedAt: row.cached_at,
+    damageClass: damageName,
+  };
+};
 
 const applyFilters = (
   query: ReturnType<Supabase["from"]>,
@@ -68,6 +81,10 @@ const applyFilters = (
 };
 
 export const fetchMoveList = async (supabase: Supabase, state: MoveListQueryState): Promise<MoveListResponseDto> => {
+  if (state.damageClasses.length > 0) {
+    return buildFallbackMoveList(state);
+  }
+
   const filters = buildMoveQueryFilters(state);
   const from = (state.page - 1) * state.pageSize;
   const to = from + state.pageSize - 1;
@@ -76,7 +93,7 @@ export const fetchMoveList = async (supabase: Supabase, state: MoveListQueryStat
 
   let query = supabase
     .from("moves_cache")
-    .select("move_id,name,type,power,accuracy,pp,generation,cached_at", { count: "exact" })
+    .select("move_id,name,type,power,accuracy,pp,generation,cached_at,payload", { count: "exact" })
     .order(sortColumn, {
       ascending: state.order === "asc",
       nullsLast: true,

@@ -40,7 +40,7 @@ export function PokemonMovesGrid({ moves }: PokemonMovesGridProps) {
           <header className="flex items-center justify-between">
             <h3 className="text-base font-semibold text-foreground">{formatMoveName(move.name)}</h3>
             <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              {formatDamageClass(move.type)}
+              {formatDamageClass(move.damageClass)}
             </span>
           </header>
           <dl className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">

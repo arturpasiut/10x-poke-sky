@@ -9,12 +9,14 @@ import {
   MOVE_MAX_SEARCH_LENGTH,
   MOVE_MIN_POWER,
   MOVE_PAGE_SIZE_OPTIONS,
+  MOVE_DAMAGE_CLASS_VALUES,
   isValidRegionValue,
   resolveGenerationsForRegion,
 } from "./constants";
 import { isValidPokemonType } from "@/lib/pokemon/filters";
 import { sanitizeSearchValue as sanitizePokemonSearchValue, sanitizePageValue } from "@/lib/pokemon/query";
 import type { PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
+import type { MoveDamageClassValue } from "@/types";
 import type {
   MoveListQueryDto,
   MoveListQueryState,
@@ -113,9 +115,41 @@ const sanitizeMoveTypes = (values: readonly (string | PokemonTypeValue)[] | null
   return deduped;
 };
 
+export const sanitizeMoveDamageClasses = (
+  values: readonly (string | MoveDamageClassValue)[] | null | undefined
+): MoveDamageClassValue[] => {
+  if (!values || values.length === 0) {
+    return [];
+  }
+
+  const deduped: MoveDamageClassValue[] = [];
+
+  for (const candidate of values) {
+    if (!candidate) {
+      continue;
+    }
+
+    const normalized = candidate.toString().toLowerCase() as MoveDamageClassValue;
+
+    if (!(MOVE_DAMAGE_CLASS_VALUES as readonly string[]).includes(normalized)) {
+      continue;
+    }
+
+    if (deduped.includes(normalized)) {
+      continue;
+    }
+
+    deduped.push(normalized);
+  }
+
+  return deduped;
+};
+
 type RawMoveQueryState = Record<string, unknown> & {
   type?: unknown;
   types?: unknown;
+  damageClass?: unknown;
+  damageClasses?: unknown;
 };
 
 const toArray = <T>(value: T | T[] | null | undefined): T[] => {
@@ -134,6 +168,7 @@ export const DEFAULT_MOVE_QUERY_STATE: MoveListQueryState = {
   region: null,
   minPower: null,
   maxPower: null,
+  damageClasses: [],
   sort: DEFAULT_MOVE_SORT_KEY,
   order: DEFAULT_MOVE_SORT_ORDER,
   page: MIN_PAGE,
@@ -156,6 +191,10 @@ export const sanitizeMoveQueryState = (candidate?: RawMoveQueryState | null): Mo
   const pageSize = typeof source.pageSize === "number" || typeof source.pageSize === "string" ? source.pageSize : null;
   const minPower = typeof source.minPower === "number" || typeof source.minPower === "string" ? source.minPower : null;
   const maxPower = typeof source.maxPower === "number" || typeof source.maxPower === "string" ? source.maxPower : null;
+  const rawDamageClasses =
+    Array.isArray(source.damageClasses) && source.damageClasses.every((item) => typeof item === "string")
+      ? (source.damageClasses as string[])
+      : toArray(source.damageClass).filter((item): item is string => typeof item === "string");
 
   return {
     search: sanitizeMoveSearchValue(search),
@@ -163,6 +202,7 @@ export const sanitizeMoveQueryState = (candidate?: RawMoveQueryState | null): Mo
     region: sanitizeMoveRegionValue(region),
     minPower: sanitizeMovePowerValue(minPower),
     maxPower: sanitizeMovePowerValue(maxPower),
+    damageClasses: sanitizeMoveDamageClasses(rawDamageClasses),
     sort: sanitizeMoveSortKey(sort),
     order: sanitizeMoveSortOrder(order),
     page: sanitizePageValue(page),
@@ -185,6 +225,7 @@ export const parseMoveQueryState = (input: URLSearchParams | string): MoveListQu
     region: params.get("region"),
     minPower: params.get("minPower"),
     maxPower: params.get("maxPower"),
+    damageClass: params.getAll("damageClass"),
     sort: params.get("sort"),
     order: params.get("order"),
     page: params.get("page"),
@@ -207,6 +248,10 @@ export const toMoveQueryDto = (state: MoveListQueryState): MoveListQueryDto => {
   const region = sanitizeMoveRegionValue(state.region);
   if (region) {
     dto.region = region;
+  }
+
+  if (state.damageClasses.length > 0) {
+    dto.damageClass = sanitizeMoveDamageClasses(state.damageClasses);
   }
 
   const minPower = sanitizeMovePowerValue(state.minPower);
@@ -249,6 +294,8 @@ export const toMoveQueryString = (state: MoveListQueryState): string => {
     params.set("maxPower", String(dto.maxPower));
   }
 
+  dto.damageClass?.forEach((value) => params.append("damageClass", value));
+
   if (dto.sort && dto.sort !== DEFAULT_MOVE_SORT_KEY) {
     params.set("sort", dto.sort);
   }
@@ -290,6 +337,7 @@ const MoveQuerySchema = z
     page: z.string().optional(),
     pageSize: z.string().optional(),
     types: z.array(z.string()).optional(),
+    damageClass: z.array(z.string()).optional(),
   })
   .transform((input) => {
     const sanitized = sanitizeMoveQueryState({
@@ -298,6 +346,7 @@ const MoveQuerySchema = z
       region: input.region,
       minPower: input.minPower,
       maxPower: input.maxPower,
+      damageClass: input.damageClass,
       sort: input.sort,
       order: input.order,
       page: input.page,

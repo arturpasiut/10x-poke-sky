@@ -1,7 +1,7 @@
 import { pokeApiEndpoints } from "@/lib/env";
-import { resolveRegionForGeneration } from "./constants";
+import { resolveRegionForGeneration, MOVE_DAMAGE_CLASS_VALUES } from "./constants";
 import type { MoveListQueryState } from "./types";
-import type { MoveListResponseDto, MoveSummaryDto } from "@/types";
+import type { MoveDamageClassValue, MoveListResponseDto, MoveSummaryDto } from "@/types";
 
 interface MoveSeedEntry {
   summary: MoveSummaryDto;
@@ -41,6 +41,12 @@ const toSummary = (payload: Record<string, unknown>): MoveSummaryDto => {
   const rawId = Number(payload?.id);
   const moveId = Number.isFinite(rawId) ? rawId : 0;
 
+  const damageRaw = (payload?.damage_class as { name?: string } | undefined)?.name?.toLowerCase() ?? null;
+  const damageClass =
+    damageRaw && (MOVE_DAMAGE_CLASS_VALUES as readonly string[]).includes(damageRaw)
+      ? (damageRaw as MoveDamageClassValue)
+      : null;
+
   return {
     moveId,
     name: (payload?.name as string) ?? "unknown",
@@ -50,6 +56,7 @@ const toSummary = (payload: Record<string, unknown>): MoveSummaryDto => {
     pp: typeof payload?.pp === "number" ? payload.pp : null,
     generation: (payload?.generation as { name?: string } | undefined)?.name ?? null,
     cachedAt: new Date().toISOString(),
+    damageClass,
   };
 };
 
@@ -184,6 +191,12 @@ const filterMoves = (moves: MoveSummaryDto[], state: MoveListQueryState): MoveSu
     if (state.region) {
       const region = resolveRegionForGeneration(move.generation);
       if (region !== state.region) {
+        return false;
+      }
+    }
+
+    if (state.damageClasses.length > 0) {
+      if (move.damageClass == null || !state.damageClasses.includes(move.damageClass)) {
         return false;
       }
     }

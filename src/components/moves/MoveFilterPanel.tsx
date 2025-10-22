@@ -2,16 +2,19 @@ import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
 import type { MoveAvailableFilters, MoveSortKey } from "@/lib/moves/types";
+import type { MoveDamageClassValue } from "@/types";
 import type { PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
 interface MoveFilterPanelProps {
   filters: MoveAvailableFilters;
   selectedTypes: PokemonTypeValue[];
+  selectedDamageClasses: MoveDamageClassValue[];
   selectedRegion: PokemonRegionValue | null;
   minPower: number | null;
   maxPower: number | null;
   sortKey: MoveSortKey;
   onToggleType: (type: PokemonTypeValue) => void;
+  onToggleDamageClass: (value: MoveDamageClassValue) => void;
   onSelectRegion: (region: PokemonRegionValue | null) => void;
   onMinPowerChange: (value: number | null) => void;
   onMaxPowerChange: (value: number | null) => void;
@@ -26,11 +29,13 @@ const formatPowerValue = (value: number | null) => (value == null ? "" : String(
 export function MoveFilterPanel({
   filters,
   selectedTypes,
+  selectedDamageClasses,
   selectedRegion,
   minPower,
   maxPower,
   sortKey,
   onToggleType,
+  onToggleDamageClass,
   onSelectRegion,
   onMinPowerChange,
   onMaxPowerChange,
@@ -58,6 +63,28 @@ export function MoveFilterPanel({
               : "border border-white/10 bg-white/5 text-white/80 hover:border-primary/60 hover:bg-primary/10"
           )}
           onClick={() => onToggleType(option.value)}
+          aria-pressed={isSelected}
+        >
+          {option.label}
+        </button>
+      </li>
+    );
+  };
+
+  const renderDamageClassOption = (option: (typeof filters.damageClasses)[number]) => {
+    const isSelected = selectedDamageClasses.includes(option.value);
+
+    return (
+      <li key={option.value}>
+        <button
+          type="button"
+          className={clsx(
+            "rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+            isSelected
+              ? "border border-primary/70 bg-primary/20 text-white"
+              : "border border-white/10 bg-white/5 text-white/80 hover:border-primary/60 hover:bg-primary/10"
+          )}
+          onClick={() => onToggleDamageClass(option.value)}
           aria-pressed={isSelected}
         >
           {option.label}
@@ -125,6 +152,13 @@ export function MoveFilterPanel({
           Typ (wybrano {selectedTypes.length})
         </h3>
         <ul className="flex flex-wrap gap-2">{filters.types.map(renderTypeOption)}</ul>
+      </section>
+
+      <section className="space-y-4">
+        <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-white/60">
+          Typ ruchu (wybrano {selectedDamageClasses.length})
+        </h3>
+        <ul className="flex flex-wrap gap-2">{filters.damageClasses.map(renderDamageClassOption)}</ul>
       </section>
 
       <section className="space-y-4">

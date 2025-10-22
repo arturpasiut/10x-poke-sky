@@ -10,11 +10,13 @@ import {
   sanitizeMoveSortOrder,
   sanitizeMoveQueryState,
   sanitizeMoveSearchValue,
+  sanitizeMoveDamageClasses,
   sanitizeMovePageSizeValue,
   toMoveQueryDto,
   toMoveQueryString,
 } from "@/lib/moves/query";
 import type { MoveListQueryDto, MoveListQueryState, MoveSortKey, MoveSortOrder } from "@/lib/moves/types";
+import type { MoveDamageClassValue } from "@/types";
 import type { PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
 export type MoveSearchStore = MoveListQueryState & {
@@ -25,6 +27,8 @@ export type MoveSearchStore = MoveListQueryState & {
   setSearch: (value: string) => void;
   setTypes: (values: PokemonTypeValue[]) => void;
   toggleType: (value: PokemonTypeValue) => void;
+  setDamageClasses: (values: MoveDamageClassValue[]) => void;
+  toggleDamageClass: (value: MoveDamageClassValue) => void;
   setRegion: (value: PokemonRegionValue | null) => void;
   setSort: (value: MoveSortKey) => void;
   setOrder: (value: MoveSortOrder) => void;
@@ -49,6 +53,7 @@ const selectSanitizedTypes = (values: PokemonTypeValue[]): PokemonTypeValue[] =>
 const extractQueryState = (source: MoveSearchStore | MoveListQueryState): MoveListQueryState => ({
   search: source.search,
   types: [...source.types],
+  damageClasses: [...source.damageClasses],
   region: source.region,
   minPower: source.minPower,
   maxPower: source.maxPower,
@@ -70,6 +75,8 @@ const createInitialState = (): MoveSearchStore => {
     setSearch: () => undefined,
     setTypes: () => undefined,
     toggleType: () => undefined,
+    setDamageClasses: () => undefined,
+    toggleDamageClass: () => undefined,
     setRegion: () => undefined,
     setSort: () => undefined,
     setOrder: () => undefined,
@@ -141,6 +148,28 @@ export const useMoveSearchStore = create<MoveSearchStore>()((set, get) => ({
 
       return mergeMoveQueryState(state, {
         types: selectSanitizedTypes(nextTypes),
+        page: MIN_PAGE,
+      });
+    });
+  },
+  setDamageClasses(values) {
+    set((state) =>
+      mergeMoveQueryState(state, {
+        damageClasses: sanitizeMoveDamageClasses(values),
+        page: MIN_PAGE,
+      })
+    );
+  },
+  toggleDamageClass(value) {
+    set((state) => {
+      const alreadySelected = state.damageClasses.includes(value);
+
+      const next = alreadySelected
+        ? state.damageClasses.filter((entry) => entry !== value)
+        : [...state.damageClasses, value];
+
+      return mergeMoveQueryState(state, {
+        damageClasses: sanitizeMoveDamageClasses(next),
         page: MIN_PAGE,
       });
     });
@@ -245,6 +274,7 @@ export const useMoveSearchStore = create<MoveSearchStore>()((set, get) => ({
     set((state) =>
       mergeMoveQueryState(state, {
         types: [],
+        damageClasses: [],
         region: null,
         minPower: null,
         maxPower: null,
@@ -288,6 +318,7 @@ export const useMoveSearchStore = create<MoveSearchStore>()((set, get) => ({
 export const selectMoveQueryState = (state: MoveSearchStore): MoveListQueryState => ({
   search: state.search,
   types: state.types,
+  damageClasses: state.damageClasses,
   region: state.region,
   minPower: state.minPower,
   maxPower: state.maxPower,

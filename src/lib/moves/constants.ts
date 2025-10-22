@@ -1,5 +1,6 @@
 import { POKEMON_GENERATION_OPTIONS, POKEMON_REGION_OPTIONS } from "@/lib/pokemon/filters";
 import type { PokemonGenerationValue, PokemonRegionValue } from "@/lib/pokemon/types";
+import type { MoveDamageClassValue } from "@/types";
 
 export const MOVE_SORT_OPTIONS = [
   { value: "name", label: "Nazwa", description: "Porządkuj alfabetycznie" },
@@ -7,6 +8,28 @@ export const MOVE_SORT_OPTIONS = [
   { value: "accuracy", label: "Celność", description: "Najbardziej precyzyjne ruchy na początku" },
   { value: "cachedAt", label: "Ostatnia aktualizacja", description: "Najnowsze wpisy na początku" },
 ] as const;
+
+export const MOVE_DAMAGE_CLASS_OPTIONS: { value: MoveDamageClassValue; label: string }[] = [
+  { value: "physical", label: "Fizyczny" },
+  { value: "special", label: "Specjalny" },
+  { value: "status", label: "Status" },
+];
+
+export const MOVE_DAMAGE_CLASS_VALUES = MOVE_DAMAGE_CLASS_OPTIONS.map(
+  (option) => option.value
+) as MoveDamageClassValue[];
+
+export const MOVE_DAMAGE_CLASS_LABELS = MOVE_DAMAGE_CLASS_OPTIONS.reduce<Record<MoveDamageClassValue, string>>(
+  (accumulator, option) => {
+    accumulator[option.value] = option.label;
+    return accumulator;
+  },
+  {
+    physical: "Fizyczny",
+    special: "Specjalny",
+    status: "Status",
+  }
+);
 
 export const GENERATION_TO_REGION: Record<PokemonGenerationValue, PokemonRegionValue> = {
   "generation-i": "kanto",

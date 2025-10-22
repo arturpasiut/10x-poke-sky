@@ -22,6 +22,7 @@ import {
   useMoveSearchStore,
 } from "@/stores/useMoveSearchStore";
 import { getTypeLabel, getRegionLabel } from "@/lib/pokemon/filters";
+import { MOVE_DAMAGE_CLASS_LABELS } from "@/lib/moves/constants";
 
 interface StatusMessage {
   title: string;
@@ -39,6 +40,7 @@ export function MoveListingView() {
     replaceFromUrl,
     setSearch,
     toggleType,
+    toggleDamageClass,
     setRegion,
     setSort,
     toggleOrder,
@@ -54,6 +56,7 @@ export function MoveListingView() {
     replaceFromUrl: state.replaceFromUrl,
     setSearch: state.setSearch,
     toggleType: state.toggleType,
+    toggleDamageClass: state.toggleDamageClass,
     setRegion: state.setRegion,
     setSort: state.setSort,
     toggleOrder: state.toggleOrder,
@@ -162,9 +165,16 @@ export function MoveListingView() {
       queryState.types.length > 0 ||
       queryState.region !== null ||
       queryState.minPower !== null ||
-      queryState.maxPower !== null
+      queryState.maxPower !== null ||
+      queryState.damageClasses.length > 0
     );
-  }, [queryState.maxPower, queryState.minPower, queryState.region, queryState.types.length]);
+  }, [
+    queryState.damageClasses.length,
+    queryState.maxPower,
+    queryState.minPower,
+    queryState.region,
+    queryState.types.length,
+  ]);
 
   const filterChips = useMemo(() => {
     const chips: { id: string; label: string; onRemove: () => void }[] = [];
@@ -174,6 +184,14 @@ export function MoveListingView() {
         id: `type:${type}`,
         label: getTypeLabel(type),
         onRemove: () => toggleType(type),
+      });
+    }
+
+    for (const damageClass of queryState.damageClasses) {
+      chips.push({
+        id: `damageClass:${damageClass}`,
+        label: MOVE_DAMAGE_CLASS_LABELS[damageClass] ?? damageClass,
+        onRemove: () => toggleDamageClass(damageClass),
       });
     }
 
@@ -203,6 +221,7 @@ export function MoveListingView() {
 
     return chips;
   }, [
+    queryState.damageClasses,
     queryState.maxPower,
     queryState.minPower,
     queryState.region,
@@ -210,6 +229,7 @@ export function MoveListingView() {
     setRegion,
     setMaxPower,
     setMinPower,
+    toggleDamageClass,
     toggleType,
   ]);
 
@@ -280,11 +300,13 @@ export function MoveListingView() {
           <MoveFilterPanel
             filters={filters}
             selectedTypes={queryState.types}
+            selectedDamageClasses={queryState.damageClasses}
             selectedRegion={queryState.region}
             minPower={queryState.minPower}
             maxPower={queryState.maxPower}
             sortKey={queryState.sort}
             onToggleType={toggleType}
+            onToggleDamageClass={toggleDamageClass}
             onSelectRegion={setRegion}
             onMinPowerChange={setMinPower}
             onMaxPowerChange={setMaxPower}
@@ -318,11 +340,13 @@ export function MoveListingView() {
         <MoveFilterPanel
           filters={filters}
           selectedTypes={queryState.types}
+          selectedDamageClasses={queryState.damageClasses}
           selectedRegion={queryState.region}
           minPower={queryState.minPower}
           maxPower={queryState.maxPower}
           sortKey={queryState.sort}
           onToggleType={toggleType}
+          onToggleDamageClass={toggleDamageClass}
           onSelectRegion={setRegion}
           onMinPowerChange={setMinPower}
           onMaxPowerChange={setMaxPower}
