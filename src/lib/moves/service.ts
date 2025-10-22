@@ -4,6 +4,7 @@ import type { Database } from "@/db/database.types.ts";
 import type { MoveListResponseDto, MoveSummaryDto } from "@/types";
 import { buildMoveQueryFilters } from "./query";
 import type { MoveListQueryState, MoveQueryResolvedFilters, MoveSortKey } from "./types";
+import { buildFallbackMoveList } from "./pokeapi";
 
 type Supabase = SupabaseClient<Database>;
 
@@ -87,11 +88,27 @@ export const fetchMoveList = async (supabase: Supabase, state: MoveListQueryStat
   const { data, error, count } = await query;
 
   if (error) {
+    if (error.code === "42501") {
+      console.warn("[moves-cache] RLS denied select; falling back to PokeAPI dataset.", error);
+      return buildFallbackMoveList(state);
+    }
+
     throw new MoveServiceError("Nie udało się pobrać listy ruchów.", 500, error.code, error);
   }
 
-  const items = (data ?? []).map(toMoveSummaryDto);
-  const total = count ?? items.length;
+  const rawItems = data ?? [];
+  const total = count ?? rawItems.length;
+
+  if (rawItems.length === 0 && (count ?? 0) > 0) {
+    console.warn("[moves-cache] Empty page despite non-zero count; falling back to PokeAPI dataset.");
+    return buildFallbackMoveList(state);
+  }
+
+  if ((count ?? 0) === 0) {
+    return buildFallbackMoveList(state);
+  }
+
+  const items = rawItems.map(toMoveSummaryDto);
   const page = state.page;
   const pageSize = state.pageSize;
   const hasNext = to + 1 < total;

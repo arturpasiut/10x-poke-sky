@@ -3,6 +3,7 @@ import type { APIRoute } from "astro";
 import { errorResponse, jsonResponse } from "@/lib/http/responses";
 import { parseMoveQuery } from "@/lib/moves/query";
 import { fetchMoveList, MoveServiceError } from "@/lib/moves/service";
+import { buildFallbackMoveList } from "@/lib/moves/pokeapi";
 
 const resolveSupabase = (locals: App.Locals): App.Locals["supabase"] | Response => {
   if (!locals.supabase) {
@@ -44,7 +45,22 @@ export const GET: APIRoute = async ({ locals, url }) => {
   }
 
   try {
-    const payload = await fetchMoveList(supabase, parsed.data);
+    let payload: Awaited<ReturnType<typeof fetchMoveList>>;
+
+    try {
+      payload = await fetchMoveList(supabase, parsed.data);
+    } catch (error) {
+      if (error instanceof MoveServiceError && error.status === 500) {
+        console.warn("[moves] fetch from Supabase failed, using PokeAPI fallback.", {
+          code: error.code,
+          message: error.message,
+        });
+        payload = await buildFallbackMoveList(parsed.data);
+      } else {
+        throw error;
+      }
+    }
+
     return jsonResponse(payload, {
       status: 200,
       headers: {
