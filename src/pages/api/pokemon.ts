@@ -6,6 +6,7 @@ import type { PokemonListResponseDto, PokemonSummaryDto } from "@/types";
 
 const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 const MAX_POKEDEX_ID = 1025;
+const MIN_SEARCH_LENGTH = 2;
 
 interface GenerationRange {
   generation: PokemonGenerationValue;
@@ -58,6 +59,14 @@ interface PokemonTypeEntry {
   };
 }
 
+interface PokemonIndexEntry {
+  id: number;
+  name: string;
+}
+
+let pokemonIndexCache: PokemonIndexEntry[] | null = null;
+let pokemonIndexPromise: Promise<PokemonIndexEntry[]> | null = null;
+
 export const GET: APIRoute = async ({ url }) => {
   const state = parseQueryState(url.searchParams);
 
@@ -101,19 +110,13 @@ class NotFoundError extends Error {
 async function buildPokemonList(state = DEFAULT_QUERY_STATE): Promise<PokemonListResponseDto> {
   const sanitizedPage = Math.max(1, state.page ?? DEFAULT_QUERY_STATE.page);
   const sanitizedPageSize = clamp(state.pageSize, 1, DEFAULT_QUERY_STATE.pageSize * 4) ?? DEFAULT_QUERY_STATE.pageSize;
+  const searchTerm = (state.search ?? "").trim().toLowerCase();
 
-  if (state.search) {
-    const searchResult = await handleSearch(state);
-    return {
-      items: searchResult ? [searchResult] : [],
-      page: 1,
-      pageSize: sanitizedPageSize,
-      total: searchResult ? 1 : 0,
-      hasNext: false,
-    };
+  let candidateIds = await resolveCandidateIds(state);
+
+  if (searchTerm) {
+    candidateIds = await filterCandidateIdsBySearch(candidateIds, searchTerm);
   }
-
-  const candidateIds = await resolveCandidateIds(state);
 
   if (candidateIds.length === 0) {
     return {
@@ -144,39 +147,6 @@ async function buildPokemonList(state = DEFAULT_QUERY_STATE): Promise<PokemonLis
   };
 }
 
-async function handleSearch(state: typeof DEFAULT_QUERY_STATE): Promise<PokemonSummaryDto | null> {
-  const identifier = state.search.trim().toLowerCase();
-  if (!identifier) {
-    return null;
-  }
-
-  try {
-    const detail = await fetchPokemonSummary(identifier);
-    if (!detail) {
-      return null;
-    }
-
-    if (state.types.length > 0 && !state.types.every((type) => detail.types.includes(type))) {
-      return null;
-    }
-
-    if (state.generation && detail.generation !== state.generation) {
-      return null;
-    }
-
-    if (state.region && detail.region !== state.region) {
-      return null;
-    }
-
-    return detail;
-  } catch (error) {
-    if (error instanceof NotFoundError) {
-      return null;
-    }
-    throw error;
-  }
-}
-
 async function resolveCandidateIds(state: typeof DEFAULT_QUERY_STATE): Promise<number[]> {
   let candidateIds: number[] = [];
 
@@ -203,6 +173,39 @@ async function resolveCandidateIds(state: typeof DEFAULT_QUERY_STATE): Promise<n
   return candidateIds;
 }
 
+async function filterCandidateIdsBySearch(candidateIds: number[], searchTerm: string): Promise<number[]> {
+  if (!searchTerm) {
+    return candidateIds;
+  }
+
+  if (/^\d+$/.test(searchTerm)) {
+    const numericId = Number.parseInt(searchTerm, 10);
+    if (!Number.isNaN(numericId) && numericId >= 1 && numericId <= MAX_POKEDEX_ID) {
+      return candidateIds.includes(numericId) ? [numericId] : [];
+    }
+    return [];
+  }
+
+  if (searchTerm.length < MIN_SEARCH_LENGTH) {
+    return candidateIds;
+  }
+
+  const index = await loadPokemonIndex();
+  const matchingIds = new Set<number>();
+
+  for (const entry of index) {
+    if (entry.name.startsWith(searchTerm)) {
+      matchingIds.add(entry.id);
+    }
+  }
+
+  if (matchingIds.size === 0) {
+    return [];
+  }
+
+  return candidateIds.filter((id) => matchingIds.has(id));
+}
+
 function sortCandidateIds(
   ids: number[],
   sort: typeof DEFAULT_QUERY_STATE.sort,
@@ -222,6 +225,47 @@ function sortCandidateIds(
   }
 
   return sorted;
+}
+
+async function loadPokemonIndex(): Promise<PokemonIndexEntry[]> {
+  if (pokemonIndexCache) {
+    return pokemonIndexCache;
+  }
+
+  if (pokemonIndexPromise) {
+    return pokemonIndexPromise;
+  }
+
+  pokemonIndexPromise = (async () => {
+    const response = await fetch(`${POKEAPI_BASE_URL}/pokemon?limit=${MAX_POKEDEX_ID}&offset=0`, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`PokeAPI index request failed with status ${response.status}`);
+    }
+
+    const payload = (await response.json()) as {
+      results?: { name: string; url: string }[];
+    };
+
+    const entries = (payload.results ?? [])
+      .map((result) => ({
+        id: extractIdFromUrl(result.url),
+        name: result.name,
+      }))
+      .filter((entry): entry is PokemonIndexEntry => typeof entry.id === "number" && entry.id <= MAX_POKEDEX_ID)
+      .sort((a, b) => a.id - b.id);
+
+    pokemonIndexCache = entries;
+    return entries;
+  })();
+
+  try {
+    return await pokemonIndexPromise;
+  } finally {
+    pokemonIndexPromise = null;
+  }
 }
 
 export async function fetchPokemonSummary(idOrName: number | string): Promise<PokemonSummaryDto | null> {
