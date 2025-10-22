@@ -51,15 +51,13 @@ export function usePokemonListQuery(
   const [error, setError] = useState<ApiError | undefined>(undefined);
 
   const requestKey = toQueryString(queryState);
-  // Note: We intentionally use requestKey (serialized string) instead of queryState object
-  // to avoid unnecessary re-renders when queryState object reference changes but values are the same.
-  // This is a performance optimization that React Compiler should respect.
+  // Using the serialized key lets downstream effects react only to meaningful query changes.
   const querySnapshot = useMemo<PokemonListQueryState>(
     () => ({
       ...queryState,
       types: [...queryState.types],
     }),
-    [queryState, requestKey]
+    [queryState]
   );
   const latestQueryRef = useRef<PokemonListQueryState>(querySnapshot);
 
