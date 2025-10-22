@@ -14,7 +14,7 @@ import {
 } from "./constants";
 import { sanitizeSelectedTypes } from "@/lib/pokemon/filters";
 import { sanitizeSearchValue as sanitizePokemonSearchValue, sanitizePageValue } from "@/lib/pokemon/query";
-import type { PokemonGenerationValue, PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
+import type { PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
 import type {
   MoveListQueryDto,
   MoveListQueryState,
@@ -134,12 +134,9 @@ export const sanitizeMoveQueryState = (candidate?: RawMoveQueryState | null): Mo
   const sort = typeof source.sort === "string" ? source.sort : null;
   const order = typeof source.order === "string" ? source.order : null;
   const page = typeof source.page === "number" || typeof source.page === "string" ? source.page : null;
-  const pageSize =
-    typeof source.pageSize === "number" || typeof source.pageSize === "string" ? source.pageSize : null;
-  const minPower =
-    typeof source.minPower === "number" || typeof source.minPower === "string" ? source.minPower : null;
-  const maxPower =
-    typeof source.maxPower === "number" || typeof source.maxPower === "string" ? source.maxPower : null;
+  const pageSize = typeof source.pageSize === "number" || typeof source.pageSize === "string" ? source.pageSize : null;
+  const minPower = typeof source.minPower === "number" || typeof source.minPower === "string" ? source.minPower : null;
+  const maxPower = typeof source.maxPower === "number" || typeof source.maxPower === "string" ? source.maxPower : null;
 
   return {
     search: sanitizeMoveSearchValue(search),
@@ -154,14 +151,11 @@ export const sanitizeMoveQueryState = (candidate?: RawMoveQueryState | null): Mo
   };
 };
 
-export const createDefaultMoveQueryState = (
-  overrides: Partial<MoveListQueryState> = {}
-): MoveListQueryState => sanitizeMoveQueryState({ ...DEFAULT_MOVE_QUERY_STATE, ...overrides });
+export const createDefaultMoveQueryState = (overrides: Partial<MoveListQueryState> = {}): MoveListQueryState =>
+  sanitizeMoveQueryState({ ...DEFAULT_MOVE_QUERY_STATE, ...overrides });
 
-export const mergeMoveQueryState = (
-  prev: MoveListQueryState,
-  next: Partial<MoveListQueryState>
-): MoveListQueryState => sanitizeMoveQueryState({ ...prev, ...next });
+export const mergeMoveQueryState = (prev: MoveListQueryState, next: Partial<MoveListQueryState>): MoveListQueryState =>
+  sanitizeMoveQueryState({ ...prev, ...next });
 
 export const parseMoveQueryState = (input: URLSearchParams | string): MoveListQueryState => {
   const params = typeof input === "string" ? new URLSearchParams(input) : input;

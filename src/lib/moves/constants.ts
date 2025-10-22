@@ -22,20 +22,23 @@ export const GENERATION_TO_REGION: Record<PokemonGenerationValue, PokemonRegionV
 
 export const REGION_TO_GENERATIONS = POKEMON_REGION_OPTIONS.reduce<
   Record<PokemonRegionValue, PokemonGenerationValue[]>
->((accumulator, option) => {
-  switch (option.value) {
-    case "hisui":
-      accumulator.hisui = ["generation-viii"];
-      break;
-    default: {
-      const generation = POKEMON_GENERATION_OPTIONS.find(
-        (generationOption) => GENERATION_TO_REGION[generationOption.value] === option.value
-      );
-      accumulator[option.value] = generation ? [generation.value] : [];
+>(
+  (accumulator, option) => {
+    switch (option.value) {
+      case "hisui":
+        accumulator.hisui = ["generation-viii"];
+        break;
+      default: {
+        const generation = POKEMON_GENERATION_OPTIONS.find(
+          (generationOption) => GENERATION_TO_REGION[generationOption.value] === option.value
+        );
+        accumulator[option.value] = generation ? [generation.value] : [];
+      }
     }
-  }
-  return accumulator;
-}, {} as Record<PokemonRegionValue, PokemonGenerationValue[]>);
+    return accumulator;
+  },
+  {} as Record<PokemonRegionValue, PokemonGenerationValue[]>
+);
 
 export const MOVE_MAX_POWER = 300;
 export const MOVE_MIN_POWER = 0;
@@ -56,18 +59,14 @@ export const isValidGenerationValue = (value: string): value is PokemonGeneratio
 export const isValidRegionValue = (value: string): value is PokemonRegionValue =>
   POKEMON_REGION_OPTIONS.some((option) => option.value === value);
 
-export const resolveRegionForGeneration = (
-  generation: string | null | undefined
-): PokemonRegionValue | null => {
+export const resolveRegionForGeneration = (generation: string | null | undefined): PokemonRegionValue | null => {
   if (!generation || !isValidGenerationValue(generation)) {
     return null;
   }
   return GENERATION_TO_REGION[generation];
 };
 
-export const resolveGenerationsForRegion = (
-  region: string | null | undefined
-): PokemonGenerationValue[] => {
+export const resolveGenerationsForRegion = (region: string | null | undefined): PokemonGenerationValue[] => {
   if (!region || !isValidRegionValue(region)) {
     return [];
   }

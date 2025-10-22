@@ -66,10 +66,7 @@ const applyFilters = (
   return builder;
 };
 
-export const fetchMoveList = async (
-  supabase: Supabase,
-  state: MoveListQueryState
-): Promise<MoveListResponseDto> => {
+export const fetchMoveList = async (supabase: Supabase, state: MoveListQueryState): Promise<MoveListResponseDto> => {
   const filters = buildMoveQueryFilters(state);
   const from = (state.page - 1) * state.pageSize;
   const to = from + state.pageSize - 1;

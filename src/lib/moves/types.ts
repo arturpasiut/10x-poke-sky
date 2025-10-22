@@ -64,6 +64,10 @@ export interface MoveSummaryViewModel extends MoveSummaryDto {
   displayName: string;
   badgeClass: string | null;
   typeLabel: string | null;
+  gradientClass: string;
+  typeValue: PokemonTypeValue | null;
+  generationLabel: string;
+  cachedAtLabel: string;
 }
 
 export interface MoveListViewModel {

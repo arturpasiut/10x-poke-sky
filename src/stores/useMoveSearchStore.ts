@@ -142,8 +142,8 @@ export const useMoveSearchStore = create<MoveSearchStore>()((set, get) => ({
       const nextTypes = alreadySelected
         ? state.types.filter((type) => type !== value)
         : selectionFull
-        ? state.types
-        : [...state.types, value];
+          ? state.types
+          : [...state.types, value];
 
       return mergeMoveQueryState(state, {
         types: selectSanitizedTypes(nextTypes),
