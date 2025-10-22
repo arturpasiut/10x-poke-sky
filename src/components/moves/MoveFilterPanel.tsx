@@ -1,7 +1,6 @@
 import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
-import { MAX_SELECTED_TYPES } from "@/lib/pokemon/filters";
 import type { MoveAvailableFilters, MoveSortKey } from "@/lib/moves/types";
 import type { PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
@@ -47,7 +46,6 @@ export function MoveFilterPanel({
 
   const renderTypeOption = (option: (typeof filters.types)[number]) => {
     const isSelected = selectedTypes.includes(option.value);
-    const selectionFull = isSelected || selectedTypes.length < MAX_SELECTED_TYPES;
 
     return (
       <li key={option.value}>
@@ -57,13 +55,10 @@ export function MoveFilterPanel({
             "rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
             isSelected
               ? "bg-primary text-black shadow-[0_18px_40px_-24px_rgba(56,189,248,0.75)]"
-              : selectionFull
-                ? "border border-white/10 bg-white/5 text-white/80 hover:border-primary/60 hover:bg-primary/10"
-                : "border border-white/5 bg-white/5 text-white/30 cursor-not-allowed"
+              : "border border-white/10 bg-white/5 text-white/80 hover:border-primary/60 hover:bg-primary/10"
           )}
           onClick={() => onToggleType(option.value)}
           aria-pressed={isSelected}
-          disabled={!selectionFull}
         >
           {option.label}
         </button>
@@ -127,7 +122,7 @@ export function MoveFilterPanel({
 
       <section className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-white/60">
-          Typ ({selectedTypes.length}/{MAX_SELECTED_TYPES})
+          Typ (wybrano {selectedTypes.length})
         </h3>
         <ul className="flex flex-wrap gap-2">{filters.types.map(renderTypeOption)}</ul>
       </section>

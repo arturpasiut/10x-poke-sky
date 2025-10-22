@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-import { MAX_SELECTED_TYPES } from "@/lib/pokemon/filters";
 import { MIN_PAGE } from "@/lib/moves/constants";
 import {
   createDefaultMoveQueryState,
@@ -137,13 +136,8 @@ export const useMoveSearchStore = create<MoveSearchStore>()((set, get) => ({
   toggleType(value) {
     set((state) => {
       const alreadySelected = state.types.includes(value);
-      const selectionFull = state.types.length >= MAX_SELECTED_TYPES;
 
-      const nextTypes = alreadySelected
-        ? state.types.filter((type) => type !== value)
-        : selectionFull
-          ? state.types
-          : [...state.types, value];
+      const nextTypes = alreadySelected ? state.types.filter((type) => type !== value) : [...state.types, value];
 
       return mergeMoveQueryState(state, {
         types: selectSanitizedTypes(nextTypes),

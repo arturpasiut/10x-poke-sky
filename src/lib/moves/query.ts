@@ -12,7 +12,7 @@ import {
   isValidRegionValue,
   resolveGenerationsForRegion,
 } from "./constants";
-import { sanitizeSelectedTypes } from "@/lib/pokemon/filters";
+import { isValidPokemonType } from "@/lib/pokemon/filters";
 import { sanitizeSearchValue as sanitizePokemonSearchValue, sanitizePageValue } from "@/lib/pokemon/query";
 import type { PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
 import type {
@@ -91,7 +91,26 @@ const sanitizeMoveTypes = (values: readonly (string | PokemonTypeValue)[] | null
     return [];
   }
 
-  return sanitizeSelectedTypes(values);
+  const deduped: PokemonTypeValue[] = [];
+
+  for (const candidate of values) {
+    if (typeof candidate !== "string") {
+      continue;
+    }
+
+    if (!isValidPokemonType(candidate)) {
+      continue;
+    }
+
+    const normalized = candidate as PokemonTypeValue;
+    if (deduped.includes(normalized)) {
+      continue;
+    }
+
+    deduped.push(normalized);
+  }
+
+  return deduped;
 };
 
 type RawMoveQueryState = Record<string, unknown> & {
