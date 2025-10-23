@@ -74,6 +74,7 @@ export interface AiChatSessionState {
   pendingCommand: AiIdentifyCommand | null;
   latestResponse: AiIdentifyResponseDto | null;
   rateLimitResetAt: number | null;
+  modelId: string;
 }
 
 export const DEFAULT_SUGGESTION_CHIPS: SuggestionChip[] = [
@@ -118,6 +119,7 @@ export const createEmptySessionState = (overrides: Partial<AiChatSessionState> =
   pendingCommand: null,
   latestResponse: null,
   rateLimitResetAt: null,
+  modelId: "",
   ...overrides,
 });
 

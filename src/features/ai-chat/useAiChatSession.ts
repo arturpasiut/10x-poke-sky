@@ -13,6 +13,7 @@ import {
   type SuggestionSummaryLookup,
 } from "./index";
 import type { AiIdentifyCommand, AiIdentifyResponseDto } from "@/types";
+import type { AiModelOption } from "@/lib/ai/models";
 
 interface UseAiChatSessionOptions {
   /**
@@ -39,6 +40,14 @@ interface UseAiChatSessionOptions {
    * Preferred generation forwarded to the AI context envelope.
    */
   preferredGeneration?: string;
+  /**
+   * List of selectable AI models presented in the UI.
+   */
+  availableModels?: AiModelOption[];
+  /**
+   * Default model selected on load (falls back to the first supported option).
+   */
+  defaultModelId?: string;
 }
 
 type SubmitResult =
@@ -57,6 +66,7 @@ type SubmitResult =
 type AiChatSessionAction =
   | { type: "INIT"; payload: { suggestions: AiChatSuggestionViewModel[]; suggestedPrompts?: SuggestionChip[] } }
   | { type: "SET_PROMPT"; payload: { value: string } }
+  | { type: "SET_MODEL"; payload: { modelId: string } }
   | {
       type: "SUBMIT_START";
       payload: {
@@ -90,6 +100,7 @@ interface UseAiChatSessionReturn {
   state: AiChatSessionState;
   actions: {
     setPromptValue: (value: string) => void;
+    setModelId: (modelId: string) => void;
     submitPrompt: (promptOverride?: string) => Promise<void>;
     selectSuggestion: (prompt: string) => void;
     dismissError: () => void;
@@ -267,6 +278,16 @@ export const aiChatSessionReducer = (state: AiChatSessionState, action: AiChatSe
         promptValue: action.payload.value,
       };
     }
+    case "SET_MODEL": {
+      if (state.modelId === action.payload.modelId) {
+        return state;
+      }
+
+      return {
+        ...state,
+        modelId: action.payload.modelId,
+      };
+    }
 
     case "SUBMIT_START": {
       return {
@@ -345,6 +366,7 @@ export const aiChatSessionReducer = (state: AiChatSessionState, action: AiChatSe
         status: "ready",
         suggestions: [...action.payload.suggestions],
         suggestedPrompts: action.payload.suggestedPrompts ?? state.suggestedPrompts,
+        modelId: state.modelId,
       });
     }
 
@@ -477,18 +499,33 @@ const isAbortError = (error: unknown): boolean => {
   );
 };
 
-export const buildIdentifyCommand = (prompt: string, preferredGeneration?: string): AiIdentifyCommand => {
+interface BuildIdentifyCommandOptions {
+  preferredGeneration?: string;
+  modelId?: string;
+}
+
+export const buildIdentifyCommand = (
+  prompt: string,
+  { preferredGeneration, modelId }: BuildIdentifyCommandOptions = {}
+): AiIdentifyCommand => {
+  const trimmedPrompt = prompt.trim();
+  const context: Record<string, string> = {};
+
   if (preferredGeneration && preferredGeneration.trim().length > 0) {
-    return {
-      prompt,
-      context: {
-        preferredGeneration,
-      },
-    };
+    context.preferredGeneration = preferredGeneration.trim();
+  }
+
+  if (modelId && modelId.trim().length > 0) {
+    context.modelId = modelId.trim();
   }
 
   return {
-    prompt,
+    prompt: trimmedPrompt,
+    ...(Object.keys(context).length > 0
+      ? {
+          context,
+        }
+      : {}),
   };
 };
 
@@ -500,13 +537,30 @@ export const useAiChatSession = (options: UseAiChatSessionOptions = {}): UseAiCh
     initialSuggestedPrompts,
     loadSuggestionSummaries,
     preferredGeneration,
+    availableModels = [],
+    defaultModelId,
   } = options;
+
+  const allowedModelIds = useMemo(() => availableModels.map((model) => model.id), [availableModels]);
+
+  const fallbackModelId = useMemo(() => {
+    if (allowedModelIds.length === 0) {
+      return "";
+    }
+
+    if (defaultModelId && allowedModelIds.includes(defaultModelId)) {
+      return defaultModelId;
+    }
+
+    return allowedModelIds[0];
+  }, [allowedModelIds, defaultModelId]);
 
   const [state, dispatch] = useReducer(
     aiChatSessionReducer,
     createEmptySessionState({
       suggestions: [...initialSuggestions],
       suggestedPrompts: initialSuggestedPrompts,
+      modelId: fallbackModelId,
     })
   );
 
@@ -519,6 +573,19 @@ export const useAiChatSession = (options: UseAiChatSessionOptions = {}): UseAiCh
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+
+  useEffect(() => {
+    if (allowedModelIds.length === 0) {
+      return;
+    }
+
+    if (!allowedModelIds.includes(state.modelId) && fallbackModelId && state.modelId !== fallbackModelId) {
+      dispatch({
+        type: "SET_MODEL",
+        payload: { modelId: fallbackModelId },
+      });
+    }
+  }, [allowedModelIds, fallbackModelId, state.modelId]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -538,6 +605,25 @@ export const useAiChatSession = (options: UseAiChatSessionOptions = {}): UseAiCh
       },
     });
   }, [initialSuggestedPrompts, initialSuggestions]);
+
+  const setModelId = useCallback(
+    (modelId: string) => {
+      const sanitized = allowedModelIds.includes(modelId) ? modelId : fallbackModelId;
+      if (!sanitized) {
+        return;
+      }
+
+      if (stateRef.current.modelId === sanitized) {
+        return;
+      }
+
+      dispatch({
+        type: "SET_MODEL",
+        payload: { modelId: sanitized },
+      });
+    },
+    [allowedModelIds, fallbackModelId]
+  );
 
   const cancelPending = useCallback(() => {
     controllerRef.current?.abort();
@@ -722,7 +808,10 @@ export const useAiChatSession = (options: UseAiChatSessionOptions = {}): UseAiCh
         return;
       }
 
-      const command = buildIdentifyCommand(promptSource, preferredGeneration);
+      const command = buildIdentifyCommand(promptSource, {
+        preferredGeneration,
+        modelId: currentState.modelId,
+      });
       const userMessage = createUserMessage(promptSource);
 
       lastCommandRef.current = command;
@@ -786,6 +875,7 @@ export const useAiChatSession = (options: UseAiChatSessionOptions = {}): UseAiCh
       state,
       actions: {
         setPromptValue,
+        setModelId,
         submitPrompt,
         selectSuggestion,
         dismissError,
@@ -800,6 +890,7 @@ export const useAiChatSession = (options: UseAiChatSessionOptions = {}): UseAiCh
     resetSession,
     retryLastPrompt,
     selectSuggestion,
+    setModelId,
     setPromptValue,
     state,
     submitPrompt,
