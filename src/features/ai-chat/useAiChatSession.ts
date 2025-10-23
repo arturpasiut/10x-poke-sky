@@ -541,10 +541,7 @@ export const useAiChatSession = (options: UseAiChatSessionOptions = {}): UseAiCh
     defaultModelId,
   } = options;
 
-  const allowedModelIds = useMemo(
-    () => availableModels.map((model) => model.id),
-    [availableModels]
-  );
+  const allowedModelIds = useMemo(() => availableModels.map((model) => model.id), [availableModels]);
 
   const fallbackModelId = useMemo(() => {
     if (allowedModelIds.length === 0) {

@@ -64,11 +64,7 @@ export const mapResponseToSuggestions = (
     const summary = lookup[suggestion.pokemonId];
 
     if (hasLookupData && !summary) {
-      console.warn(
-        "[ai] Skipping suggestion without matching Pokémon summary",
-        suggestion.pokemonId,
-        suggestion.name
-      );
+      console.warn("[ai] Skipping suggestion without matching Pokémon summary", suggestion.pokemonId, suggestion.name);
       return [];
     }
 
@@ -98,10 +94,7 @@ const buildDetailHref = (summary: PokemonSummaryDto | undefined, suggestion: AiI
   return `/pokemon/${suggestion.pokemonId}`;
 };
 
-const resolveSuggestionName = (
-  summary: PokemonSummaryDto | undefined,
-  suggestion: AiIdentifySuggestionDto
-): string => {
+const resolveSuggestionName = (summary: PokemonSummaryDto | undefined, suggestion: AiIdentifySuggestionDto): string => {
   const source = summary?.name ?? suggestion.name;
   if (!source) {
     return suggestion.name;
