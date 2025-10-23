@@ -36,10 +36,16 @@ const baseResponse = {
 
 describe("useAiChatSession internals", () => {
   it("buildIdentifyCommand attaches generation hint when provided", () => {
-    const command = buildIdentifyCommand("Opis Pokémona", "generation-ii");
+    const command = buildIdentifyCommand("Opis Pokémona", { preferredGeneration: "generation-ii" });
 
     expect(command.prompt).toBe("Opis Pokémona");
     expect(command.context).toEqual({ preferredGeneration: "generation-ii" });
+  });
+
+  it("buildIdentifyCommand attaches model identifier when provided", () => {
+    const command = buildIdentifyCommand("Opis Pokémona", { modelId: "google/gemini-2.0-flash-exp:free" });
+
+    expect(command.context).toEqual({ modelId: "google/gemini-2.0-flash-exp:free" });
   });
 
   it("resolveErrorState maps HTTP status codes to domain errors", () => {

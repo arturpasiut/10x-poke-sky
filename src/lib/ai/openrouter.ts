@@ -1,12 +1,11 @@
 import { z } from "zod";
 
 import { buildSystemPrompt, buildUserPrompt } from "./prompts";
+import { DEFAULT_AI_MODEL_ID, resolveSupportedModelId } from "./models";
 import { runtimeConfig } from "@/lib/env";
 import type { AiIdentifyCommand } from "@/types";
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
-// Use an open-source model available on the OpenRouter free tier for initial integration.
-const DEFAULT_MODEL = "deepseek/deepseek-r1-0528-qwen3-8b:free";
 
 const IdentifyPayloadSchema = z
   .object({
@@ -43,6 +42,7 @@ interface ExtractedContent {
 
 interface OpenRouterIdentifySuccess {
   ok: true;
+  modelId: string;
   payload: ParsedIdentifyPayload;
   rawResponse: unknown;
   rawText: string;
@@ -51,6 +51,7 @@ interface OpenRouterIdentifySuccess {
 
 interface OpenRouterIdentifyError {
   ok: false;
+  modelId: string;
   status: number;
   message: string;
   durationMs: number;
@@ -193,10 +194,16 @@ export const callOpenRouterIdentify = async (
   options: { signal?: AbortSignal } = {}
 ): Promise<OpenRouterIdentifyResult> => {
   const apiKey = runtimeConfig.openRouterApiKey;
+  const contextModelId =
+    typeof command.context === "object" && command.context && "modelId" in command.context
+      ? String((command.context as Record<string, unknown>).modelId)
+      : null;
+  const modelId = resolveSupportedModelId(contextModelId, DEFAULT_AI_MODEL_ID);
 
   if (!apiKey) {
     return {
       ok: false,
+      modelId,
       status: 503,
       message: "OpenRouter API key is missing. Set OPENROUTER_API_KEY to enable AI suggestions.",
       durationMs: 0,
@@ -223,7 +230,7 @@ export const callOpenRouterIdentify = async (
   });
 
   const payload = {
-    model: DEFAULT_MODEL,
+    model: modelId,
     temperature: 0.2,
     top_p: 0.9,
     max_tokens: 800,
@@ -262,6 +269,7 @@ export const callOpenRouterIdentify = async (
     if (!response.ok) {
       return {
         ok: false,
+        modelId,
         status: response.status,
         message: extractErrorMessage(body, "OpenRouter rejected the identify request."),
         durationMs,
@@ -275,6 +283,7 @@ export const callOpenRouterIdentify = async (
     if (!content) {
       return {
         ok: false,
+        modelId,
         status: 502,
         message: "OpenRouter returned an unexpected payload without content.",
         durationMs,
@@ -287,6 +296,7 @@ export const callOpenRouterIdentify = async (
     if (!parsedJson) {
       return {
         ok: true,
+        modelId,
         payload: IdentifyPayloadSchema.parse({
           success: false,
           suggestions: [],
@@ -302,6 +312,7 @@ export const callOpenRouterIdentify = async (
 
     return {
       ok: true,
+      modelId,
       payload: parsedPayload,
       rawResponse: body,
       rawText: content.text,
@@ -311,6 +322,7 @@ export const callOpenRouterIdentify = async (
     if (error instanceof DOMException && error.name === "AbortError") {
       return {
         ok: false,
+        modelId,
         status: 499,
         message: "The identify request was aborted.",
         durationMs: Date.now() - startedAt,
@@ -319,6 +331,7 @@ export const callOpenRouterIdentify = async (
 
     return {
       ok: false,
+      modelId,
       status: 500,
       message: error instanceof Error ? error.message : "Unknown error during OpenRouter call.",
       durationMs: Date.now() - startedAt,
