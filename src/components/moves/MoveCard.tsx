@@ -28,16 +28,18 @@ export function MoveCard({ move }: MoveCardProps) {
         )}
       />
       <div className="relative z-10 flex h-full flex-col gap-6">
-        <header className="flex items-start justify-between gap-4">
+        <header className="flex flex-col gap-4">
           <div className="space-y-1">
             <p className="text-[11px] uppercase tracking-[0.4em] text-white/50">Ruch</p>
-            <h3 className="text-2xl font-semibold tracking-tight leading-tight drop-shadow-sm">{move.displayName}</h3>
+            <h3 className="text-2xl font-semibold tracking-tight leading-snug drop-shadow-sm sm:text-[28px]">
+              {move.displayName}
+            </h3>
           </div>
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-wrap items-start gap-2">
             {move.typeLabel ? (
               <span
                 className={clsx(
-                  "inline-flex min-w-[88px] items-center justify-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.45em]",
+                  "inline-flex min-w-[64px] items-center justify-center rounded-full px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.25em]",
                   move.badgeClass ?? "bg-white/10 text-white"
                 )}
               >
@@ -45,35 +47,38 @@ export function MoveCard({ move }: MoveCardProps) {
               </span>
             ) : null}
             {move.damageClassLabel ? (
-              <span className="inline-flex min-w-[88px] items-center justify-center rounded-full border border-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.4em] text-white/80">
+              <span className="inline-flex min-w-[64px] items-center justify-center rounded-full border border-white/20 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.25em] text-white/80">
                 {move.damageClassLabel}
               </span>
             ) : null}
           </div>
         </header>
 
-        <dl className="grid grid-cols-2 gap-3 text-sm text-white/80 sm:gap-4">
-          <div className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-black/25 p-3">
+        <dl className="grid grid-cols-2 gap-3 text-xs text-white/80 sm:gap-4 sm:text-sm">
+          <div className="flex h-full flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/25 p-3 text-center">
             <dt className="text-[10px] uppercase tracking-[0.3em] text-white/45">Moc</dt>
-            <dd className="text-xl font-semibold leading-tight text-white">{formatStat(move.power)}</dd>
+            <dd className="text-base font-semibold leading-tight text-white sm:text-lg">{formatStat(move.power)}</dd>
           </div>
-          <div className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-black/25 p-3">
+          <div className="flex h-full flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/25 p-3 text-center">
             <dt className="text-[10px] uppercase tracking-[0.3em] text-white/45">Celność</dt>
-            <dd className="text-xl font-semibold leading-tight text-white">{formatStat(move.accuracy, "%")}</dd>
+            <dd className="text-base font-semibold leading-tight text-white sm:text-lg">
+              {formatStat(move.accuracy, "%")}
+            </dd>
           </div>
-          <div className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-black/25 p-3">
+          <div className="flex h-full flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/25 p-3 text-center">
             <dt className="text-[10px] uppercase tracking-[0.3em] text-white/45">PP</dt>
-            <dd className="text-xl font-semibold leading-tight text-white">{formatStat(move.pp)}</dd>
+            <dd className="text-base font-semibold leading-tight text-white sm:text-lg">{formatStat(move.pp)}</dd>
           </div>
-          <div className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-black/25 p-3">
+          <div className="flex h-full flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/25 p-3 text-center">
             <dt className="text-[10px] uppercase tracking-[0.3em] text-white/45">Generacja</dt>
-            <dd className="text-base font-semibold leading-tight text-white/90">{move.generationLabel}</dd>
+            <dd className="text-xs font-semibold leading-tight text-white/90 sm:text-sm">{move.generationLabel}</dd>
           </div>
         </dl>
 
-        <footer className="mt-auto flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-white/35">
-          <span>#{move.moveId.toString().padStart(3, "0")}</span>
-          <span className="truncate text-right">Ostatnia aktualizacja: {move.cachedAtLabel}</span>
+        <footer className="mt-auto flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-white/35 sm:text-[11px]">
+          <span className="text-white/45">{move.cachedAtLabel}</span>
+          <span className="text-white/30">Ostatnia aktualizacja</span>
+          <span className="ml-auto shrink-0 text-white/35">#{move.moveId.toString().padStart(3, "0")}</span>
         </footer>
       </div>
     </article>
