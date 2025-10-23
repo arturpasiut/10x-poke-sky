@@ -376,6 +376,7 @@ export const parseMoveQuery = (params: URLSearchParams): MoveQueryParseResult =>
     order: params.get("order") ?? undefined,
     page: params.get("page") ?? undefined,
     pageSize: params.get("pageSize") ?? undefined,
+    damageClass: params.getAll("damageClass"),
   };
 
   const result = MoveQuerySchema.safeParse(raw);
