@@ -125,6 +125,7 @@ const toMoveSummaryDto = (move: MoveDetail): MoveSummaryDto => ({
   pp: move.pp ?? null,
   generation: move.generation?.name ?? null,
   cachedAt: new Date().toISOString(),
+  damageClass: move.damage_class?.name?.toLowerCase() ?? null,
 });
 
 const buildMoveSummaries = async (moves: PokemonMoveEntry[]): Promise<MoveSummaryDto[]> => {

@@ -1,31 +1,42 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { PokemonMovesGrid } from "../PokemonMovesGrid";
-import type { MoveSummaryDto } from "@/types";
+import type { MoveSummaryDto, MoveDamageClassValue } from "@/types";
 
 describe("PokemonMovesGrid", () => {
+  const createMove = (overrides: Partial<MoveSummaryDto> = {}): MoveSummaryDto => ({
+    moveId: 999,
+    name: "test-move",
+    type: "normal",
+    power: 40,
+    accuracy: 100,
+    pp: 10,
+    generation: "generation-i",
+    cachedAt: new Date().toISOString(),
+    damageClass: "physical",
+    ...overrides,
+  });
+
   const mockMoves: MoveSummaryDto[] = [
-    {
+    createMove({
       moveId: 1,
       name: "thunder-shock",
-      type: "physical",
-      power: 40,
-      accuracy: 100,
-    },
-    {
+      type: "electric",
+      damageClass: "physical",
+    }),
+    createMove({
       moveId: 2,
       name: "quick-attack",
-      type: "special",
-      power: 40,
-      accuracy: 100,
-    },
-    {
+      type: "water",
+      damageClass: "special",
+    }),
+    createMove({
       moveId: 3,
       name: "tail-whip",
-      type: "status",
+      type: "fairy",
       power: null,
-      accuracy: 100,
-    },
+      damageClass: "status",
+    }),
   ];
 
   // Rendering tests
@@ -65,9 +76,9 @@ describe("PokemonMovesGrid", () => {
     const typeLabels = screen.getAllByText("Typ");
     expect(typeLabels.length).toBe(3);
 
-    expect(screen.getAllByText("physical").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("special").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("status").length).toBeGreaterThan(0);
+    expect(screen.getByText("electric")).toBeInTheDocument();
+    expect(screen.getByText("water")).toBeInTheDocument();
+    expect(screen.getByText("fairy")).toBeInTheDocument();
   });
 
   // Empty state tests
@@ -91,13 +102,9 @@ describe("PokemonMovesGrid", () => {
 
   // Max moves limit test
   it("should display maximum 12 moves", () => {
-    const manyMoves: MoveSummaryDto[] = Array.from({ length: 20 }, (_, i) => ({
-      moveId: i,
-      name: `move-${i}`,
-      type: "physical",
-      power: 50,
-      accuracy: 100,
-    }));
+    const manyMoves: MoveSummaryDto[] = Array.from({ length: 20 }, (_, i) =>
+      createMove({ moveId: i, name: `move-${i}`, damageClass: "special" })
+    );
 
     const { container } = render(<PokemonMovesGrid moves={manyMoves} />);
 
@@ -115,13 +122,7 @@ describe("PokemonMovesGrid", () => {
   // Null/missing values tests
   it('should display "—" for null power', () => {
     const movesWithNullPower: MoveSummaryDto[] = [
-      {
-        moveId: 1,
-        name: "growl",
-        type: "status",
-        power: null,
-        accuracy: 100,
-      },
+      createMove({ moveId: 1, name: "growl", type: "normal", power: null, damageClass: "status" }),
     ];
 
     render(<PokemonMovesGrid moves={movesWithNullPower} />);
@@ -132,13 +133,7 @@ describe("PokemonMovesGrid", () => {
 
   it('should display "—" for null accuracy', () => {
     const movesWithNullAccuracy: MoveSummaryDto[] = [
-      {
-        moveId: 1,
-        name: "swift",
-        type: "special",
-        power: 60,
-        accuracy: null,
-      },
+      createMove({ moveId: 1, name: "swift", type: "normal", power: 60, accuracy: null, damageClass: "special" }),
     ];
 
     render(<PokemonMovesGrid moves={movesWithNullAccuracy} />);
@@ -149,13 +144,14 @@ describe("PokemonMovesGrid", () => {
 
   it('should display "—" for null/undefined damage class', () => {
     const movesWithNullType: MoveSummaryDto[] = [
-      {
+      createMove({
         moveId: 1,
         name: "struggle",
         type: null as unknown as string,
         power: 50,
         accuracy: 100,
-      },
+        damageClass: "physical",
+      }),
     ];
 
     render(<PokemonMovesGrid moves={movesWithNullType} />);
@@ -166,13 +162,12 @@ describe("PokemonMovesGrid", () => {
 
   it('should display "—" for null type', () => {
     const movesWithNullMoveType: MoveSummaryDto[] = [
-      {
+      createMove({
         moveId: 1,
         name: "mystery-move",
         type: null as unknown as string,
-        power: 50,
-        accuracy: 100,
-      },
+        damageClass: "status",
+      }),
     ];
 
     render(<PokemonMovesGrid moves={movesWithNullMoveType} />);
@@ -183,13 +178,12 @@ describe("PokemonMovesGrid", () => {
   // Name formatting tests
   it("should capitalize each word in move name", () => {
     const movesWithHyphens: MoveSummaryDto[] = [
-      {
+      createMove({
         moveId: 1,
         name: "solar-beam",
-        type: "special",
         power: 120,
-        accuracy: 100,
-      },
+        damageClass: "special",
+      }),
     ];
 
     render(<PokemonMovesGrid moves={movesWithHyphens} />);
@@ -198,15 +192,7 @@ describe("PokemonMovesGrid", () => {
   });
 
   it("should handle single-word move names", () => {
-    const singleWordMoves: MoveSummaryDto[] = [
-      {
-        moveId: 1,
-        name: "tackle",
-        type: "physical",
-        power: 40,
-        accuracy: 100,
-      },
-    ];
+    const singleWordMoves: MoveSummaryDto[] = [createMove({ moveId: 1, name: "tackle", damageClass: "physical" })];
 
     render(<PokemonMovesGrid moves={singleWordMoves} />);
 
@@ -242,18 +228,18 @@ describe("PokemonMovesGrid", () => {
   // Unknown damage class test
   it("should display unknown damage class as-is", () => {
     const movesWithUnknownType = [
-      {
+      createMove({
         moveId: 1,
         name: "custom-move",
         type: "unknown-type",
-        power: 50,
-        accuracy: 100,
-      },
+        damageClass: "mystic" as unknown as MoveDamageClassValue,
+      }),
     ] as MoveSummaryDto[];
 
     render(<PokemonMovesGrid moves={movesWithUnknownType} />);
 
     expect(screen.getByText("Custom Move")).toBeInTheDocument();
+    expect(screen.getByText("mystic")).toBeInTheDocument();
   });
 
   // Hover interaction test
