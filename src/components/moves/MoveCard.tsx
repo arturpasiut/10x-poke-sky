@@ -24,7 +24,9 @@ export function MoveCard({ move }: MoveCardProps) {
       <div
         className={clsx(
           "pointer-events-none absolute inset-0 opacity-60 blur-[80px] transition group-hover:opacity-90",
-          move.gradientClass
+          move.gradientClass,
+          "dark:opacity-60 dark:mix-blend-normal mix-blend-screen [--glow-strength:0.92] [--glow-overlay:color-mix(in_srgb,var(--color-foreground)15%,transparent)]",
+          "before:absolute before:inset-0 before:-z-10 before:rounded-[30px] before:bg-[color:var(--glow-overlay)] before:opacity-0 before:transition before:duration-300 before:ease-out group-hover:before:opacity-70"
         )}
       />
       <div className="relative z-10 flex h-full flex-col gap-6">
