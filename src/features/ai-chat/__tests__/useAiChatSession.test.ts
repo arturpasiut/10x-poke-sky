@@ -8,7 +8,12 @@ import {
   resolveAssistantText,
   resolveErrorState,
 } from "../useAiChatSession";
-import { createEmptySessionState, resolveConfidenceTier, type AiChatSuggestionViewModel } from "../types";
+import {
+  createEmptySessionState,
+  resolveConfidenceTier,
+  type AiChatSuggestionViewModel,
+  type SuggestionSummaryLookup,
+} from "../types";
 import { mapResponseToSuggestions } from "../mappers";
 
 const baseResponse = {
@@ -58,7 +63,7 @@ describe("useAiChatSession internals", () => {
       confidenceTier: resolveConfidenceTier(suggestion.confidence),
       rationale: suggestion.rationale ?? null,
       spriteUrl: null,
-      detailHref: `/pokemon/${suggestion.pokemonId}`,
+      detailHref: "/pokemon/pikachu",
       favorite: { status: "idle" },
     }));
 
@@ -134,5 +139,83 @@ describe("useAiChatSession internals", () => {
   it("resolves assistant text from structured raw response", () => {
     const assistantText = resolveAssistantText(baseResponse, []);
     expect(assistantText).toContain("Pikachu");
+  });
+
+  it("filters out suggestions that lack a matching Pokémon summary", () => {
+    const extendedResponse = {
+      ...baseResponse,
+      suggestions: [
+        baseResponse.suggestions[0],
+        {
+          pokemonId: 9999,
+          name: "Halucynacja",
+          confidence: 0.3,
+          rationale: null,
+        },
+      ],
+    };
+
+    const lookup: SuggestionSummaryLookup = {
+      25: {
+        pokemonId: 25,
+        name: "Pikachu",
+        types: ["electric"],
+        generation: "generation-i",
+        region: "kanto",
+        spriteUrl: "https://example.com/pikachu.png",
+        highlights: [],
+      },
+    };
+
+    const suggestions = mapResponseToSuggestions(extendedResponse, lookup);
+    expect(suggestions).toHaveLength(1);
+    expect(suggestions[0]?.pokemonId).toBe(25);
+  });
+
+  it("prefers canonical summary data over model text when available", () => {
+    const mismatchedResponse = {
+      ...baseResponse,
+      suggestions: [
+        {
+          pokemonId: 550,
+          name: "Electric Carp",
+          confidence: 0.62,
+          rationale: "Model pomylił nazwę.",
+        },
+      ],
+    };
+
+    const lookup: SuggestionSummaryLookup = {
+      550: {
+        pokemonId: 550,
+        name: "basculin",
+        types: ["water"],
+        generation: "generation-v",
+        region: "unova",
+        spriteUrl: null,
+        highlights: [],
+      },
+    };
+
+    const [suggestion] = mapResponseToSuggestions(mismatchedResponse, lookup);
+    expect(suggestion?.name).toBe("Basculin");
+    expect(suggestion?.detailHref).toBe("/pokemon/basculin");
+  });
+
+  it("builds detail href slug from suggestion name when summary is missing", () => {
+    const response = {
+      ...baseResponse,
+      suggestions: [
+        {
+          pokemonId: 100,
+          name: "Mr. Mime",
+          confidence: 0.55,
+          rationale: "Classic mimik.",
+        },
+      ],
+    };
+
+    const [suggestion] = mapResponseToSuggestions(response, {});
+    expect(suggestion?.detailHref).toBe("/pokemon/mr-mime");
   });
 });

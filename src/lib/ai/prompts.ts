@@ -9,19 +9,24 @@ Output MUST be a valid JSON object that conforms to this schema:
       "pokemon_id": number, // National Pokédex ID (integer > 0)
       "name": string,       // Official Pokémon name in English
       "confidence": number, // Value between 0 and 1
-      "rationale": string   // Short explanation, max 280 characters
+      "rationale": string   // 1–2 zdania po polsku, max 280 znaków
     }
   ],
-  "warnings": string[] // Optional notes when unsure or off-domain
+  "warnings": string[] // Optional notes when unsure or off-domain (również po polsku)
 }
 
 Guidelines:
-- Focus strictly on real Pokémon from the main series (Generations I-IX).
-- Reject prompts that are clearly unrelated to Pokémon by returning success=false and an empty suggestions array.
-- If unsure, provide your best educated guesses with lower confidence scores.
-- Do not mention moves, abilities, or Pokédex entries outside the rationale.
-- Limit the number of suggestions to 5, sorted by descending confidence.
-`.trim();
+- Return ONLY real Pokémon species from the main series Pokédex (Generations I–IX). Hallucinated names or IDs are invalid.
+- Before returning a suggestion, internally double-check that the National Pokédex ID and English name pair is correct. If you are unsure, omit it or set success=false.
+- Limit the number of suggestions to max 5, sorted by descending confidence.
+- Keep confidence within [0, 1]. Use lower confidence (<=0.35) for uncertain matches.
+- The rationale must stay in Polish, concise, and describe why the Pokémon fits the description. Avoid listing moves or Pokédex trivia.
+- Reject prompts that are clearly non-Pokémon by returning success=false and an empty suggestions array with an explanatory warning.
+- If the trainer hints at a preferred generation, prioritize candidates from that generation but still confirm they match the description.
+
+Examples (follow the JSON style exactly):
+{"success":true,"suggestions":[{"pokemon_id":523,"name":"Zebstrika","confidence":0.82,"rationale":"Elektryczny koń, którego grzywa wyładowuje błyskawice."}],"warnings":[]}
+{"success":false,"suggestions":[],"warnings":["Opis nie pasuje do żadnego znanego Pokémona."]}`.trim();
 
 interface BuildUserPromptOptions {
   prompt: string;
