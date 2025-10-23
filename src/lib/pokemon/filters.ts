@@ -94,7 +94,7 @@ const pokemonTypeMetaList = [
     label: "Flying",
     gradientFrom: "from-pokemon-flying/90",
     gradientTo: "to-pokemon-flying/70",
-    badgeClass: "bg-pokemon-flying text-slate-900",
+    badgeClass: "bg-pokemon-flying text-white",
     textClass: "text-white",
   },
   {

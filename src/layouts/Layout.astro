@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface Props {
   title?: string;
@@ -32,6 +33,27 @@ try {
 
 const currentUrl = new URL(Astro.request.url);
 const flashMessage = currentUrl.searchParams.get("message");
+const themeInitializerScript = `(function () {
+  const storageKey = "10x-theme";
+  try {
+    const root = document.documentElement;
+    const stored = window.localStorage ? window.localStorage.getItem(storageKey) : null;
+    const mediaQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    let resolved = "light";
+
+    if (stored === "light" || stored === "dark") {
+      resolved = stored;
+    } else if (mediaQuery && mediaQuery.matches) {
+      resolved = "dark";
+    }
+
+    root.classList.toggle("dark", resolved === "dark");
+    root.dataset.theme = resolved;
+  } catch (error) {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.dataset.theme = "light";
+  }
+})();`;
 ---
 
 <!doctype html>
@@ -42,12 +64,14 @@ const flashMessage = currentUrl.searchParams.get("message");
     <link rel="icon" type="image/png" href="/poke-sky-logo.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <script is:inline set:html={themeInitializerScript} />
   </head>
   <body class="layout-body">
     <SessionProvider client:load initialSession={sessionData} />
     <header class="layout-header">
       <a class="layout-brand" href="/">10x Poke Sky</a>
       <div class="layout-actions">
+        <ThemeToggle client:load />
         {
           userEmail ? (
             <>

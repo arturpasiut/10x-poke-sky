@@ -1,14 +1,43 @@
 @layer components {
   .pokedex-surface {
-    @apply rounded-3xl border border-white/10 bg-[#0e1621]/80;
+    @apply rounded-3xl border backdrop-blur;
+    border-color: color-mix(in srgb, var(--color-border) 55%, transparent);
+    background-color: color-mix(in srgb, var(--color-background) 82%, rgba(255, 255, 255, 0.85));
   }
 
   .pokedex-panel {
-    @apply rounded-3xl border border-white/10 bg-[#0d131c]/70;
+    @apply rounded-3xl border backdrop-blur;
+    border-color: color-mix(in srgb, var(--color-border) 55%, transparent);
+    background-color: color-mix(in srgb, var(--color-background) 78%, rgba(255, 255, 255, 0.9));
+    color: var(--color-foreground);
+  }
+
+  .dark .pokedex-surface {
+    border-color: rgba(255, 255, 255, 0.22);
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .dark .pokedex-panel {
+    border-color: rgba(255, 255, 255, 0.24);
+    background-color: rgba(255, 255, 255, 0.15);
   }
 
   .pokedex-chip {
-    @apply rounded-full border border-white/15 bg-white/5 text-xs font-semibold uppercase tracking-[0.2em] text-white/70 transition hover:border-white/30 focus-visible:outline-none;
+    @apply rounded-full border text-xs font-semibold uppercase tracking-[0.2em] transition focus-visible:outline-none;
+    border-color: color-mix(in srgb, rgba(0, 0, 0, 0.4) 25%, transparent);
+    background-color: rgba(255, 255, 255, 0.12);
+    color: color-mix(in srgb, var(--color-foreground) 82%, transparent);
+  }
+
+  .pokedex-chip:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
+    background-color: color-mix(in srgb, var(--color-primary) 12%, rgba(255, 255, 255, 0.18));
+  }
+
+  .dark .pokedex-chip {
+    border-color: rgba(255, 255, 255, 0.26);
+    background-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .pokedex-chip:focus-visible {
