@@ -37,6 +37,14 @@ function Component({ pokemon }: PokemonCardProps) {
       aria-label={`${displayName} ${dexNumber}`}
       data-testid={`pokemon-card-link-${pokemon.pokemonId}`}
     >
+      <div
+        aria-hidden="true"
+        className={clsx(
+          "pointer-events-none absolute -inset-8 -z-10 opacity-0 blur-[110px] transition duration-500 ease-out",
+          "mix-blend-screen group-hover:opacity-85",
+          cardGradientClass
+        )}
+      />
       <article
         className={clsx("relative flex w-full flex-col justify-end overflow-hidden p-6 text-white", cardGradientClass)}
         data-testid={`pokemon-card-${pokemon.pokemonId}`}
