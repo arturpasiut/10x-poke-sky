@@ -1,40 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 const STORAGE_KEY = "10x-theme";
 type Theme = "light" | "dark";
 
-const resolveInitialTheme = (): Theme => {
-  if (typeof document === "undefined") {
-    return "light";
-  }
-
-  if (document.documentElement.classList.contains("dark")) {
-    return "dark";
-  }
-
-  if (typeof window !== "undefined" && window.matchMedia) {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-
-  return "light";
-};
-
-const hasStoredPreference = (): boolean => {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return false;
-  }
-
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === "dark" || stored === "light";
-};
-
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(resolveInitialTheme);
-  const [isExplicitPreference, setIsExplicitPreference] = useState<boolean>(hasStoredPreference);
+  const [theme, setTheme] = useState<Theme>("light");
+  const [isExplicitPreference, setIsExplicitPreference] = useState<boolean>(false);
+  const [hasResolvedPreference, setHasResolvedPreference] = useState<boolean>(false);
+  const explicitPreferenceRef = useRef(isExplicitPreference);
 
   useEffect(() => {
-    if (typeof document === "undefined") {
+    explicitPreferenceRef.current = isExplicitPreference;
+  }, [isExplicitPreference]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const stored = window.localStorage?.getItem(STORAGE_KEY);
+    if (stored === "light" || stored === "dark") {
+      setTheme(stored);
+      setIsExplicitPreference(true);
+      setHasResolvedPreference(true);
+      return;
+    }
+
+    if (!window.matchMedia) {
+      setTheme("light");
+      setHasResolvedPreference(true);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyMediaPreference = (matches: boolean) => {
+      if (explicitPreferenceRef.current) {
+        return;
+      }
+      setTheme(matches ? "dark" : "light");
+    };
+
+    applyMediaPreference(mediaQuery.matches);
+    setHasResolvedPreference(true);
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      applyMediaPreference(event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (!hasResolvedPreference || typeof document === "undefined") {
       return;
     }
 
@@ -49,21 +68,7 @@ export function ThemeToggle() {
         window.localStorage.removeItem(STORAGE_KEY);
       }
     }
-  }, [theme, isExplicitPreference]);
-
-  useEffect(() => {
-    if (isExplicitPreference || typeof window === "undefined" || !window.matchMedia) {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = (event: MediaQueryListEvent) => {
-      setTheme(event.matches ? "dark" : "light");
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [isExplicitPreference]);
+  }, [theme, isExplicitPreference, hasResolvedPreference]);
 
   const handleToggle = () => {
     setIsExplicitPreference(true);
