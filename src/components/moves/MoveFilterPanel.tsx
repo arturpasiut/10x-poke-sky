@@ -156,7 +156,7 @@ export function MoveFilterPanel({
 
       <section className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-white/60">
-          Typ ruchu (wybrano {selectedDamageClasses.length})
+          Typ obrażeń • Damage Class (wybrano {selectedDamageClasses.length})
         </h3>
         <ul className="flex flex-wrap gap-2">{filters.damageClasses.map(renderDamageClassOption)}</ul>
       </section>
