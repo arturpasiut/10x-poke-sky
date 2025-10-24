@@ -4,7 +4,9 @@ import { Badge, type BadgeTone } from "@/components/ui/badge";
 
 import MainLayout from "../../layouts/MainLayout.astro";
 import { PokemonFavoriteAction } from "../../components/pokemon/PokemonFavoriteAction";
-import { PokemonEvolutionTimeline } from "../../components/pokemon/evolution/PokemonEvolutionTimeline";
+import { EvolutionBranchTabs } from "../../components/pokemon/evolution/EvolutionBranchTabs";
+import { EvolutionTimelineContainer } from "../../components/pokemon/evolution/EvolutionTimelineContainer";
+import { fetchEvolutionAssetPreference } from "@/lib/profile/preferences";
 import { PokemonMovesGrid } from "../../components/pokemon/moves/PokemonMovesGrid";
 import { PokemonStatsPanel } from "../../components/pokemon/PokemonStatsPanel";
 import { fetchPokemonDetailFromEdge } from "../../lib/api/pokemon-service";
@@ -26,6 +28,8 @@ const normalizeName = (value: string) =>
 let detail: PokemonDetailResponseDto | null = null;
 let errorMessage: string | null = null;
 
+const supabase = Astro.locals.supabase;
+
 try {
   const response = await fetchPokemonDetailFromEdge(rawIdentifier, { baseUrl: Astro.url });
   detail = response.data;
@@ -41,6 +45,8 @@ try {
     Astro.response.status = 502;
   }
 }
+
+const { preference: profileAssetPreference, isAuthenticated } = await fetchEvolutionAssetPreference(supabase);
 
 const TYPE_COLORS: Record<string, string> = {
   bug: "#179A55",
@@ -309,8 +315,26 @@ const gradientStyle = `background: radial-gradient(circle at 20% 20%, ${typeGrad
             <p class="mt-2 text-sm text-muted-foreground">
               Śledź jak {formattedName} zmienia się w kolejnych formach. Wskazujemy wymagane warunki w skrócie.
             </p>
-            <div class="mt-6">
-              <PokemonEvolutionTimeline client:load chain={detail.evolutionChain ?? null} />
+            <div class="mt-6 space-y-4">
+              {detail.evolutionChainDto ? (
+                <>
+                  <EvolutionBranchTabs
+                    client:load
+                    chainId={detail.evolutionChainDto.chainId}
+                    branches={detail.evolutionChainDto.branches}
+                  />
+                  <EvolutionTimelineContainer
+                    client:load
+                    chain={detail.evolutionChainDto}
+                    assetPreference={profileAssetPreference}
+                    initialIsAuthenticated={isAuthenticated}
+                  />
+                </>
+              ) : (
+                <p class="rounded-2xl border border-border/40 bg-muted/10 px-4 py-6 text-sm text-muted-foreground">
+                  Brak zdefiniowanego łańcucha ewolucji dla tego Pokémona.
+                </p>
+              )}
             </div>
           </article>
 

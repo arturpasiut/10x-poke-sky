@@ -1,19 +1,164 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import { EvolutionSearchForm } from "@/components/forms/EvolutionSearchForm";
+import { EvolutionBranchTabs } from "@/components/pokemon/evolution/EvolutionBranchTabs";
+import { EvolutionTimelineContainer } from "@/components/pokemon/evolution/EvolutionTimelineContainer";
+import { fetchEvolutionAssetPreference } from "@/lib/profile/preferences";
+import { fetchEvolutionChainFromEdge } from "@/lib/api/evolution-service";
+import type { EvolutionBranchingFilter, EvolutionChainDto } from "@/lib/evolution/types";
+import { isValidGeneration, isValidPokemonType } from "@/lib/pokemon/filters";
+import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
+
+const searchParams = Astro.url.searchParams;
+const chainIdParam = searchParams.get("chainId");
+const pokemonIdParam = searchParams.get("pokemonId");
+const identifierParam = searchParams.get("identifier");
+const typeParam = searchParams.get("type");
+const generationParam = searchParams.get("generation");
+const branchingParam = searchParams.get("branching");
+
+const parseNumericParam = (value: string | null) => {
+  if (!value) {
+    return null;
+  }
+
+  const numeric = Number.parseInt(value, 10);
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
+};
+
+const requestedChainId = parseNumericParam(chainIdParam);
+const requestedPokemonId = parseNumericParam(pokemonIdParam);
+
+const selectedType: PokemonTypeValue | null =
+  typeParam && isValidPokemonType(typeParam) ? (typeParam as PokemonTypeValue) : null;
+const selectedGeneration: PokemonGenerationValue | null =
+  generationParam && isValidGeneration(generationParam) ? (generationParam as PokemonGenerationValue) : null;
+
+const branchFilters: EvolutionBranchingFilter[] = ["any", "linear", "branching"];
+const selectedBranching: EvolutionBranchingFilter = branchFilters.includes(branchingParam as EvolutionBranchingFilter)
+  ? (branchingParam as EvolutionBranchingFilter)
+  : "any";
+
+const evolutionQuery = {
+  chainId: requestedChainId,
+  pokemonId: requestedPokemonId,
+  identifier: identifierParam?.trim() ?? null,
+  type: selectedType,
+  generation: selectedGeneration,
+  branching: selectedBranching === "any" ? null : selectedBranching,
+};
+
+if (!evolutionQuery.chainId && !evolutionQuery.pokemonId && !evolutionQuery.identifier) {
+  evolutionQuery.identifier = "eevee";
+}
+
+let activeChain: EvolutionChainDto | null = null;
+let chainError: string | null = null;
+
+const supabase = Astro.locals.supabase;
+
+try {
+  const response = await fetchEvolutionChainFromEdge(evolutionQuery, { baseUrl: Astro.url });
+  activeChain = response.data;
+} catch (error) {
+  chainError =
+    error instanceof Error
+      ? error.message
+      : "Nie udało się pobrać łańcucha ewolucji. Spróbuj wyszukać innego Pokémona.";
+}
+
+const { preference: profileAssetPreference, isAuthenticated } = await fetchEvolutionAssetPreference(supabase);
+
+const formDefaults = {
+  term: evolutionQuery.identifier ?? "",
+  type: selectedType,
+  generation: selectedGeneration,
+  branching: selectedBranching,
+};
+
+const featureHighlights = [
+  {
+    title: "Filtry w locie",
+    description: "Wyszukuj po nazwie, generacji i typie – wszystkie wyniki odświeżają się bez przeładowania strony.",
+  },
+  {
+    title: "Preferencje wizualne",
+    description: "Przełączaj między GIF-ami i sprite'ami, a Twoje ustawienia zostaną zapamiętane.",
+  },
+  {
+    title: "Zapisz drużynę",
+    description: "Po zalogowaniu dodasz cały łańcuch do ulubionych jednym kliknięciem.",
+  },
+];
 ---
 
 <MainLayout title="Evolutions – 10x Poke Sky">
-  <div slot="header" class="space-y-2">
-    <h1 class="text-4xl font-semibold sm:text-5xl">Evolutions</h1>
-    <p class="text-muted-foreground">Przegląd drzew ewolucji pojawi się w module detali (faza 4).</p>
+  <div slot="header" class="space-y-6">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-semibold text-white sm:text-5xl">Ewolucje Pokémonów</h1>
+      <p class="max-w-2xl text-base text-white/70">
+        Eksploruj rozgałęzione ścieżki rozwoju, sprawdzaj wymagania i różnice w statystykach kolejnych form. Docelowo
+        połączymy tutaj wyszukiwarkę, timeline oraz możliwość zapisu ulubionych drużyn.
+      </p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-3">
+      {
+        featureHighlights.map((item) => (
+          <article key={item.title} class="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-lg">
+            <h2 class="text-sm font-semibold uppercase tracking-widest text-primary/80">{item.title}</h2>
+            <p class="mt-2 text-sm text-white/70">{item.description}</p>
+          </article>
+        ))
+      }
+    </div>
   </div>
 
-  <section
-    class="rounded-2xl border border-[color:color-mix(in_srgb,var(--color-border)_60%,transparent)] bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-10 text-center shadow-md"
-  >
-    <p class="max-w-xl mx-auto text-lg text-muted-foreground">
-      Tu pokażemy timeline ewolucji wraz z ilustracjami i statystykami. Na razie możesz korzystać z linków na stronie
-      głównej, żeby zobaczyć nawigację.
-    </p>
+  <section class="mt-10 grid gap-8">
+    <EvolutionSearchForm client:load defaultValues={formDefaults} />
+
+    {
+      chainError ? (
+        <div class="rounded-3xl border border-red-400/40 bg-red-500/10 p-6 text-red-100 shadow-lg backdrop-blur">
+          <h2 class="text-lg font-semibold">Nie udało się pobrać łańcucha ewolucji</h2>
+          <p class="mt-2 text-sm">{chainError}</p>
+        </div>
+      ) : activeChain ? (
+        <section class="space-y-6 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0f172a] via-[#0b1120] to-[#120f24] p-6 shadow-2xl">
+          <header class="flex flex-col gap-3 text-white lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 class="text-3xl font-semibold">{activeChain.leadName} – drzewo ewolucji</h2>
+              {activeChain.summary ? <p class="text-sm text-white/70">{activeChain.summary}</p> : null}
+            </div>
+            <div class="flex flex-wrap gap-3 text-sm text-white/80">
+              <a
+                href={`/pokemon/${activeChain.leadPokemonId}`}
+                class="rounded-full border border-white/20 bg-white/10 px-4 py-2 font-semibold uppercase tracking-wide transition hover:border-primary/60 hover:bg-primary/20"
+              >
+                Zobacz kartę Pokémona
+              </a>
+              {isAuthenticated ? null : (
+                <a
+                  href="/auth/login"
+                  class="rounded-full bg-primary px-4 py-2 font-semibold uppercase tracking-wide text-white shadow-lg transition hover:bg-primary/90"
+                >
+                  Zaloguj się, aby zapisać drużynę
+                </a>
+              )}
+            </div>
+          </header>
+
+          <EvolutionBranchTabs client:load chainId={activeChain.chainId} branches={activeChain.branches} />
+          <EvolutionTimelineContainer
+            client:load
+            chain={activeChain}
+            assetPreference={profileAssetPreference}
+            initialIsAuthenticated={isAuthenticated}
+          />
+        </section>
+      ) : (
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-6 text-white/70">Ładujemy dane ewolucji…</div>
+      )
+    }
   </section>
 </MainLayout>

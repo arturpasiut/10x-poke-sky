@@ -1,279 +1,172 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { render, screen, act, cleanup } from "@testing-library/react";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+
 import { PokemonEvolutionTimeline } from "../PokemonEvolutionTimeline";
-import type { EvolutionChain } from "@/lib/types/pokemon";
+import type { EvolutionChainDto, EvolutionStageDto, EvolutionRequirementDto } from "@/lib/evolution/types";
+import { useEvolutionStore } from "@/stores/useEvolutionStore";
 
-describe("PokemonEvolutionTimeline", () => {
-  const mockSingleStageChain: EvolutionChain = {
-    id: 1,
-    chain: {
-      species: { name: "pikachu", url: "" },
-      evolution_details: [],
-      evolves_to: [],
-    },
-  };
+const createStage = (overrides: Partial<EvolutionStageDto> & Pick<EvolutionStageDto, "pokemonId" | "name">) => {
+  const requirements: EvolutionRequirementDto[] = overrides.requirements ?? [
+    { id: `req-${overrides.pokemonId}`, summary: "Forma startowa" },
+  ];
 
-  const mockTwoStageChain: EvolutionChain = {
-    id: 2,
-    chain: {
-      species: { name: "bulbasaur", url: "" },
-      evolution_details: [],
-      evolves_to: [
-        {
-          species: { name: "ivysaur", url: "" },
-          evolution_details: [
-            {
-              min_level: 16,
-              trigger: { name: "level-up", url: "" },
-            },
-          ],
-          evolves_to: [
-            {
-              species: { name: "venusaur", url: "" },
-              evolution_details: [
-                {
-                  min_level: 32,
-                  trigger: { name: "level-up", url: "" },
-                },
-              ],
-              evolves_to: [],
-            },
-          ],
-        },
-      ],
-    },
-  };
+  return {
+    stageId: overrides.stageId ?? `stage-${overrides.pokemonId}`,
+    order: overrides.order ?? 1,
+    pokemonId: overrides.pokemonId,
+    slug: overrides.slug ?? overrides.name,
+    name: overrides.name,
+    types: overrides.types ?? [],
+    description: overrides.description ?? null,
+    branchIds: overrides.branchIds ?? ["main"],
+    asset: overrides.asset ?? { gif: null, sprite: null, officialArtwork: null, fallback: null },
+    requirements,
+    stats: overrides.stats ?? [],
+    statsDiff: overrides.statsDiff ?? null,
+    accentColor: overrides.accentColor,
+    generation: overrides.generation ?? null,
+  } satisfies EvolutionStageDto;
+};
 
-  const mockTradeEvolutionChain: EvolutionChain = {
-    id: 3,
-    chain: {
-      species: { name: "kadabra", url: "" },
-      evolution_details: [],
-      evolves_to: [
-        {
-          species: { name: "alakazam", url: "" },
-          evolution_details: [
-            {
-              trigger: { name: "trade", url: "" },
-            },
-          ],
-          evolves_to: [],
-        },
-      ],
-    },
-  };
+const multiStageChain: EvolutionChainDto = {
+  chainId: "two-stage",
+  title: "Bulbasaur – łańcuch",
+  leadPokemonId: 1,
+  leadName: "bulbasaur",
+  summary: "Testowy łańcuch dwóch etapów.",
+  branches: [{ id: "main", label: "Główna" }],
+  stages: [
+    createStage({ pokemonId: 1, name: "bulbasaur", order: 1 }),
+    createStage({
+      pokemonId: 2,
+      name: "ivysaur",
+      order: 2,
+      requirements: [{ id: "lvl-16", summary: "Poziom 16" }],
+    }),
+    createStage({
+      pokemonId: 3,
+      name: "venusaur",
+      order: 3,
+      requirements: [{ id: "lvl-32", summary: "Poziom 32" }],
+    }),
+  ],
+};
 
-  // Rendering tests
-  it("should render evolution chain with all species", () => {
-    render(<PokemonEvolutionTimeline chain={mockTwoStageChain} />);
+const singleStageChain: EvolutionChainDto = {
+  chainId: "single",
+  title: "Pikachu – łańcuch",
+  leadPokemonId: 25,
+  leadName: "pikachu",
+  branches: [{ id: "main", label: "Główna" }],
+  stages: [
+    createStage({
+      pokemonId: 25,
+      name: "pikachu",
+      order: 1,
+      requirements: [{ id: "start", summary: "Forma startowa" }],
+    }),
+  ],
+};
 
+const branchingChain: EvolutionChainDto = {
+  chainId: "eevee",
+  title: "Eevee – łańcuch",
+  leadPokemonId: 133,
+  leadName: "eevee",
+  branches: [
+    { id: "water", label: "Ścieżka wodna" },
+    { id: "electric", label: "Ścieżka elektryczna" },
+  ],
+  stages: [
+    createStage({ pokemonId: 133, name: "eevee", order: 1, branchIds: ["water", "electric"] }),
+    createStage({
+      pokemonId: 134,
+      name: "vaporeon",
+      order: 2,
+      branchIds: ["water"],
+      requirements: [{ id: "water-stone", summary: "Kamień Wodny" }],
+    }),
+    createStage({
+      pokemonId: 135,
+      name: "jolteon",
+      order: 2,
+      branchIds: ["electric"],
+      requirements: [{ id: "thunder-stone", summary: "Kamień Błysk" }],
+    }),
+  ],
+};
+
+describe("PokemonEvolutionTimeline (EvolutionChainDto)", () => {
+  beforeEach(() => {
+    useEvolutionStore.setState({
+      selectedChainId: null,
+      selectedBranchId: null,
+      displayMode: "list",
+      assetPreference: "gif",
+      focusedPokemonId: null,
+      showStatDiffs: false,
+      isHydrated: true,
+    });
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("renders all stages for a multi-stage chain", () => {
+    render(<PokemonEvolutionTimeline chain={multiStageChain} displayMode="list" assetPreference="gif" />);
+
+    expect(screen.getByText("Bulbasaur – łańcuch")).toBeInTheDocument();
     expect(screen.getByText("bulbasaur")).toBeInTheDocument();
     expect(screen.getByText("ivysaur")).toBeInTheDocument();
     expect(screen.getByText("venusaur")).toBeInTheDocument();
-  });
-
-  it("should display level requirements", () => {
-    render(<PokemonEvolutionTimeline chain={mockTwoStageChain} />);
-
     expect(screen.getByText("Poziom 16")).toBeInTheDocument();
     expect(screen.getByText("Poziom 32")).toBeInTheDocument();
   });
 
-  it('should display "Forma startowa" for first pokemon', () => {
-    render(<PokemonEvolutionTimeline chain={mockTwoStageChain} />);
+  it("renders Forma startowa for the first stage", () => {
+    render(<PokemonEvolutionTimeline chain={multiStageChain} displayMode="list" assetPreference="gif" />);
 
     expect(screen.getByText("Forma startowa")).toBeInTheDocument();
   });
 
-  it("should render single-stage evolution", () => {
-    render(<PokemonEvolutionTimeline chain={mockSingleStageChain} />);
+  it("renders single-stage chain", () => {
+    render(<PokemonEvolutionTimeline chain={singleStageChain} displayMode="list" assetPreference="gif" />);
 
     expect(screen.getByText("pikachu")).toBeInTheDocument();
     expect(screen.getByText("Forma startowa")).toBeInTheDocument();
   });
 
-  // Trigger types tests
-  it("should display trade trigger", () => {
-    render(<PokemonEvolutionTimeline chain={mockTradeEvolutionChain} />);
+  it("filters stages when a branch is selected", () => {
+    render(<PokemonEvolutionTimeline chain={branchingChain} displayMode="list" assetPreference="gif" />);
 
-    expect(screen.getByText("kadabra")).toBeInTheDocument();
-    expect(screen.getByText("alakazam")).toBeInTheDocument();
-    expect(screen.getByText("trade")).toBeInTheDocument();
-  });
-
-  it("should format trigger names by replacing hyphens with spaces", () => {
-    const chainWithFormattedTrigger: EvolutionChain = {
-      id: 4,
-      chain: {
-        species: { name: "eevee", url: "" },
-        evolution_details: [],
-        evolves_to: [
-          {
-            species: { name: "espeon", url: "" },
-            evolution_details: [
-              {
-                trigger: { name: "level-up", url: "" },
-              },
-            ],
-            evolves_to: [],
-          },
-        ],
-      },
-    };
-
-    render(<PokemonEvolutionTimeline chain={chainWithFormattedTrigger} />);
-
-    expect(screen.getByText("level up")).toBeInTheDocument();
-  });
-
-  it('should show generic "Ewolucja" when trigger has no name', () => {
-    const chainWithNoTrigger = {
-      id: 5,
-      chain: {
-        species: { name: "pokemon1", url: "" },
-        evolution_details: [],
-        evolves_to: [
-          {
-            species: { name: "pokemon2", url: "" },
-            evolution_details: [
-              {
-                trigger: null as unknown as { name: string; url: string },
-              },
-            ],
-            evolves_to: [],
-          },
-        ],
-      },
-    } as EvolutionChain;
-
-    render(<PokemonEvolutionTimeline chain={chainWithNoTrigger} />);
-
-    expect(screen.getByText("Ewolucja")).toBeInTheDocument();
-  });
-
-  // Empty state tests
-  it("should show empty state when chain is null", () => {
-    render(<PokemonEvolutionTimeline chain={null} />);
-
-    expect(screen.getByText("Ten Pokémon nie posiada zdefiniowanego łańcucha ewolucji.")).toBeInTheDocument();
-  });
-
-  it("should show empty state when chain.chain is missing", () => {
-    const emptyChain = {
-      id: 1,
-      chain: null as unknown as EvolutionChain["chain"],
-    } as EvolutionChain;
-
-    render(<PokemonEvolutionTimeline chain={emptyChain} />);
-
-    expect(screen.getByText("Ten Pokémon nie posiada zdefiniowanego łańcucha ewolucji.")).toBeInTheDocument();
-  });
-
-  it("should render unknown species when species.name is null", () => {
-    const invalidChain = {
-      id: 1,
-      chain: {
-        species: null as unknown as { name: string; url: string },
-        evolution_details: [],
-        evolves_to: [],
-      },
-    } as EvolutionChain;
-
-    render(<PokemonEvolutionTimeline chain={invalidChain} />);
-
-    // Component renders "unknown" for null species instead of showing empty state
-    expect(screen.getByText("unknown")).toBeInTheDocument();
-    expect(screen.getByText("Forma startowa")).toBeInTheDocument();
-  });
-
-  // Structure tests
-  it("should render as ordered list", () => {
-    const { container } = render(<PokemonEvolutionTimeline chain={mockTwoStageChain} />);
-
-    const list = container.querySelector("ol");
-    expect(list).toBeInTheDocument();
-  });
-
-  it("should render list items for each evolution stage", () => {
-    const { container } = render(<PokemonEvolutionTimeline chain={mockTwoStageChain} />);
-
-    const listItems = container.querySelectorAll("li");
-    expect(listItems.length).toBe(3); // bulbasaur, ivysaur, venusaur
-  });
-
-  // Capitalization test
-  it("should capitalize species names", () => {
-    render(<PokemonEvolutionTimeline chain={mockTwoStageChain} />);
-
-    const bulbasaur = screen.getByText("bulbasaur");
-    expect(bulbasaur).toHaveClass("capitalize");
-  });
-
-  // Complex evolution chains
-  it("should handle branching evolutions (first branch only)", () => {
-    const branchingChain: EvolutionChain = {
-      id: 6,
-      chain: {
-        species: { name: "eevee", url: "" },
-        evolution_details: [],
-        evolves_to: [
-          {
-            species: { name: "vaporeon", url: "" },
-            evolution_details: [
-              {
-                trigger: { name: "use-item", url: "" },
-              },
-            ],
-            evolves_to: [],
-          },
-          {
-            species: { name: "jolteon", url: "" },
-            evolution_details: [
-              {
-                trigger: { name: "use-item", url: "" },
-              },
-            ],
-            evolves_to: [],
-          },
-        ],
-      },
-    };
-
-    render(<PokemonEvolutionTimeline chain={branchingChain} />);
+    act(() => {
+      useEvolutionStore.getState().setSelectedBranchId("water");
+    });
 
     expect(screen.getByText("eevee")).toBeInTheDocument();
     expect(screen.getByText("vaporeon")).toBeInTheDocument();
-    expect(screen.getByText("jolteon")).toBeInTheDocument();
+    expect(screen.queryByText("jolteon")).not.toBeInTheDocument();
   });
 
-  // Horizontal scrolling
-  it("should have horizontal scroll capability", () => {
-    const { container } = render(<PokemonEvolutionTimeline chain={mockTwoStageChain} />);
+  it("shows empty state when chain is null", () => {
+    render(<PokemonEvolutionTimeline chain={null} displayMode="list" assetPreference="gif" />);
 
-    const list = container.querySelector("ol");
-    expect(list).toHaveClass("overflow-x-auto");
+    expect(screen.getByText("Ten Pokémon nie posiada zdefiniowanego łańcucha ewolucji.")).toBeInTheDocument();
   });
 
-  // Edge case with missing evolution details
-  it("should handle missing evolution_details array", () => {
-    const chainWithNoDetails = {
-      id: 7,
-      chain: {
-        species: { name: "pokemon1", url: "" },
-        evolution_details: [],
-        evolves_to: [
-          {
-            species: { name: "pokemon2", url: "" },
-            evolution_details: null as unknown as EvolutionChain["chain"]["evolves_to"][0]["evolution_details"],
-            evolves_to: [],
-          },
-        ],
-      },
-    } as EvolutionChain;
+  it("shows empty state when chain has no stages", () => {
+    const emptyChain: EvolutionChainDto = {
+      chainId: "empty",
+      title: "Empty",
+      leadPokemonId: 0,
+      leadName: "empty",
+      branches: [],
+      stages: [],
+    };
 
-    render(<PokemonEvolutionTimeline chain={chainWithNoDetails} />);
+    render(<PokemonEvolutionTimeline chain={emptyChain} displayMode="list" assetPreference="gif" />);
 
-    expect(screen.getByText("pokemon1")).toBeInTheDocument();
-    expect(screen.getByText("pokemon2")).toBeInTheDocument();
+    expect(screen.getByText("Nie znaleziono etapów ewolucji dla wybranych filtrów.")).toBeInTheDocument();
   });
 });

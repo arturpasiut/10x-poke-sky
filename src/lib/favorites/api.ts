@@ -1,8 +1,10 @@
 import type { ApiError } from "@/lib/pokemon/types";
 import { mapFavoritesList } from "@/lib/favorites/transformers";
 import type { FavoritesListResponseDto } from "@/types";
+import type { FavoriteEvolutionGroupDto } from "@/lib/favorites/groups";
 
 const BASE_ENDPOINT = "/api/users/me/favorites";
+const GROUPS_ENDPOINT = `${BASE_ENDPOINT}/groups`;
 
 export interface FavoritesListParams {
   page?: number;
@@ -175,4 +177,91 @@ export const deleteFavoriteFromApi = async (pokemonId: number) => {
       retryAfterMs: error.retryAfterMs,
     });
   }
+};
+
+export interface EvolutionFavoriteGroupParams {
+  chainId?: string | null;
+}
+
+export const fetchEvolutionFavoriteGroups = async (params: EvolutionFavoriteGroupParams = {}) => {
+  const search = new URLSearchParams();
+  if (params.chainId) {
+    search.set("chainId", params.chainId);
+  }
+
+  const url = search.size ? `${GROUPS_ENDPOINT}?${search.toString()}` : GROUPS_ENDPOINT;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const error = await parseErrorPayload(response);
+    throw new FavoritesApiError(error.message, {
+      code: error.code,
+      details: error.details,
+      retryAfterMs: error.retryAfterMs,
+    });
+  }
+
+  const payload = (await response.json()) as { items: FavoriteEvolutionGroupDto[] };
+  return payload.items ?? [];
+};
+
+export const deleteEvolutionFavoriteGroup = async (chainId: string, branchId: string) => {
+  const search = new URLSearchParams({ chainId, branchId });
+  const url = `${GROUPS_ENDPOINT}?${search.toString()}`;
+
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const error = await parseErrorPayload(response);
+    throw new FavoritesApiError(error.message, {
+      code: error.code,
+      details: error.details,
+      retryAfterMs: error.retryAfterMs,
+    });
+  }
+};
+
+export const saveEvolutionFavoriteGroup = async (payload: {
+  chainId: string;
+  branchId?: string | null;
+  pokemonIds: number[];
+}) => {
+  const response = await fetch(GROUPS_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      chainId: payload.chainId,
+      branchId: payload.branchId ?? "",
+      pokemonIds: payload.pokemonIds,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await parseErrorPayload(response);
+    throw new FavoritesApiError(error.message, {
+      code: error.code,
+      details: error.details,
+      retryAfterMs: error.retryAfterMs,
+    });
+  }
+
+  const data = (await response.json()) as FavoriteEvolutionGroupDto;
+  return data;
 };

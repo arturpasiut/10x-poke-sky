@@ -2,6 +2,10 @@ import type { APIRoute } from "astro";
 
 import type { PokemonGenerationValue, PokemonRegionValue, PokemonTypeValue } from "@/lib/pokemon/types";
 import type { MoveSummaryDto, PokemonDetailResponseDto } from "@/types";
+import type { EvolutionChainDto } from "@/lib/evolution/types";
+import { fetchEvolutionChainDto } from "@/lib/evolution/service";
+import { EvolutionServiceError } from "@/lib/evolution/errors";
+import { extractIdFromResourceUrl } from "@/lib/evolution/utils";
 
 const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 const MAX_MOVES_PREVIEW = 12;
@@ -158,19 +162,54 @@ const buildDetailResponse = async (identifier: string): Promise<PokemonDetailRes
   }
 
   let species: Record<string, unknown> | null = null;
-  let evolutionChain: Record<string, unknown> | null = null;
+  let evolutionChainDto: EvolutionChainDto | null = null;
 
   try {
     const speciesUrl = (pokemon?.species as Record<string, string> | undefined)?.url;
     if (speciesUrl) {
       species = await fetchJson(speciesUrl);
-      const evolutionUrl = (species?.evolution_chain as Record<string, string> | undefined)?.url;
-      if (evolutionUrl) {
-        evolutionChain = await fetchJson(evolutionUrl);
+      const chainUrl = (species?.evolution_chain as Record<string, string> | undefined)?.url ?? null;
+      const chainId = extractIdFromResourceUrl(chainUrl ?? null);
+
+      try {
+        evolutionChainDto = await fetchEvolutionChainDto(undefined, {
+          chainId: chainId ?? null,
+          pokemonId: Number.isFinite(pokemonId) ? pokemonId : null,
+        });
+      } catch (error) {
+        if (error instanceof EvolutionServiceError) {
+          console.warn("[pokemon/details] Failed to build evolution chain DTO", {
+            code: error.code,
+            status: error.status,
+            message: error.message,
+          });
+        } else {
+          console.warn("[pokemon/details] Unexpected evolution dto error", error);
+        }
       }
     }
   } catch (error) {
     console.warn("Failed to fetch species/evolution data", error);
+  }
+
+  if (!evolutionChainDto) {
+    try {
+      evolutionChainDto = await fetchEvolutionChainDto(undefined, {
+        chainId: null,
+        pokemonId,
+        identifier,
+      });
+    } catch (error) {
+      if (error instanceof EvolutionServiceError) {
+        console.warn("[pokemon/details] Fallback evolution dto fetch failed", {
+          code: error.code,
+          status: error.status,
+          message: error.message,
+        });
+      } else {
+        console.warn("[pokemon/details] Unexpected fallback evolution dto error", error);
+      }
+    }
   }
 
   const { generation, region } = mapGenerationAndRegion(pokemonId);
@@ -193,7 +232,8 @@ const buildDetailResponse = async (identifier: string): Promise<PokemonDetailRes
     },
     pokemon,
     species,
-    evolutionChain,
+    evolutionChain: null,
+    evolutionChainDto,
     moves,
   };
 };

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { HeartOff, Loader2 } from "lucide-react";
+import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
 import { ListSkeleton } from "@/components/pokemon/ListSkeleton";
@@ -11,6 +12,9 @@ import {
   type FavoritesListParams,
 } from "@/lib/favorites/api";
 import type { FavoritePokemonViewModel } from "@/lib/favorites/transformers";
+import type { EvolutionAssetPreference } from "@/lib/evolution/types";
+import { EvolutionFavoriteGroupsPanel } from "@/components/pokemon/evolution/EvolutionFavoriteGroupsPanel";
+import { useSessionStore } from "@/lib/stores/use-session-store";
 
 type RequestStatus = "idle" | "loading" | "success" | "error";
 
@@ -28,12 +32,26 @@ const DEFAULT_QUERY: FavoritesListParams = {
   order: "desc",
 };
 
-export default function FavoritesView() {
+type FavoritesViewMode = "pokemon" | "groups";
+
+interface FavoritesViewProps {
+  initialAssetPreference?: EvolutionAssetPreference | null;
+  initialIsAuthenticated?: boolean;
+}
+
+export default function FavoritesView({
+  initialAssetPreference = null,
+  initialIsAuthenticated = false,
+}: FavoritesViewProps) {
   const [status, setStatus] = useState<RequestStatus>("idle");
   const [items, setItems] = useState<FavoritePokemonViewModel[]>([]);
   const [error, setError] = useState<FavoritesApiError | null>(null);
   const [loginHref, setLoginHref] = useState<string>("/auth/login");
   const [removalMap, setRemovalMap] = useState<Record<number, RemovalState>>({});
+  const [viewMode, setViewMode] = useState<FavoritesViewMode>("pokemon");
+
+  const sessionStatus = useSessionStore((state) => state.status);
+  const isAuthenticated = initialIsAuthenticated || sessionStatus === "authenticated";
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -109,21 +127,19 @@ export default function FavoritesView() {
   );
 
   const hasFavorites = items.length > 0;
-
   const removalEntries = useMemo(() => removalMap, [removalMap]);
 
+  let pokemonContent: React.ReactNode = null;
+
   if (status === "loading") {
-    return (
+    pokemonContent = (
       <div data-testid="favorites-loading">
         <ListSkeleton />
       </div>
     );
-  }
-
-  if (status === "error" && error) {
+  } else if (status === "error" && error) {
     const requiresAuth = error.code === 401;
-
-    return (
+    pokemonContent = (
       <section
         className="flex flex-col items-center gap-6 rounded-3xl border border-white/5 bg-[#101722] p-10 text-center shadow-lg shadow-black/30"
         data-testid="favorites-error-state"
@@ -149,10 +165,8 @@ export default function FavoritesView() {
         </div>
       </section>
     );
-  }
-
-  if (status === "success" && !hasFavorites) {
-    return (
+  } else if (status === "success" && !hasFavorites) {
+    pokemonContent = (
       <section
         className="flex flex-col items-center gap-6 rounded-3xl border border-white/5 bg-[#101722] p-12 text-center shadow-lg shadow-black/25"
         data-testid="favorites-empty-state"
@@ -180,14 +194,8 @@ export default function FavoritesView() {
         </div>
       </section>
     );
-  }
-
-  if (status !== "success") {
-    return null;
-  }
-
-  return (
-    <div className="space-y-6">
+  } else if (status === "success") {
+    pokemonContent = (
       <div
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
         role="feed"
@@ -208,7 +216,7 @@ export default function FavoritesView() {
                   type="button"
                   size="default"
                   variant="secondary"
-                  className="pointer-events-auto gap-2 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20"
+                  className="pointer-events-auto gap-2 border border-white/20 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
@@ -233,6 +241,56 @@ export default function FavoritesView() {
           );
         })}
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 text-sm text-white/70">
+          <button
+            type="button"
+            className={clsx(
+              "rounded-full px-4 py-2 font-semibold uppercase tracking-wide transition",
+              viewMode === "pokemon" ? "bg-primary/80 text-white shadow" : "hover:text-white"
+            )}
+            onClick={() => setViewMode("pokemon")}
+          >
+            Pokémony
+          </button>
+          <button
+            type="button"
+            className={clsx(
+              "rounded-full px-4 py-2 font-semibold uppercase tracking-wide transition",
+              viewMode === "groups" ? "bg-primary/80 text-white shadow" : "hover:text-white"
+            )}
+            onClick={() => setViewMode("groups")}
+          >
+            Drużyny
+          </button>
+        </div>
+      </div>
+
+      {viewMode === "pokemon" ? (
+        pokemonContent
+      ) : isAuthenticated ? (
+        <EvolutionFavoriteGroupsPanel
+          client:load
+          assetPreference={initialAssetPreference ?? null}
+          initialIsAuthenticated={isAuthenticated}
+        />
+      ) : (
+        <section className="rounded-3xl border border-white/5 bg-[#101722] p-10 text-center text-white/70">
+          <h2 className="text-2xl font-semibold text-white">Zaloguj się, aby zapisać drużyny</h2>
+          <p className="mt-3">
+            Ulubione gałęzie łańcuchów ewolucji pojawią się tutaj po zapisaniu ich na stronie szczegółowej lub w
+            zakładce evolutions.
+          </p>
+          <Button asChild variant="secondary" className="mt-6">
+            <a href={loginHref}>Zaloguj się</a>
+          </Button>
+        </section>
+      )}
     </div>
   );
 }
