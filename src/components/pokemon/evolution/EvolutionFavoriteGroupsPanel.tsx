@@ -164,7 +164,7 @@ function Component({
         </div>
       ) : null}
 
-      {loadState === "error" && error ? (
+      {error ? (
         <div className="rounded-2xl border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-100">{error}</div>
       ) : null}
 
