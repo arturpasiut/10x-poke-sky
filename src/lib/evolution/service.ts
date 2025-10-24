@@ -2,11 +2,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/db/database.types";
 import type { EvolutionChain, ChainLink, Pokemon } from "@/lib/types/pokemon";
+import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
 import { EvolutionServiceError } from "./errors";
 import { fetchEvolutionChainById, fetchEvolutionChainByUrl, fetchPokemonDetail, fetchPokemonSpecies } from "./pokeapi";
-import { buildEvolutionChainDto } from "./transformers";
-import type { EvolutionChainDto } from "./types";
+import { buildEvolutionChainDto, collectBranchPaths } from "./transformers";
+import type { EvolutionBranchingFilter, EvolutionChainDto } from "./types";
 import { extractIdFromResourceUrl } from "./utils";
 
 type SupabaseServerClient = SupabaseClient<Database>;
@@ -15,6 +16,9 @@ export interface EvolutionChainRequest {
   chainId?: number | string | null;
   pokemonId?: number | null;
   identifier?: string | null;
+  type?: PokemonTypeValue | null;
+  generation?: PokemonGenerationValue | null;
+  branching?: EvolutionBranchingFilter | null;
 }
 
 interface EvolutionChainResult {
@@ -120,6 +124,83 @@ const persistChainCache = async (supabase: SupabaseServerClient | undefined, dto
   }
 };
 
+const applyEvolutionFilters = (
+  dto: EvolutionChainDto,
+  chain: EvolutionChain,
+  filters: Pick<EvolutionChainRequest, "type" | "generation" | "branching">
+): EvolutionChainDto => {
+  const branching = filters.branching ?? "any";
+
+  const branchCount = dto.branches.length;
+  if (branching === "linear" && branchCount > 1) {
+    throw new EvolutionServiceError(404, "Łańcuch zawiera rozgałęzienia i nie spełnia filtra 'liniowe'.", {
+      code: "INVALID_INPUT",
+    });
+  }
+
+  if (branching === "branching" && branchCount <= 1) {
+    throw new EvolutionServiceError(404, "Łańcuch nie posiada alternatywnych ścieżek ewolucji.", {
+      code: "INVALID_INPUT",
+    });
+  }
+
+  const typeFilter = filters.type ?? null;
+  const generationFilter = filters.generation ?? null;
+
+  if (!typeFilter && !generationFilter) {
+    return dto;
+  }
+
+  const matchingStageIds = new Set<number>();
+
+  dto.stages.forEach((stage) => {
+    const typeOk = !typeFilter || stage.types.includes(typeFilter);
+    const generationOk = !generationFilter || stage.generation === generationFilter;
+
+    if (typeOk && generationOk) {
+      matchingStageIds.add(stage.pokemonId);
+    }
+  });
+
+  if (matchingStageIds.size === 0) {
+    throw new EvolutionServiceError(404, "Brak etapów ewolucji spełniających wybrane filtry.", {
+      code: "INVALID_INPUT",
+    });
+  }
+
+  const branchPaths = collectBranchPaths(chain.chain);
+  const allowedStageIds = new Set<number>();
+  const allowedBranchIds = new Set<string>();
+
+  branchPaths.forEach((path) => {
+    const speciesIds = path.nodes
+      .map((node) => extractIdFromResourceUrl(node.species?.url ?? null))
+      .filter((id): id is number => typeof id === "number" && Number.isFinite(id));
+
+    const pathMatches = speciesIds.some((id) => matchingStageIds.has(id));
+    if (pathMatches) {
+      speciesIds.forEach((id) => allowedStageIds.add(id));
+      allowedBranchIds.add(path.branchId);
+    }
+  });
+
+  const stages = dto.stages.filter((stage) => stage.order === 1 || allowedStageIds.has(stage.pokemonId));
+
+  if (stages.length === 0) {
+    throw new EvolutionServiceError(404, "Etapy ewolucji zostały odfiltrowane.", {
+      code: "INVALID_INPUT",
+    });
+  }
+
+  const branches = dto.branches.filter((branch) => allowedBranchIds.has(branch.id));
+
+  return {
+    ...dto,
+    stages,
+    branches,
+  };
+};
+
 export const fetchEvolutionChainDto = async (
   supabase: SupabaseServerClient | undefined,
   params: EvolutionChainRequest
@@ -132,12 +213,18 @@ export const fetchEvolutionChainDto = async (
   }
 
   const pokemonMap = await fetchPokemonMap(speciesIds);
-  const dto = buildEvolutionChainDto({
+  const fullDto = buildEvolutionChainDto({
     chain,
     pokemonMap,
   });
 
-  await persistChainCache(supabase, dto);
+  const filteredDto = applyEvolutionFilters(fullDto, chain, {
+    type: params.type ?? null,
+    generation: params.generation ?? null,
+    branching: params.branching ?? null,
+  });
 
-  return dto;
+  await persistChainCache(supabase, fullDto);
+
+  return filteredDto;
 };

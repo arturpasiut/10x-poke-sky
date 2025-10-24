@@ -4,11 +4,17 @@ import { z } from "zod";
 import { errorResponse, jsonResponse } from "@/lib/http/responses";
 import { fetchEvolutionChainDto } from "@/lib/evolution/service";
 import { EvolutionServiceError } from "@/lib/evolution/errors";
+import { isValidGeneration, isValidPokemonType } from "@/lib/pokemon/filters";
+import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
+import type { EvolutionBranchingFilter } from "@/lib/evolution/types";
 
 const querySchema = z.object({
   chainId: z.string().optional(),
   pokemonId: z.string().optional(),
   identifier: z.string().optional(),
+  type: z.string().optional(),
+  generation: z.string().optional(),
+  branching: z.enum(["any", "linear", "branching"]).optional(),
 });
 
 const parseQuery = (searchParams: URLSearchParams) => {
@@ -16,6 +22,9 @@ const parseQuery = (searchParams: URLSearchParams) => {
     chainId: searchParams.get("chainId") ?? undefined,
     pokemonId: searchParams.get("pokemonId") ?? undefined,
     identifier: searchParams.get("identifier") ?? undefined,
+    type: searchParams.get("type") ?? undefined,
+    generation: searchParams.get("generation") ?? undefined,
+    branching: searchParams.get("branching") ?? undefined,
   });
 
   if (!parsed.success) {
@@ -43,12 +52,28 @@ const parseQuery = (searchParams: URLSearchParams) => {
     } as const;
   }
 
+  const typeValue = parsed.data.type ? parsed.data.type.trim().toLowerCase() : null;
+  const generationValue = parsed.data.generation ? parsed.data.generation.trim().toLowerCase() : null;
+
+  const normalizedType: PokemonTypeValue | null =
+    typeValue && isValidPokemonType(typeValue) ? (typeValue as PokemonTypeValue) : null;
+
+  const normalizedGeneration: PokemonGenerationValue | null =
+    generationValue && isValidGeneration(generationValue) ? (generationValue as PokemonGenerationValue) : null;
+
+  const branchingValue = parsed.data.branching ?? null;
+  const normalizedBranching: EvolutionBranchingFilter | null =
+    branchingValue && branchingValue !== "any" ? branchingValue : null;
+
   return {
     ok: true,
     data: {
       chainId: normalizedChainId,
       pokemonId: normalizedPokemonId,
       identifier: identifierValue,
+      type: normalizedType,
+      generation: normalizedGeneration,
+      branching: normalizedBranching,
     },
   } as const;
 };

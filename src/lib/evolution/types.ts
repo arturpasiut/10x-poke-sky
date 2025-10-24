@@ -1,8 +1,9 @@
 import type { PokemonStat } from "@/lib/types/pokemon";
-import type { PokemonTypeValue } from "@/lib/pokemon/types";
+import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
 export type EvolutionDisplayMode = "list" | "graph";
 export type EvolutionAssetPreference = "gif" | "sprite";
+export type EvolutionBranchingFilter = "any" | "linear" | "branching";
 
 export interface EvolutionAssetSources {
   sprite: string | null;
@@ -34,6 +35,7 @@ export interface EvolutionStageDto {
     Record<"hp" | "attack" | "defense" | "special-attack" | "special-defense" | "speed", number>
   > | null;
   accentColor?: string;
+  generation?: PokemonGenerationValue | null;
 }
 
 export interface EvolutionBranchDto {

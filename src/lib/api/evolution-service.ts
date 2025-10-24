@@ -1,4 +1,5 @@
-import type { EvolutionChainDto } from "@/lib/evolution/types";
+import type { EvolutionChainDto, EvolutionBranchingFilter } from "@/lib/evolution/types";
+import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
 interface EvolutionChainEdgeResponse {
   data: EvolutionChainDto;
@@ -10,6 +11,9 @@ export interface EvolutionChainQueryParams {
   chainId?: number | string | null;
   pokemonId?: number | null;
   identifier?: string | null;
+  type?: PokemonTypeValue | null;
+  generation?: PokemonGenerationValue | null;
+  branching?: EvolutionBranchingFilter | null;
 }
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
@@ -35,6 +39,18 @@ const buildQueryString = (params: EvolutionChainQueryParams = {}): string => {
 
   if (params.identifier) {
     search.set("identifier", params.identifier.trim());
+  }
+
+  if (params.type) {
+    search.set("type", params.type);
+  }
+
+  if (params.generation) {
+    search.set("generation", params.generation);
+  }
+
+  if (params.branching && params.branching !== "any") {
+    search.set("branching", params.branching);
   }
 
   return search.toString();

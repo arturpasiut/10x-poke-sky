@@ -2,7 +2,7 @@ import type { EvolutionChain, EvolutionDetail, ChainLink, Pokemon } from "@/lib/
 
 import { isValidPokemonType } from "@/lib/pokemon/filters";
 import { formatPokemonDisplayName } from "@/lib/pokemon/transformers";
-import type { PokemonTypeValue } from "@/lib/pokemon/types";
+import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
 import type { EvolutionChainDto, EvolutionStageDto, EvolutionRequirementDto, EvolutionBranchDto } from "./types";
 import { extractIdFromResourceUrl, formatLabel, slugify } from "./utils";
@@ -163,7 +163,34 @@ const toRequirements = (details: EvolutionDetail[], isBaseStage: boolean): Evolu
   return Array.from(dedup.values());
 };
 
-const collectBranchPaths = (node: ChainLink): BranchPath[] => {
+const GENERATION_RANGES: { generation: PokemonGenerationValue; from: number; to: number }[] = [
+  { generation: "generation-i", from: 1, to: 151 },
+  { generation: "generation-ii", from: 152, to: 251 },
+  { generation: "generation-iii", from: 252, to: 386 },
+  { generation: "generation-iv", from: 387, to: 493 },
+  { generation: "generation-v", from: 494, to: 649 },
+  { generation: "generation-vi", from: 650, to: 721 },
+  { generation: "generation-vii", from: 722, to: 809 },
+  { generation: "generation-viii", from: 810, to: 905 },
+  { generation: "generation-ix", from: 906, to: 1025 },
+];
+
+const HISUI_IDS = new Set<number>([899, 900, 901, 902, 903, 904, 905]);
+
+const inferGeneration = (pokemonId: number): PokemonGenerationValue => {
+  const range = GENERATION_RANGES.find((entry) => pokemonId >= entry.from && pokemonId <= entry.to);
+  if (!range) {
+    return "generation-ix";
+  }
+
+  if (range.generation === "generation-viii" && HISUI_IDS.has(pokemonId)) {
+    return "generation-viii";
+  }
+
+  return range.generation;
+};
+
+export const collectBranchPaths = (node: ChainLink): BranchPath[] => {
   const traverse = (link: ChainLink, path: ChainLink[]): ChainLink[][] => {
     const nextPath = [...path, link];
 
@@ -261,6 +288,7 @@ export const buildEvolutionChainDto = ({ chain, pokemonMap }: BuildEvolutionChai
       stats,
       statsDiff: null,
       accentColor: undefined,
+      generation: inferGeneration(pokemonId),
     });
   }
 

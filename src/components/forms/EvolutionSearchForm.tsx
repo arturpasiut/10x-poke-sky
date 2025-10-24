@@ -5,14 +5,13 @@ import clsx from "clsx";
 import { selectEvolutionAssetPreference, useEvolutionStore } from "@/stores/useEvolutionStore";
 import { getTypeLabel, POKEMON_GENERATION_OPTIONS, POKEMON_TYPE_OPTIONS } from "@/lib/pokemon/filters";
 import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
-
-export type EvolutionBranchFilter = "any" | "linear" | "branching";
+import type { EvolutionBranchingFilter } from "@/lib/evolution/types";
 
 export interface EvolutionSearchFormValues {
   term: string;
   type: PokemonTypeValue | null;
   generation: PokemonGenerationValue | null;
-  branching: EvolutionBranchFilter;
+  branching: EvolutionBranchingFilter;
 }
 
 export interface EvolutionSearchFormProps {
@@ -226,7 +225,7 @@ function Component({ defaultValues, isLoading = false, onSubmit, onChange, class
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-white/70">Rozgałęzienie:</span>
-          {(["any", "linear", "branching"] as EvolutionBranchFilter[]).map((option) => {
+          {(["any", "linear", "branching"] as EvolutionBranchingFilter[]).map((option) => {
             const label = option === "any" ? "Dowolne" : option === "linear" ? "Liniowe" : "Rozgałęzione (np. Eevee)";
             const isActive = values.branching === option;
             return (
