@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 import { EvolutionSearchForm } from "@/components/forms/EvolutionSearchForm";
 import { EvolutionBranchTabs } from "@/components/pokemon/evolution/EvolutionBranchTabs";
 import { EvolutionTimelineContainer } from "@/components/pokemon/evolution/EvolutionTimelineContainer";
+import { fetchEvolutionAssetPreference } from "@/lib/profile/preferences";
 import { fetchEvolutionChainFromEdge } from "@/lib/api/evolution-service";
 import type { EvolutionBranchingFilter, EvolutionChainDto } from "@/lib/evolution/types";
 import { isValidGeneration, isValidPokemonType } from "@/lib/pokemon/filters";
@@ -54,6 +55,8 @@ if (!evolutionQuery.chainId && !evolutionQuery.pokemonId && !evolutionQuery.iden
 let activeChain: EvolutionChainDto | null = null;
 let chainError: string | null = null;
 
+const supabase = Astro.locals.supabase;
+
 try {
   const response = await fetchEvolutionChainFromEdge(evolutionQuery, { baseUrl: Astro.url });
   activeChain = response.data;
@@ -63,6 +66,8 @@ try {
       ? error.message
       : "Nie udało się pobrać łańcucha ewolucji. Spróbuj wyszukać innego Pokémona.";
 }
+
+const profileAssetPreference = await fetchEvolutionAssetPreference(supabase);
 
 const formDefaults = {
   term: evolutionQuery.identifier ?? "",
@@ -142,7 +147,7 @@ const featureHighlights = [
           </header>
 
           <EvolutionBranchTabs client:load chainId={activeChain.chainId} branches={activeChain.branches} />
-          <EvolutionTimelineContainer client:load chain={activeChain} />
+          <EvolutionTimelineContainer client:load chain={activeChain} assetPreference={profileAssetPreference} />
         </section>
       ) : (
         <div class="rounded-3xl border border-white/10 bg-white/5 p-6 text-white/70">Ładujemy dane ewolucji…</div>

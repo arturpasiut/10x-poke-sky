@@ -6,6 +6,8 @@ import { selectEvolutionAssetPreference, useEvolutionStore } from "@/stores/useE
 import { getTypeLabel, POKEMON_GENERATION_OPTIONS, POKEMON_TYPE_OPTIONS } from "@/lib/pokemon/filters";
 import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
 import type { EvolutionBranchingFilter } from "@/lib/evolution/types";
+import { upsertEvolutionAssetPreferenceClient } from "@/lib/profile/preferences";
+import { useSessionStore } from "@/lib/stores/use-session-store";
 
 export interface EvolutionSearchFormValues {
   term: string;
@@ -48,6 +50,7 @@ function Component({ defaultValues, isLoading = false, onSubmit, onChange, class
   const [error, setError] = useState<string | null>(null);
   const assetPreference = useEvolutionStore(selectEvolutionAssetPreference);
   const setAssetPreference = useEvolutionStore((state) => state.setAssetPreference);
+  const sessionStatus = useSessionStore((state) => state.status);
 
   const searchFieldId = useId();
   const typeFieldId = useId();
@@ -119,8 +122,11 @@ function Component({ defaultValues, isLoading = false, onSubmit, onChange, class
   const handleAssetToggle = useCallback(
     (preference: "gif" | "sprite") => {
       setAssetPreference(preference);
+      if (sessionStatus === "authenticated") {
+        void upsertEvolutionAssetPreferenceClient(preference);
+      }
     },
-    [setAssetPreference]
+    [setAssetPreference, sessionStatus]
   );
 
   return (

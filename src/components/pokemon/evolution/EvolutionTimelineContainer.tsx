@@ -2,7 +2,9 @@ import { memo, useCallback } from "react";
 
 import clsx from "clsx";
 
-import type { EvolutionChainDto } from "@/lib/evolution/types";
+import { useEffect, useRef } from "react";
+
+import type { EvolutionAssetPreference, EvolutionChainDto } from "@/lib/evolution/types";
 import { PokemonEvolutionTimeline } from "@/components/pokemon/evolution/PokemonEvolutionTimeline";
 import {
   selectEvolutionAssetPreference,
@@ -14,14 +16,17 @@ import {
 export interface EvolutionTimelineContainerProps {
   chain: EvolutionChainDto;
   className?: string;
+  assetPreference?: EvolutionAssetPreference | null;
 }
 
-function Component({ chain, className }: EvolutionTimelineContainerProps) {
+function Component({ chain, className, assetPreference: profilePreference }: EvolutionTimelineContainerProps) {
   const displayMode = useEvolutionStore(selectEvolutionDisplayMode);
   const setDisplayMode = useEvolutionStore((state) => state.setDisplayMode);
   const assetPreference = useEvolutionStore(selectEvolutionAssetPreference);
+  const setAssetPreference = useEvolutionStore((state) => state.setAssetPreference);
   const showStatDiffs = useEvolutionStore(selectShowStatDiffs);
   const toggleStatDiffs = useEvolutionStore((state) => state.toggleStatDiffs);
+  const hasSyncedAssetPreference = useRef(false);
 
   const handleDisplayModeChange = useCallback(
     (mode: "list" | "graph") => {
@@ -29,6 +34,20 @@ function Component({ chain, className }: EvolutionTimelineContainerProps) {
     },
     [setDisplayMode]
   );
+
+  useEffect(() => {
+    if (!profilePreference) {
+      return;
+    }
+
+    if (!hasSyncedAssetPreference.current && assetPreference !== profilePreference) {
+      setAssetPreference(profilePreference);
+    }
+
+    if (profilePreference) {
+      hasSyncedAssetPreference.current = true;
+    }
+  }, [assetPreference, profilePreference, setAssetPreference]);
 
   return (
     <div className={clsx("space-y-4", className)}>
@@ -73,7 +92,11 @@ function Component({ chain, className }: EvolutionTimelineContainerProps) {
         </button>
       </div>
 
-      <PokemonEvolutionTimeline chain={chain} displayMode={displayMode} assetPreference={assetPreference} />
+      <PokemonEvolutionTimeline
+        chain={chain}
+        displayMode={displayMode}
+        assetPreference={profilePreference ?? assetPreference}
+      />
     </div>
   );
 }
