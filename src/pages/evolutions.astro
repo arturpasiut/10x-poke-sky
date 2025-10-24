@@ -3,7 +3,6 @@ import MainLayout from "../layouts/MainLayout.astro";
 import { EvolutionSearchForm } from "@/components/forms/EvolutionSearchForm";
 import { EvolutionBranchTabs } from "@/components/pokemon/evolution/EvolutionBranchTabs";
 import { EvolutionTimelineContainer } from "@/components/pokemon/evolution/EvolutionTimelineContainer";
-import { EvolutionFavoriteGroupsPanel } from "@/components/pokemon/evolution/EvolutionFavoriteGroupsPanel";
 import { fetchEvolutionAssetPreference } from "@/lib/profile/preferences";
 import { fetchEvolutionChainFromEdge } from "@/lib/api/evolution-service";
 import type { EvolutionBranchingFilter, EvolutionChainDto } from "@/lib/evolution/types";
@@ -68,7 +67,7 @@ try {
       : "Nie udało się pobrać łańcucha ewolucji. Spróbuj wyszukać innego Pokémona.";
 }
 
-const { preference: profileAssetPreference, isAuthenticated } = await fetchEvolutionAssetPreference(supabase);
+const { preference: profileAssetPreference } = await fetchEvolutionAssetPreference(supabase);
 
 const formDefaults = {
   term: evolutionQuery.identifier ?? "",
@@ -114,29 +113,6 @@ const featureHighlights = [
       }
     </div>
   </div>
-
-  {
-    isAuthenticated ? (
-      <EvolutionFavoriteGroupsPanel
-        client:load
-        className="mt-8"
-        highlightChainId={activeChain?.chainId ?? null}
-        assetPreference={profileAssetPreference}
-        initialIsAuthenticated={isAuthenticated}
-      />
-    ) : (
-      <div class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
-        <p class="font-semibold text-white">Zapisuj swoje drużyny</p>
-        <p class="mt-2">Zaloguj się, aby przechowywać ulubione gałęzie łańcuchów ewolucji i szybko do nich wracać.</p>
-        <a
-          class="mt-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-white/20"
-          href="/auth/login"
-        >
-          Zaloguj się →
-        </a>
-      </div>
-    )
-  }
 
   <section class="mt-10 grid gap-8">
     <EvolutionSearchForm client:load defaultValues={formDefaults} />

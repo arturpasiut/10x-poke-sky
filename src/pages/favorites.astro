@@ -1,6 +1,11 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 import FavoritesView from "@/components/favorites/FavoritesView";
+import { fetchEvolutionAssetPreference } from "@/lib/profile/preferences";
+
+const supabase = Astro.locals.supabase;
+
+const { preference: profileAssetPreference, isAuthenticated } = await fetchEvolutionAssetPreference(supabase);
 ---
 
 <MainLayout title="Ulubione – 10x Poke Sky">
@@ -12,6 +17,10 @@ import FavoritesView from "@/components/favorites/FavoritesView";
   </div>
 
   <div class="space-y-8">
-    <FavoritesView client:load />
+    <FavoritesView
+      client:load
+      initialAssetPreference={profileAssetPreference}
+      initialIsAuthenticated={isAuthenticated}
+    />
   </div>
 </MainLayout>
