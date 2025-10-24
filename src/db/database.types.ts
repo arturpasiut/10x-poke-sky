@@ -20,6 +20,36 @@ export interface Database {
   };
   public: {
     Tables: {
+      evolution_chains_cache: {
+        Row: {
+          branches: Json;
+          cached_at: string;
+          chain_id: string;
+          id: number;
+          lead_pokemon_name: string | null;
+          payload: Json;
+          root_pokemon_id: number;
+        };
+        Insert: {
+          branches?: Json;
+          cached_at?: string;
+          chain_id: string;
+          id?: number;
+          lead_pokemon_name?: string | null;
+          payload: Json;
+          root_pokemon_id: number;
+        };
+        Update: {
+          branches?: Json;
+          cached_at?: string;
+          chain_id?: string;
+          id?: number;
+          lead_pokemon_name?: string | null;
+          payload?: Json;
+          root_pokemon_id?: number;
+        };
+        Relationships: [];
+      };
       ai_queries: {
         Row: {
           created_at: string;
@@ -115,6 +145,33 @@ export interface Database {
           pokemon_name?: string | null;
           pokemon_sprite_url?: string | null;
           pokemon_types?: string[] | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      favorite_evolution_groups: {
+        Row: {
+          branch_id: string;
+          chain_id: string;
+          created_at: string;
+          id: string;
+          pokemon_ids: number[];
+          user_id: string;
+        };
+        Insert: {
+          branch_id?: string;
+          chain_id: string;
+          created_at?: string;
+          id?: string;
+          pokemon_ids: number[];
+          user_id: string;
+        };
+        Update: {
+          branch_id?: string;
+          chain_id?: string;
+          created_at?: string;
+          id?: string;
+          pokemon_ids?: number[];
           user_id?: string;
         };
         Relationships: [];

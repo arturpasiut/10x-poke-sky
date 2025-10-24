@@ -5,6 +5,8 @@ type ProfileRow = Tables<"profiles">;
 type PokemonRow = Tables<"pokemon_cache">;
 type MoveRow = Tables<"moves_cache">;
 type FavoriteRow = Tables<"favorites">;
+type EvolutionChainCacheRow = Tables<"evolution_chains_cache">;
+type FavoriteEvolutionGroupRow = Tables<"favorite_evolution_groups">;
 type AiQueryRow = Tables<"ai_queries">;
 
 type ProfileUpdate = TablesUpdate<"profiles">;
@@ -78,6 +80,23 @@ export interface PokemonDetailResponseDto {
   species: PokemonSpecies | null;
   evolutionChain: EvolutionChain | null;
   moves: MoveSummaryDto[];
+}
+
+export interface EvolutionChainCacheDto {
+  chainId: EvolutionChainCacheRow["chain_id"];
+  rootPokemonId: EvolutionChainCacheRow["root_pokemon_id"];
+  leadPokemonName: EvolutionChainCacheRow["lead_pokemon_name"];
+  payload: EvolutionChainCacheRow["payload"];
+  branches: EvolutionChainCacheRow["branches"];
+  cachedAt: EvolutionChainCacheRow["cached_at"];
+}
+
+export interface FavoriteEvolutionGroupDto {
+  id: FavoriteEvolutionGroupRow["id"];
+  chainId: FavoriteEvolutionGroupRow["chain_id"];
+  branchId: FavoriteEvolutionGroupRow["branch_id"];
+  pokemonIds: FavoriteEvolutionGroupRow["pokemon_ids"];
+  createdAt: FavoriteEvolutionGroupRow["created_at"];
 }
 
 export interface MoveSummaryDto {
