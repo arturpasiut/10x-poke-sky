@@ -36,20 +36,31 @@ const parsePreferences = (metadata: unknown): PreferencesState => {
   };
 };
 
+export interface EvolutionPreferenceSnapshot {
+  preference: EvolutionAssetPreference | null;
+  isAuthenticated: boolean;
+}
+
 export const fetchEvolutionAssetPreference = async (
   supabase: SupabaseServerClient
-): Promise<EvolutionAssetPreference | null> => {
+): Promise<EvolutionPreferenceSnapshot> => {
   const { data, error } = await supabase.auth.getUser();
 
   if (error || !data?.user) {
     if (error) {
       console.warn("[profile.preferences] getUser failed", error);
     }
-    return null;
+    return {
+      preference: null,
+      isAuthenticated: false,
+    };
   }
 
   const preferences = parsePreferences(data.user.user_metadata);
-  return preferences.evolutionAssetPreference;
+  return {
+    preference: preferences.evolutionAssetPreference,
+    isAuthenticated: true,
+  };
 };
 
 export const upsertEvolutionAssetPreference = async (

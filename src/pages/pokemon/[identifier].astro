@@ -46,7 +46,7 @@ try {
   }
 }
 
-const profileAssetPreference = await fetchEvolutionAssetPreference(supabase);
+const { preference: profileAssetPreference } = await fetchEvolutionAssetPreference(supabase);
 
 const TYPE_COLORS: Record<string, string> = {
   bug: "#179A55",
