@@ -46,7 +46,7 @@ try {
   }
 }
 
-const { preference: profileAssetPreference } = await fetchEvolutionAssetPreference(supabase);
+const { preference: profileAssetPreference, isAuthenticated } = await fetchEvolutionAssetPreference(supabase);
 
 const TYPE_COLORS: Record<string, string> = {
   bug: "#179A55",
@@ -327,6 +327,7 @@ const gradientStyle = `background: radial-gradient(circle at 20% 20%, ${typeGrad
                     client:load
                     chain={detail.evolutionChainDto}
                     assetPreference={profileAssetPreference}
+                    initialIsAuthenticated={isAuthenticated}
                   />
                 </>
               ) : (

@@ -233,3 +233,35 @@ export const deleteEvolutionFavoriteGroup = async (chainId: string, branchId: st
     });
   }
 };
+
+export const saveEvolutionFavoriteGroup = async (payload: {
+  chainId: string;
+  branchId?: string | null;
+  pokemonIds: number[];
+}) => {
+  const response = await fetch(GROUPS_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      chainId: payload.chainId,
+      branchId: payload.branchId ?? "",
+      pokemonIds: payload.pokemonIds,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await parseErrorPayload(response);
+    throw new FavoritesApiError(error.message, {
+      code: error.code,
+      details: error.details,
+      retryAfterMs: error.retryAfterMs,
+    });
+  }
+
+  const data = (await response.json()) as FavoriteEvolutionGroupDto;
+  return data;
+};

@@ -67,7 +67,7 @@ try {
       : "Nie udało się pobrać łańcucha ewolucji. Spróbuj wyszukać innego Pokémona.";
 }
 
-const { preference: profileAssetPreference } = await fetchEvolutionAssetPreference(supabase);
+const { preference: profileAssetPreference, isAuthenticated } = await fetchEvolutionAssetPreference(supabase);
 
 const formDefaults = {
   term: evolutionQuery.identifier ?? "",
@@ -137,17 +137,24 @@ const featureHighlights = [
               >
                 Zobacz kartę Pokémona
               </a>
-              <a
-                href="/auth/login"
-                class="rounded-full bg-primary px-4 py-2 font-semibold uppercase tracking-wide text-white shadow-lg transition hover:bg-primary/90"
-              >
-                Zaloguj się, aby zapisać drużynę
-              </a>
+              {isAuthenticated ? null : (
+                <a
+                  href="/auth/login"
+                  class="rounded-full bg-primary px-4 py-2 font-semibold uppercase tracking-wide text-white shadow-lg transition hover:bg-primary/90"
+                >
+                  Zaloguj się, aby zapisać drużynę
+                </a>
+              )}
             </div>
           </header>
 
           <EvolutionBranchTabs client:load chainId={activeChain.chainId} branches={activeChain.branches} />
-          <EvolutionTimelineContainer client:load chain={activeChain} assetPreference={profileAssetPreference} />
+          <EvolutionTimelineContainer
+            client:load
+            chain={activeChain}
+            assetPreference={profileAssetPreference}
+            initialIsAuthenticated={isAuthenticated}
+          />
         </section>
       ) : (
         <div class="rounded-3xl border border-white/10 bg-white/5 p-6 text-white/70">Ładujemy dane ewolucji…</div>
