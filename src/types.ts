@@ -1,5 +1,6 @@
 import type { Json, Tables, TablesInsert, TablesUpdate } from "./db/database.types";
 import type { EvolutionChain, Pokemon as PokemonDetailPayload, PokemonSpecies } from "@/lib/types/pokemon";
+import type { EvolutionChainDto } from "@/lib/evolution/types";
 
 type ProfileRow = Tables<"profiles">;
 type PokemonRow = Tables<"pokemon_cache">;
@@ -79,6 +80,7 @@ export interface PokemonDetailResponseDto {
   pokemon: PokemonDetailPayload;
   species: PokemonSpecies | null;
   evolutionChain: EvolutionChain | null;
+  evolutionChainDto: EvolutionChainDto | null;
   moves: MoveSummaryDto[];
 }
 

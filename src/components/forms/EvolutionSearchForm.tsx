@@ -76,7 +76,43 @@ function Component({ defaultValues, isLoading = false, onSubmit, onChange, class
       }
 
       setError(null);
-      onSubmit?.(values);
+
+      if (onSubmit) {
+        onSubmit(values);
+        return;
+      }
+
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+
+        if (values.term.trim().length >= 2) {
+          params.set("identifier", values.term.trim().toLowerCase());
+        } else {
+          params.delete("identifier");
+        }
+
+        if (values.type) {
+          params.set("type", values.type);
+        } else {
+          params.delete("type");
+        }
+
+        if (values.generation) {
+          params.set("generation", values.generation);
+        } else {
+          params.delete("generation");
+        }
+
+        if (values.branching && values.branching !== "any") {
+          params.set("branching", values.branching);
+        } else {
+          params.delete("branching");
+        }
+
+        const queryString = params.toString();
+        const nextUrl = queryString.length ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+        window.location.href = nextUrl;
+      }
     },
     [onSubmit, values]
   );
