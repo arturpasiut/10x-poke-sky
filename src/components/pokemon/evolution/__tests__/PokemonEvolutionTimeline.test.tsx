@@ -6,8 +6,9 @@ import type { EvolutionChainDto, EvolutionStageDto, EvolutionRequirementDto } fr
 import { useEvolutionStore } from "@/stores/useEvolutionStore";
 
 const createStage = (overrides: Partial<EvolutionStageDto> & Pick<EvolutionStageDto, "pokemonId" | "name">) => {
-  const requirements: EvolutionRequirementDto[] =
-    overrides.requirements ?? [{ id: `req-${overrides.pokemonId}`, summary: "Forma startowa" }];
+  const requirements: EvolutionRequirementDto[] = overrides.requirements ?? [
+    { id: `req-${overrides.pokemonId}`, summary: "Forma startowa" },
+  ];
 
   return {
     stageId: overrides.stageId ?? `stage-${overrides.pokemonId}`,

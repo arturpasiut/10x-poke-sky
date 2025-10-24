@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { EvolutionFavoriteGroupsPanel } from "../EvolutionFavoriteGroupsPanel";
 import * as favoritesApi from "@/lib/favorites/api";
-import * as evolutionApi from "@/lib/api/evolution-service";
 
 vi.mock("@/lib/stores/use-session-store", () => ({
   useSessionStore: vi.fn().mockReturnValue({ status: "authenticated" }),
@@ -26,21 +25,25 @@ vi.mock("@/lib/favorites/api", async (importOriginal) => {
   } satisfies Partial<typeof actual>;
 });
 
+const fetchEvolutionChainFromEdgeMock = vi.hoisted(() => vi.fn());
+
 vi.mock("@/lib/api/evolution-service", () => ({
-  fetchEvolutionChainFromEdge: vi.fn().mockResolvedValue({
-    data: {
-      chainId: "sample",
-      title: "Sample",
-      leadPokemonId: 1,
-      leadName: "sample",
-      branches: [{ id: "main", label: "Główna" }],
-      stages: [
-        { pokemonId: 1, name: "pokemon-1" },
-        { pokemonId: 2, name: "pokemon-2" },
-      ],
-    },
-  }),
+  fetchEvolutionChainFromEdge: fetchEvolutionChainFromEdgeMock,
 }));
+
+fetchEvolutionChainFromEdgeMock.mockResolvedValue({
+  data: {
+    chainId: "sample",
+    title: "Sample",
+    leadPokemonId: 1,
+    leadName: "sample",
+    branches: [{ id: "main", label: "Główna" }],
+    stages: [
+      { pokemonId: 1, name: "pokemon-1" },
+      { pokemonId: 2, name: "pokemon-2" },
+    ],
+  },
+});
 
 describe("EvolutionFavoriteGroupsPanel", () => {
   const fetchGroupsSpy = favoritesApi.fetchEvolutionFavoriteGroups as ReturnType<typeof vi.fn>;
