@@ -1,10 +1,10 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { EvolutionSearchForm, type EvolutionBranchFilter } from "@/components/forms/EvolutionSearchForm";
+import { EvolutionSearchForm } from "@/components/forms/EvolutionSearchForm";
 import { EvolutionBranchTabs } from "@/components/pokemon/evolution/EvolutionBranchTabs";
 import { EvolutionTimelineContainer } from "@/components/pokemon/evolution/EvolutionTimelineContainer";
 import { fetchEvolutionChainFromEdge } from "@/lib/api/evolution-service";
-import type { EvolutionChainDto } from "@/lib/evolution/types";
+import type { EvolutionBranchingFilter, EvolutionChainDto } from "@/lib/evolution/types";
 import { isValidGeneration, isValidPokemonType } from "@/lib/pokemon/filters";
 import type { PokemonGenerationValue, PokemonTypeValue } from "@/lib/pokemon/types";
 
@@ -28,25 +28,28 @@ const parseNumericParam = (value: string | null) => {
 const requestedChainId = parseNumericParam(chainIdParam);
 const requestedPokemonId = parseNumericParam(pokemonIdParam);
 
-const evolutionQuery = {
-  chainId: requestedChainId,
-  pokemonId: requestedPokemonId,
-  identifier: identifierParam?.trim() ?? null,
-};
-
-if (!evolutionQuery.chainId && !evolutionQuery.pokemonId && !evolutionQuery.identifier) {
-  evolutionQuery.identifier = "eevee";
-}
-
 const selectedType: PokemonTypeValue | null =
   typeParam && isValidPokemonType(typeParam) ? (typeParam as PokemonTypeValue) : null;
 const selectedGeneration: PokemonGenerationValue | null =
   generationParam && isValidGeneration(generationParam) ? (generationParam as PokemonGenerationValue) : null;
 
-const branchFilters: EvolutionBranchFilter[] = ["any", "linear", "branching"];
-const selectedBranching: EvolutionBranchFilter = branchFilters.includes(branchingParam as EvolutionBranchFilter)
-  ? (branchingParam as EvolutionBranchFilter)
+const branchFilters: EvolutionBranchingFilter[] = ["any", "linear", "branching"];
+const selectedBranching: EvolutionBranchingFilter = branchFilters.includes(branchingParam as EvolutionBranchingFilter)
+  ? (branchingParam as EvolutionBranchingFilter)
   : "any";
+
+const evolutionQuery = {
+  chainId: requestedChainId,
+  pokemonId: requestedPokemonId,
+  identifier: identifierParam?.trim() ?? null,
+  type: selectedType,
+  generation: selectedGeneration,
+  branching: selectedBranching === "any" ? null : selectedBranching,
+};
+
+if (!evolutionQuery.chainId && !evolutionQuery.pokemonId && !evolutionQuery.identifier) {
+  evolutionQuery.identifier = "eevee";
+}
 
 let activeChain: EvolutionChainDto | null = null;
 let chainError: string | null = null;

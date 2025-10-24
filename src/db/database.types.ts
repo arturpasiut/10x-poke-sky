@@ -28,7 +28,12 @@ export interface Database {
           id: number;
           lead_pokemon_name: string | null;
           payload: Json;
+          branching_count: number;
+          generation_tags: string[];
+          pokemon_ids: number[];
           root_pokemon_id: number;
+          search_terms: string | null;
+          type_tags: string[];
         };
         Insert: {
           branches?: Json;
@@ -37,7 +42,12 @@ export interface Database {
           id?: number;
           lead_pokemon_name?: string | null;
           payload: Json;
+          branching_count?: number;
+          generation_tags?: string[];
+          pokemon_ids?: number[];
           root_pokemon_id: number;
+          search_terms?: string | null;
+          type_tags?: string[];
         };
         Update: {
           branches?: Json;
@@ -46,7 +56,12 @@ export interface Database {
           id?: number;
           lead_pokemon_name?: string | null;
           payload?: Json;
+          branching_count?: number;
+          generation_tags?: string[];
+          pokemon_ids?: number[];
           root_pokemon_id?: number;
+          search_terms?: string | null;
+          type_tags?: string[];
         };
         Relationships: [];
       };
