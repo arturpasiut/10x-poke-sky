@@ -1,19 +1,289 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import { EvolutionSearchForm } from "@/components/forms/EvolutionSearchForm";
+import { EvolutionBranchTabs } from "@/components/pokemon/evolution/EvolutionBranchTabs";
+import { EvolutionTimelineContainer } from "@/components/pokemon/evolution/EvolutionTimelineContainer";
+import type { EvolutionChainDto } from "@/lib/evolution/types";
+
+const demoChains: EvolutionChainDto[] = [
+  {
+    chainId: "eevee-branching",
+    title: "Eevee – zależne od kamieni",
+    leadPokemonId: 133,
+    leadName: "Eevee",
+    summary:
+      "Eevee reaguje na kamienie żywiołów, rozwijając zupełnie inne statystyki i role bojowe. Każda ścieżka ma własny zestaw bonusów.",
+    branches: [
+      { id: "water", label: "Ścieżka wodna (Vaporeon)", description: "Kamień Wodny" },
+      { id: "electric", label: "Ścieżka elektryczna (Jolteon)", description: "Kamień Błysk" },
+      { id: "fire", label: "Ścieżka ognista (Flareon)", description: "Kamień Ognia" },
+    ],
+    stages: [
+      {
+        stageId: "eevee-base",
+        order: 1,
+        pokemonId: 133,
+        slug: "eevee",
+        name: "Eevee",
+        types: ["normal"],
+        description: "Adaptacyjny Pokémon startowy, reagujący na warunki otoczenia.",
+        branchIds: ["water", "electric", "fire"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/eevee.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png",
+        },
+        requirements: [{ id: "base", summary: "Forma startowa" }],
+      },
+      {
+        stageId: "vaporeon",
+        order: 2,
+        pokemonId: 134,
+        slug: "vaporeon",
+        name: "Vaporeon",
+        types: ["water"],
+        description: "Doskonały absorber obrażeń specjalnych z naturalną regeneracją.",
+        branchIds: ["water"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/vaporeon.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/134.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/134.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/134.png",
+        },
+        requirements: [{ id: "water-stone", summary: "Kamień Wodny" }],
+        statsDiff: {
+          hp: 35,
+          defense: 15,
+          "special-defense": 35,
+        },
+      },
+      {
+        stageId: "jolteon",
+        order: 2,
+        pokemonId: 135,
+        slug: "jolteon",
+        name: "Jolteon",
+        types: ["electric"],
+        description: "Błyskawiczny napastnik, świetny do przełamywania defensywy przeciwnika.",
+        branchIds: ["electric"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/jolteon.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/135.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/135.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/135.png",
+        },
+        requirements: [{ id: "thunder-stone", summary: "Kamień Błysk" }],
+        statsDiff: {
+          speed: 65,
+          attack: 25,
+          "special-attack": 45,
+        },
+      },
+      {
+        stageId: "flareon",
+        order: 2,
+        pokemonId: 136,
+        slug: "flareon",
+        name: "Flareon",
+        types: ["fire"],
+        description: "Skupiony na ataku fizycznym, idealny do wejścia po wsparciu.",
+        branchIds: ["fire"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/flareon.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/136.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/136.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/136.png",
+        },
+        requirements: [{ id: "fire-stone", summary: "Kamień Ognia" }],
+        statsDiff: {
+          attack: 65,
+          "special-defense": 20,
+        },
+      },
+    ],
+  },
+  {
+    chainId: "ralts-split",
+    title: "Ralts – rozwój psychiczny",
+    leadPokemonId: 280,
+    leadName: "Ralts",
+    summary:
+      "Łańcuch ewolucji bazujący na poziomach i dodatkowych warunkach: Kirlia prowadzi do Gardevoir lub Gallade.",
+    branches: [
+      { id: "gardevoir", label: "Klasyczna ścieżka (Gardevoir)", description: "Ewoluuje na poziomie 30" },
+      { id: "gallade", label: "Wariant Gallade", description: "Pokemon męski + Kamień Świtu" },
+    ],
+    stages: [
+      {
+        stageId: "ralts-base",
+        order: 1,
+        pokemonId: 280,
+        slug: "ralts",
+        name: "Ralts",
+        types: ["psychic", "fairy"],
+        description: "Wyczuwanie emocji przeciwnika pozwala mu unikać walki.",
+        branchIds: ["gardevoir", "gallade"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/ralts.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/280.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/280.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/280.png",
+        },
+        requirements: [{ id: "base", summary: "Forma startowa" }],
+      },
+      {
+        stageId: "kirlia",
+        order: 2,
+        pokemonId: 281,
+        slug: "kirlia",
+        name: "Kirlia",
+        types: ["psychic", "fairy"],
+        description: "Rozwija zmysł percepcji, przygotowując grunt pod specjalizację.",
+        branchIds: ["gardevoir", "gallade"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/kirlia.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/281.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/281.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/281.png",
+        },
+        requirements: [{ id: "level-20", summary: "Poziom 20" }],
+        statsDiff: {
+          hp: 20,
+          "special-attack": 25,
+          speed: 15,
+        },
+      },
+      {
+        stageId: "gardevoir",
+        order: 3,
+        pokemonId: 282,
+        slug: "gardevoir",
+        name: "Gardevoir",
+        types: ["psychic", "fairy"],
+        description: "Klasyczny wspierający z mocą specjalnych ataków i ochroną sojuszników.",
+        branchIds: ["gardevoir"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/gardevoir.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/282.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png",
+        },
+        requirements: [{ id: "level-30", summary: "Poziom 30" }],
+        statsDiff: {
+          "special-attack": 40,
+          "special-defense": 25,
+        },
+      },
+      {
+        stageId: "gallade",
+        order: 3,
+        pokemonId: 475,
+        slug: "gallade",
+        name: "Gallade",
+        types: ["psychic", "fighting"],
+        description: "Alternatywna ścieżka dla Pokémonów męskich – ofensywna na krótkim dystansie.",
+        branchIds: ["gallade"],
+        asset: {
+          gif: "https://img.pokemondb.net/sprites/black-white/anim/normal/gallade.gif",
+          sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/475.png",
+          officialArtwork:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/475.png",
+          fallback: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/475.png",
+        },
+        requirements: [
+          { id: "male", summary: "Pokemon męski" },
+          { id: "dawn-stone", summary: "Kamień Świtu" },
+        ],
+        statsDiff: {
+          attack: 45,
+          speed: 20,
+          defense: 20,
+        },
+      },
+    ],
+  },
+];
+
+const featureHighlights = [
+  {
+    title: "Filtry w locie",
+    description: "Wyszukuj po nazwie, generacji i typie – wszystkie wyniki odświeżają się bez przeładowania strony.",
+  },
+  {
+    title: "Preferencje wizualne",
+    description: "Przełączaj między GIF-ami i sprite'ami, a Twoje ustawienia zostaną zapamiętane.",
+  },
+  {
+    title: "Zapisz drużynę",
+    description: "Po zalogowaniu dodasz cały łańcuch do ulubionych jednym kliknięciem.",
+  },
+];
 ---
 
 <MainLayout title="Evolutions – 10x Poke Sky">
-  <div slot="header" class="space-y-2">
-    <h1 class="text-4xl font-semibold sm:text-5xl">Evolutions</h1>
-    <p class="text-muted-foreground">Przegląd drzew ewolucji pojawi się w module detali (faza 4).</p>
+  <div slot="header" class="space-y-6">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-semibold text-white sm:text-5xl">Ewolucje Pokémonów</h1>
+      <p class="max-w-2xl text-base text-white/70">
+        Eksploruj rozgałęzione ścieżki rozwoju, sprawdzaj wymagania i różnice w statystykach kolejnych form. Docelowo
+        połączymy tutaj wyszukiwarkę, timeline oraz możliwość zapisu ulubionych drużyn.
+      </p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-3">
+      {
+        featureHighlights.map((item) => (
+          <article key={item.title} class="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-lg">
+            <h2 class="text-sm font-semibold uppercase tracking-widest text-primary/80">{item.title}</h2>
+            <p class="mt-2 text-sm text-white/70">{item.description}</p>
+          </article>
+        ))
+      }
+    </div>
   </div>
 
-  <section
-    class="rounded-2xl border border-[color:color-mix(in_srgb,var(--color-border)_60%,transparent)] bg-[color:color-mix(in_srgb,var(--color-surface)_50%,transparent)] p-10 text-center shadow-md"
-  >
-    <p class="max-w-xl mx-auto text-lg text-muted-foreground">
-      Tu pokażemy timeline ewolucji wraz z ilustracjami i statystykami. Na razie możesz korzystać z linków na stronie
-      głównej, żeby zobaczyć nawigację.
-    </p>
+  <section class="mt-10 grid gap-8">
+    <EvolutionSearchForm client:load />
+
+    {
+      demoChains.map((chain) => (
+        <section
+          key={chain.chainId}
+          class="space-y-6 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0f172a] via-[#0b1120] to-[#120f24] p-6 shadow-2xl"
+        >
+          <header class="flex flex-col gap-3 text-white lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 class="text-3xl font-semibold">{chain.leadName} – drzewo ewolucji</h2>
+              <p class="text-sm text-white/70">{chain.summary}</p>
+            </div>
+            <div class="flex flex-wrap gap-3 text-sm text-white/80">
+              <a
+                href={`/pokemon/${chain.leadPokemonId}`}
+                class="rounded-full border border-white/20 bg-white/10 px-4 py-2 font-semibold uppercase tracking-wide transition hover:border-primary/60 hover:bg-primary/20"
+              >
+                Zobacz kartę Pokémona
+              </a>
+              <a
+                href="/auth/login"
+                class="rounded-full bg-primary px-4 py-2 font-semibold uppercase tracking-wide text-white shadow-lg transition hover:bg-primary/90"
+              >
+                Zaloguj się, aby zapisać drużynę
+              </a>
+            </div>
+          </header>
+
+          <EvolutionBranchTabs client:load chainId={chain.chainId} branches={chain.branches} />
+          <EvolutionTimelineContainer client:load chain={chain} />
+        </section>
+      ))
+    }
   </section>
 </MainLayout>

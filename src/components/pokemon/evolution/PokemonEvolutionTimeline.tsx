@@ -1,70 +1,127 @@
-import type { ChainLink, EvolutionChain, EvolutionDetail } from "@/lib/types/pokemon";
+import { useEffect, useMemo } from "react";
 
-const STEP_ICON = "➡️";
+import clsx from "clsx";
+
+import type { EvolutionChainDto, EvolutionDisplayMode, EvolutionAssetPreference } from "@/lib/evolution/types";
+import { EvolutionStageCard } from "@/components/pokemon/evolution/EvolutionStageCard";
+import {
+  selectEvolutionHydration,
+  selectFocusedPokemonId,
+  selectSelectedBranchId,
+  selectShowStatDiffs,
+  useEvolutionStore,
+} from "@/stores/useEvolutionStore";
 
 export interface PokemonEvolutionTimelineProps {
-  chain: EvolutionChain | null;
+  chain: EvolutionChainDto | null;
+  displayMode: EvolutionDisplayMode;
+  assetPreference: EvolutionAssetPreference;
+  onStageFocus?: (pokemonId: number) => void;
 }
 
-export function PokemonEvolutionTimeline({ chain }: PokemonEvolutionTimelineProps) {
-  if (!chain?.chain) {
+export function PokemonEvolutionTimeline({
+  chain,
+  displayMode,
+  assetPreference,
+  onStageFocus,
+}: PokemonEvolutionTimelineProps) {
+  const selectedBranchId = useEvolutionStore(selectSelectedBranchId);
+  const focusedPokemonId = useEvolutionStore(selectFocusedPokemonId);
+  const focusPokemon = useEvolutionStore((state) => state.focusPokemon);
+  const setSelectedChainId = useEvolutionStore((state) => state.setSelectedChainId);
+  const showStatDiffs = useEvolutionStore(selectShowStatDiffs);
+  const isHydrated = useEvolutionStore(selectEvolutionHydration);
+
+  const stages = useMemo(() => {
+    if (!chain?.stages?.length) {
+      return [];
+    }
+
+    if (!selectedBranchId) {
+      return chain.stages;
+    }
+
+    return chain.stages.filter((stage) => stage.branchIds.includes(selectedBranchId) || stage.order === 1);
+  }, [chain, selectedBranchId]);
+
+  useEffect(() => {
+    if (chain?.chainId) {
+      setSelectedChainId(chain.chainId);
+    }
+  }, [chain?.chainId, setSelectedChainId]);
+
+  useEffect(() => {
+    if (!stages.length || !isHydrated) {
+      return;
+    }
+
+    if (!focusedPokemonId) {
+      focusPokemon(stages[0].pokemonId);
+    }
+  }, [focusPokemon, focusedPokemonId, isHydrated, stages]);
+
+  if (!chain) {
     return (
-      <p className="rounded-2xl border border-border/40 bg-muted/10 px-4 py-6 text-center text-sm text-muted-foreground backdrop-blur">
+      <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-white/70">
         Ten Pokémon nie posiada zdefiniowanego łańcucha ewolucji.
       </p>
     );
   }
 
-  const flattened = flattenChain(chain.chain);
-
-  if (!flattened.length) {
+  if (!stages.length) {
     return (
-      <p className="rounded-2xl border border-border/40 bg-muted/10 px-4 py-6 text-center text-sm text-muted-foreground backdrop-blur">
-        Brak danych o ewolucjach w PokeAPI.
+      <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-white/70">
+        Nie znaleziono etapów ewolucji dla wybranych filtrów.
       </p>
     );
   }
 
+  const layoutClass =
+    displayMode === "graph"
+      ? "grid gap-6 lg:grid-cols-2"
+      : "flex snap-x gap-6 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0";
+
   return (
-    <ol className="flex snap-x gap-4 overflow-x-auto pb-2">
-      {flattened.map((step, index) => (
-        <li
-          key={`${step.species}-${index}`}
-          className="flex min-w-[220px] flex-col items-center gap-3 rounded-2xl border border-border/30 bg-surface/80 px-4 py-5 text-center shadow-sm backdrop-blur"
-        >
-          <span className="text-sm font-semibold capitalize text-foreground">{step.species}</span>
-          <p className="text-xs text-muted-foreground">
-            {step.triggers.length ? step.triggers.join(", ") : index === 0 ? "Forma startowa" : STEP_ICON}
-          </p>
-        </li>
-      ))}
-    </ol>
+    <section className="space-y-6">
+      <header className="flex flex-col gap-2 text-white">
+        <h2 className="text-2xl font-semibold">{chain.title}</h2>
+        {chain.summary && <p className="text-sm text-white/70">{chain.summary}</p>}
+      </header>
+
+      <ol className={clsx(layoutClass, "relative")}>
+        {stages.map((stage, index) => {
+          const isActive = stage.pokemonId === focusedPokemonId;
+          const item = (
+            <EvolutionStageCard
+              stage={stage}
+              assetPreference={assetPreference}
+              isActive={isActive}
+              showStatDiffs={showStatDiffs && isHydrated}
+              onFocus={(pokemonId) => {
+                focusPokemon(pokemonId);
+                onStageFocus?.(pokemonId);
+              }}
+            />
+          );
+
+          if (displayMode === "graph") {
+            return (
+              <li key={stage.stageId} className="relative h-full">
+                {item}
+              </li>
+            );
+          }
+
+          return (
+            <li key={stage.stageId} className="relative min-w-[280px]">
+              {item}
+              {index < stages.length - 1 && (
+                <span className="absolute top-1/2 right-[-36px] hidden h-[2px] w-16 -translate-y-1/2 bg-gradient-to-r from-white/10 to-white/50 lg:block" />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
-
-interface FlattenedStep {
-  species: string;
-  triggers: string[];
-}
-
-const flattenChain = (node: ChainLink | null, acc: FlattenedStep[] = []): FlattenedStep[] => {
-  if (!node) return acc;
-
-  const triggers = (node.evolution_details ?? []).map((detail: EvolutionDetail) => {
-    if (detail.trigger?.name === "level-up" && detail.min_level) {
-      return `Poziom ${detail.min_level}`;
-    }
-    if (detail.trigger?.name) {
-      return detail.trigger.name.replace(/-/g, " ");
-    }
-    return "Ewolucja";
-  });
-
-  acc.push({
-    species: node.species?.name ?? "unknown",
-    triggers: triggers.filter(Boolean),
-  });
-
-  node.evolves_to?.forEach((child: ChainLink) => flattenChain(child, acc));
-  return acc;
-};
