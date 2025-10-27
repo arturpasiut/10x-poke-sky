@@ -1,0 +1,3 @@
+-- 0001_remote_placeholder.sql
+-- placeholder to satisfy existing migration history entries when working offline
+-- this migration intentionally performs no schema changes

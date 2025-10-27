@@ -1,0 +1,16 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import PokemonListingView from "@/components/pokemon/PokemonListingView";
+---
+
+<MainLayout title="Pokédex – 10x Poke Sky">
+  <div slot="header" class="space-y-3">
+    <p class="text-sm font-medium uppercase tracking-[0.3em] text-primary-300">Explorer</p>
+    <h1 class="text-4xl font-semibold sm:text-5xl">Pokédex</h1>
+    <p class="max-w-2xl text-muted-foreground">
+      Przeglądaj Pokemony według typu, regionu i generacji. Wyszukaj ulubione stworki i odkryj nowe propozycje.
+    </p>
+  </div>
+
+  <PokemonListingView client:load />
+</MainLayout>

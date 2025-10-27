@@ -1,0 +1,46 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import AIChatPanel from "@/components/ai-chat/AIChatPanel";
+import type { AiChatSuggestionViewModel } from "@/features/ai-chat";
+
+const pageTitle = "Czat AI – 10x Poke Sky";
+
+const supabase = Astro.locals.supabase;
+
+let isAuthenticated = false;
+let preferredGeneration: string | undefined;
+
+try {
+  const { data, error } = await supabase.auth.getUser();
+
+  if (!error && data?.user) {
+    isAuthenticated = true;
+
+    const metadata = data.user.user_metadata ?? {};
+    const preferred = (metadata.preferredGeneration ?? metadata.preferred_generation) as string | undefined;
+    preferredGeneration = typeof preferred === "string" && preferred.trim().length > 0 ? preferred : undefined;
+  }
+} catch (error) {
+  console.error("[ai] Failed to resolve Supabase session", error);
+}
+
+const initialSuggestions: AiChatSuggestionViewModel[] = [];
+---
+
+<MainLayout title={pageTitle}>
+  <div slot="header" class="space-y-3">
+    <p class="text-sm font-medium uppercase tracking-[0.3em] text-primary-300">Asystent</p>
+    <h1 class="text-4xl font-semibold sm:text-5xl">Czat AI</h1>
+    <p class="max-w-2xl text-muted-foreground">
+      Opisz Pokémona, a asystent AI spróbuje rozpoznać, o kogo chodzi i zaproponuje listę dopasowań z poziomem pewności.
+      Twoje pytania nie są zapisywane.
+    </p>
+  </div>
+
+  <AIChatPanel
+    client:load
+    initialSuggestions={initialSuggestions}
+    isAuthenticated={isAuthenticated}
+    preferredGeneration={preferredGeneration}
+  />
+</MainLayout>

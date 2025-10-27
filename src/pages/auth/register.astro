@@ -1,0 +1,49 @@
+---
+import AuthLayout from "../../layouts/AuthLayout.astro";
+import RegisterForm from "../../components/auth/RegisterForm";
+
+const currentUrl = new URL(Astro.request.url);
+const message = currentUrl.searchParams.get("message");
+---
+
+<AuthLayout title="Rejestracja – 10x Poke Sky">
+  <RegisterForm client:load message={message} />
+</AuthLayout>
+
+<style lang="postcss" is:global>
+.auth-input {
+  border-radius: 1rem;
+  padding: 0.9rem 1.25rem;
+  background: color-mix(in srgb, var(--color-background) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+  color: var(--color-foreground);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary) 25%, transparent);
+}
+
+.auth-action {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #2eb688 0%, #046d4a 100%);
+  box-shadow: 0 18px 40px -22px rgba(9, 15, 11, 0.65);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px -18px rgba(9, 15, 11, 0.7);
+}
+</style>

@@ -1,8 +1,212 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+<MainLayout title="10x Poke Sky">
+  <div slot="header" class="flex flex-col gap-6">
+    <div class="flex flex-col gap-3">
+      <p class="text-sm uppercase tracking-[0.35em] text-muted-foreground">Znajdź swojego kompana</p>
+      <h1 class="text-4xl font-semibold sm:text-5xl">Jakiego Pokémona szukasz?</h1>
+    </div>
+
+    <form class="relative w-full" method="get" action="/pokemon">
+      <label class="sr-only" for="home-search">Wyszukaj pokémona</label>
+      <input
+        id="home-search"
+        name="search"
+        class="w-full rounded-full border border-transparent bg-[color:color-mix(in_srgb,var(--color-muted)_70%,transparent)] px-6 py-4 pr-14 text-base text-foreground shadow-inner outline-none transition focus:border-primary focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--color-primary)_35%,transparent)]"
+        type="search"
+        placeholder="Wpisz nazwę pokémona lub filtr"
+      />
+      <button
+        type="submit"
+        class="absolute right-1.5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-lg text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        aria-label="Szukaj pokémonów"
+      >
+        <span aria-hidden="true">🔍</span>
+      </button>
+    </form>
+  </div>
+
+  <section class="grid gap-4 sm:grid-cols-2">
+    <a class="dashboard-card" href="/pokemon">
+      <span>Pokedex</span>
+      <img
+        alt="Pokeball"
+        loading="lazy"
+        src="https://raw.githubusercontent.com/MohamedRejeb/Pokedex/main/icons/pokeball.png"
+      />
+    </a>
+    <a class="dashboard-card dashboard-card--moves" href="/moves">
+      <span>Moves</span>
+      <img
+        alt="Lightning"
+        loading="lazy"
+        src="https://raw.githubusercontent.com/MohamedRejeb/Pokedex/main/icons/electric.png"
+      />
+    </a>
+    <a class="dashboard-card dashboard-card--evolutions" href="/evolutions">
+      <span>Evolutions</span>
+      <img alt="DNA" loading="lazy" src="https://raw.githubusercontent.com/MohamedRejeb/Pokedex/main/icons/dna.png" />
+    </a>
+    <a class="dashboard-card dashboard-card--locations" href="/locations">
+      <span>Locations</span>
+      <img
+        alt="Pin"
+        loading="lazy"
+        src="https://raw.githubusercontent.com/MohamedRejeb/Pokedex/main/icons/location.png"
+      />
+    </a>
+    <a class="dashboard-card dashboard-card--favorites" href="/favorites">
+      <span>Favorites</span>
+      <span aria-hidden="true" class="dashboard-card__icon">
+        <svg fill="none" height="48" viewBox="0 0 48 48" width="48" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M24 42s-1.52-1.35-3.63-3.25C13.54 32.29 6 25.49 6 18.07 6 12.09 10.66 7.5 16.5 7.5c3.32 0 6.27 1.66 7.5 4.14C25.73 9.16 28.68 7.5 32 7.5 37.84 7.5 42.5 12.09 42.5 18.07c0 7.42-7.54 14.22-14.37 20.68C25.52 40.65 24 42 24 42Z"
+            fill="url(#heartGradient)"></path>
+          <defs>
+            <linearGradient id="heartGradient" gradientUnits="userSpaceOnUse" x1="12" x2="36" y1="10" y2="40">
+              <stop stop-color="#ffd6e8"></stop>
+              <stop offset="1" stop-color="#ff6fb7"></stop>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+    </a>
+    <a class="dashboard-card dashboard-card--chat" href="/ai">
+      <span>Chat AI</span>
+      <span aria-hidden="true" class="dashboard-card__icon">
+        <img alt="Chat AI" height="64" loading="lazy" src="/poke-robo-blur.png" width="64" />
+      </span>
+    </a>
+  </section>
+
+  <section class="mt-10 flex flex-col gap-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold">Oglądaj</h2>
+      <a class="text-sm text-primary" href="#">Zobacz wszystkie</a>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      {
+        [
+          {
+            title: "Holy Matrimony!",
+            year: "1998",
+            series: "S01 - 48 EP",
+            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+          },
+          {
+            title: "Espeon, Not Included",
+            year: "2001",
+            series: "S05 - 17 EP",
+            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/196.png",
+          },
+          {
+            title: "Battle of the Badge",
+            year: "1999",
+            series: "S01 - 63 EP",
+            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png",
+          },
+          {
+            title: "Dig Those Diglett!",
+            year: "1998",
+            series: "S01 - 31 EP",
+            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/50.png",
+          },
+        ].map((item) => (
+          <article class="overflow-hidden rounded-lg border border-[color:color-mix(in_srgb,var(--color-border)_70%,transparent)] bg-[color:color-mix(in_srgb,var(--color-surface)_60%,transparent)] shadow-md">
+            <div class="aspect-video w-full overflow-hidden bg-[color:color-mix(in_srgb,var(--color-background)_20%,transparent)]">
+              <img alt={item.title} class="h-full w-full object-cover" loading="lazy" src={item.image} />
+            </div>
+            <div class="space-y-1 px-4 py-3">
+              <h3 class="text-base font-semibold">{item.title}</h3>
+              <p class="text-xs text-muted-foreground">
+                {item.year} | Series | {item.series}
+              </p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</MainLayout>
+
+<style lang="postcss">
+.dashboard-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  gap: 1rem;
+  border-radius: 1.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.125rem;
+  background: linear-gradient(135deg, #f33736 0%, #9c2221 100%);
+  box-shadow: 0 24px 40px -24px rgba(9, 15, 11, 0.55);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card span:first-child {
+  flex: 1;
+}
+
+.dashboard-card img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-left: auto;
+}
+
+.dashboard-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-left: auto;
+}
+
+.dashboard-card__icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 32px 48px -20px rgba(9, 15, 11, 0.65);
+}
+
+.dashboard-card--moves {
+  background: linear-gradient(135deg, #f1a22c 0%, #cb5c0d 100%);
+}
+
+.dashboard-card--evolutions {
+  background: linear-gradient(135deg, #2eb688 0%, #046d4a 100%);
+}
+
+.dashboard-card--locations {
+  background: linear-gradient(135deg, #54b1df 0%, #1e3da8 100%);
+}
+
+.dashboard-card--favorites {
+  background: linear-gradient(135deg, #f9bad8 0%, #c96aa4 100%);
+}
+
+.dashboard-card--chat {
+  background: linear-gradient(135deg, #f0f2f8 0%, #9aa5bb 100%);
+  color: #1a1f2b;
+}
+
+.dashboard-card--chat span {
+  color: inherit;
+}
+
+@media (min-width: 640px) {
+  .dashboard-card {
+    font-size: 1.25rem;
+    padding: 1.5rem 1.75rem;
+  }
+}
+</style>

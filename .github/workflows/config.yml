@@ -1,0 +1,234 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - develop-10xdevs
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  unit-test:
+    name: Unit Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Vitest with coverage
+        run: npm run test
+
+#      - name: Upload unit coverage
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: unit-coverage
+#          path: coverage/
+#          retention-days: 5
+
+  e2e-test:
+    name: Playwright E2E
+    needs: lint
+    runs-on: ubuntu-latest
+    environment: e2e
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Create .env.test
+        run: |
+          echo "PLAYWRIGHT_BASE_URL=http://localhost:3000" > .env.test
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.test
+          echo "SUPABASE_PUBLIC_KEY=${{ secrets.SUPABASE_PUBLIC_KEY }}" >> .env.test
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_PUBLIC_KEY }}" >> .env.test
+          echo "PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.test
+          echo "PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_PUBLIC_KEY }}" >> .env.test
+          echo "E2E_USERNAME_ID=${{ secrets.E2E_USERNAME_ID }}" >> .env.test
+          echo "E2E_USERNAME=${{ secrets.E2E_USERNAME }}" >> .env.test
+          echo "E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}" >> .env.test
+          echo "TEST_USER_EMAIL=${{ secrets.TEST_USER_EMAIL }}" >> .env.test
+          echo "TEST_USER_EMPTY_FAVS_EMAIL=${{ secrets.TEST_USER_EMPTY_FAVS_EMAIL}}" >> .env.test
+          echo "TEST_USER_EMPTY_FAVS_PASSWORD=${{ secrets.TEST_USER_EMPTY_FAVS_PASSWORD}}" >> .env.test
+          echo "TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}" >> .env.test
+          echo "NODE_ENV=test" >> .env.test
+
+#      - name: Start dev server for E2E tests
+#        run: |
+#          npm run dev:e2e > server.log 2>&1 &
+#          echo $! > server.pid
+#          echo "Server started with PID $(cat server.pid)"
+#
+#      - name: Wait for server to be ready
+#        run: |
+#          echo "Waiting for server to start on port 3000..."
+#          for i in {1..30}; do
+#            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+#              echo "Server is ready!"
+#              exit 0
+#            fi
+#            echo "Attempt $i/30: Server not ready yet, waiting..."
+#            sleep 2
+#          done
+#          echo "Server failed to start within 60 seconds. Showing server logs:"
+#          cat server.log
+#          exit 1
+#
+#      - name: Run E2E tests
+#        run: npm run test:e2e
+
+#      - name: Upload E2E test artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: playwright-report
+#          path: playwright-report/
+#          retention-days: 5
+
+#  status-comment:
+#    name: Update PR Status
+#    needs: [lint, unit-test, e2e-test]
+#    runs-on: ubuntu-latest
+#    if: always()
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Get PR details
+#        id: pr_details
+#        uses: actions/github-script@v7
+#        with:
+#          script: |
+#            const { owner, repo } = context.repo;
+#            const pr_number = context.issue.number;
+#            return { owner, repo, pr_number };
+#
+#      - name: Download unit test coverage
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: unit-coverage
+#          path: unit-coverage
+#
+#      - name: Download E2E report
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: playwright-report
+#          path: playwright-report
+#
+#      - name: Create status comment
+#        uses: actions/github-script@v7
+#        if: ${{ needs.unit-test.result == 'success' && needs.e2e-test.result == 'success' }}
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const { owner, repo, pr_number } = ${{ steps.pr_details.outputs.result }};
+#
+#            github.rest.issues.createComment({
+#              owner,
+#              repo,
+#              issue_number: pr_number,
+#              body: `✅ All checks have passed successfully!\n\n` +
+#                    `- Lint: ✅\n` +
+#                    `- Unit Tests: ✅\n` +
+#                    `- E2E Tests: ✅\n\n` +
+#                    `Coverage reports have been uploaded as artifacts.`
+#            });
+#
+#      - name: Create failure comment
+#        uses: actions/github-script@v7
+#        if: ${{ needs.unit-test.result != 'success' || needs.e2e-test.result != 'success' }}
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const { owner, repo, pr_number } = ${{ steps.pr_details.outputs.result }};
+#            const lintStatus = "${{ needs.lint.result }}" === "success" ? "✅" : "❌";
+#            const unitStatus = "${{ needs.unit-test.result }}" === "success" ? "✅" : "❌";
+#            const e2eStatus = "${{ needs.e2e-test.result }}" === "success" ? "✅" : "❌";
+#
+#            github.rest.issues.createComment({
+#              owner,
+#              repo,
+#              issue_number: pr_number,
+#              body: `❌ Some checks have failed!\n\n` +
+#                    `- Lint: ${lintStatus}\n` +
+#                    `- Unit Tests: ${unitStatus}\n` +
+#                    `- E2E Tests: ${e2eStatus}\n\n` +
+#                    `Please check the workflow logs for details.`
+#            });
+
+  build:
+    name: Build Production
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, e2e-test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production version
+        run: npm run build
+        env:
+          # Add production environment variables here if needed
+          # PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          # PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          NODE_ENV: production
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+          retention-days: 7
+
+      - name: Build summary
+        if: always()
+        run: |
+          echo "## Build Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Production build completed" >> $GITHUB_STEP_SUMMARY
