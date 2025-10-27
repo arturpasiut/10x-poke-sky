@@ -1,3 +1,4 @@
+import { GEMINI_API_KEY, OPENROUTER_API_KEY, POKEAPI_BASE_URL, SUPABASE_KEY, SUPABASE_URL } from "astro:env/server";
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -27,11 +28,11 @@ const envSchema = z.object({
 });
 
 const rawEnv = {
-  SUPABASE_URL: import.meta.env.SUPABASE_URL,
-  SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
-  POKEAPI_BASE_URL: import.meta.env.POKEAPI_BASE_URL,
-  OPENROUTER_API_KEY: import.meta.env.OPENROUTER_API_KEY,
-  GEMINI_API_KEY: import.meta.env.GEMINI_API_KEY,
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  POKEAPI_BASE_URL,
+  OPENROUTER_API_KEY,
+  GEMINI_API_KEY,
 };
 
 const parsed = envSchema.safeParse(rawEnv);

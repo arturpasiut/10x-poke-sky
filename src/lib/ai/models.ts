@@ -15,6 +15,13 @@ export const AI_MODEL_OPTIONS: AiModelOption[] = [
     tier: "free",
   },
   {
+    id: "google/gemini-2.5-flash",
+    label: "Gemini 2.5 Flash",
+    provider: "Google",
+    description: "Nowsza odsłona Gemini Flash – lepsza dokładność przy zachowaniu niskiej latencji.",
+    tier: "paid",
+  },
+  {
     id: "meta-llama/llama-3.3-70b-instruct:free",
     label: "Llama 3.3 70B Instruct",
     provider: "Meta",
