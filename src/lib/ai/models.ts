@@ -15,7 +15,7 @@ export const AI_MODEL_OPTIONS: AiModelOption[] = [
     tier: "free",
   },
   {
-    id: "google/gemini-2.5-flash:free",
+    id: "google/gemini-2.5-flash",
     label: "Gemini 2.5 Flash",
     provider: "Google",
     description: "Nowsza odsłona Gemini Flash – lepsza dokładność przy zachowaniu niskiej latencji.",
