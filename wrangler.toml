@@ -1,0 +1,5 @@
+name = "10x-poke-sky"
+compatibility_date = "2025-02-04"
+pages_build_output_dir = "./dist"
+main = "./dist/_worker.js"
+compatibility_flags = ["nodejs_compat"]
