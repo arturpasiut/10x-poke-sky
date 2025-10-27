@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 
-import { createSupabaseServerClient } from "@/db/supabase.client";
+import { createSupabaseServerClient } from "@/db/supabase.server";
 import { extractFieldErrors, forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/auth/validation";
 
 export const prerender = false;
@@ -86,7 +86,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   const supabase = createSupabaseServerClient({
-    request,
+    headers: request.headers,
     cookies,
   });
 
