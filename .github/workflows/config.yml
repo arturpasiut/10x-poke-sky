@@ -46,12 +46,12 @@ jobs:
       - name: Run Vitest with coverage
         run: npm run test
 
-#      - name: Upload unit coverage
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: unit-coverage
-#          path: coverage/
-#          retention-days: 5
+      - name: Upload unit coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-coverage
+          path: coverage/
+          retention-days: 5
 
   e2e-test:
     name: Playwright E2E
@@ -74,53 +74,66 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Create .env.test
+      - name: Start dev server for E2E tests
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
+          PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
+          E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_EMPTY_FAVS_EMAIL: ${{ secrets.TEST_USER_EMPTY_FAVS_EMAIL }}
+          TEST_USER_EMPTY_FAVS_PASSWORD: ${{ secrets.TEST_USER_EMPTY_FAVS_PASSWORD }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          NODE_ENV: test
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
         run: |
-          echo "PLAYWRIGHT_BASE_URL=http://localhost:3000" > .env.test
-          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.test
-          echo "SUPABASE_PUBLIC_KEY=${{ secrets.SUPABASE_PUBLIC_KEY }}" >> .env.test
-          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_PUBLIC_KEY }}" >> .env.test
-          echo "PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.test
-          echo "PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_PUBLIC_KEY }}" >> .env.test
-          echo "E2E_USERNAME_ID=${{ secrets.E2E_USERNAME_ID }}" >> .env.test
-          echo "E2E_USERNAME=${{ secrets.E2E_USERNAME }}" >> .env.test
-          echo "E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}" >> .env.test
-          echo "TEST_USER_EMAIL=${{ secrets.TEST_USER_EMAIL }}" >> .env.test
-          echo "TEST_USER_EMPTY_FAVS_EMAIL=${{ secrets.TEST_USER_EMPTY_FAVS_EMAIL}}" >> .env.test
-          echo "TEST_USER_EMPTY_FAVS_PASSWORD=${{ secrets.TEST_USER_EMPTY_FAVS_PASSWORD}}" >> .env.test
-          echo "TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}" >> .env.test
-          echo "NODE_ENV=test" >> .env.test
+          npm run dev:e2e > server.log 2>&1 &
+          echo $! > server.pid
+          echo "Server started with PID $(cat server.pid)"
 
-#      - name: Start dev server for E2E tests
-#        run: |
-#          npm run dev:e2e > server.log 2>&1 &
-#          echo $! > server.pid
-#          echo "Server started with PID $(cat server.pid)"
-#
-#      - name: Wait for server to be ready
-#        run: |
-#          echo "Waiting for server to start on port 3000..."
-#          for i in {1..30}; do
-#            if curl -f http://localhost:3000 > /dev/null 2>&1; then
-#              echo "Server is ready!"
-#              exit 0
-#            fi
-#            echo "Attempt $i/30: Server not ready yet, waiting..."
-#            sleep 2
-#          done
-#          echo "Server failed to start within 60 seconds. Showing server logs:"
-#          cat server.log
-#          exit 1
-#
-#      - name: Run E2E tests
-#        run: npm run test:e2e
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server to start on port 3000..."
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+              echo "Server is ready!"
+              exit 0
+            fi
+            echo "Attempt $i/30: Server not ready yet, waiting..."
+            sleep 2
+          done
+          echo "Server failed to start within 60 seconds. Showing server logs:"
+          cat server.log
+          exit 1
 
-#      - name: Upload E2E test artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: playwright-report
-#          path: playwright-report/
-#          retention-days: 5
+      - name: Run E2E tests
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
+          PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
+          E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_EMPTY_FAVS_EMAIL: ${{ secrets.TEST_USER_EMPTY_FAVS_EMAIL }}
+          TEST_USER_EMPTY_FAVS_PASSWORD: ${{ secrets.TEST_USER_EMPTY_FAVS_PASSWORD }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          NODE_ENV: test
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+        run: npm run test:e2e
+
+      - name: Upload E2E test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 5
 
 #  status-comment:
 #    name: Update PR Status
