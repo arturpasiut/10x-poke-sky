@@ -13,11 +13,11 @@ export const cookieOptions: CookieOptionsWithName = {
   sameSite: "lax",
 };
 
-type SupabaseServerContext = {
+interface SupabaseServerContext {
   headers: Headers;
   cookies: AstroCookies;
   persistSession?: boolean;
-};
+}
 
 export const createSupabaseServerClient = ({ headers, cookies, persistSession = true }: SupabaseServerContext) => {
   if (!SUPABASE_URL || !serverSupabaseKey) {
