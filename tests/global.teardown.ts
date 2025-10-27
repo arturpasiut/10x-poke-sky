@@ -16,13 +16,13 @@ teardown("cleanup favorites table in Supabase", async () => {
 
   // Get credentials from environment
   const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_PUBLIC_KEY;
+  const supabaseKey = process.env.SUPABASE_PUBLIC_KEY ?? process.env.SUPABASE_KEY;
   const testUserId = process.env.E2E_USERNAME_ID;
 
   // Validate environment variables
   if (!supabaseUrl || !supabaseKey) {
     console.error("Missing Supabase credentials in environment variables");
-    throw new Error("SUPABASE_URL and SUPABASE_PUBLIC_KEY must be set in .env.test");
+    throw new Error("SUPABASE_URL and SUPABASE_PUBLIC_KEY (or SUPABASE_KEY) must be set");
   }
 
   if (!testUserId) {
