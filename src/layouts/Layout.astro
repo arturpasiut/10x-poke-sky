@@ -67,11 +67,11 @@ const themeInitializerScript = `(function () {
     <script is:inline set:html={themeInitializerScript} />
   </head>
   <body class="layout-body">
-    <SessionProvider client:load initialSession={sessionData} />
+    <SessionProvider client:only="react" initialSession={sessionData} />
     <header class="layout-header">
       <a class="layout-brand" href="/">10x Poke Sky</a>
       <div class="layout-actions">
-        <ThemeToggle client:load />
+        <ThemeToggle client:only="react" />
         {
           userEmail ? (
             <>
