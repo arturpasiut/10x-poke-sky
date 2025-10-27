@@ -1,10 +1,10 @@
 import { defineMiddleware } from "astro:middleware";
 
-import { createSupabaseServerClient } from "../db/supabase.client.ts";
+import { createSupabaseServerClient } from "../db/supabase.server.ts";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createSupabaseServerClient({
-    request: context.request,
+    headers: context.request.headers,
     cookies: context.cookies,
   });
 
