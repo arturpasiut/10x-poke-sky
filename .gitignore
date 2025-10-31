@@ -245,3 +245,4 @@ pnpm-debug.log*
 /coverage/src/lib/favorites/validation.ts.html
 /coverage/lcov-report/src/pages/api/users/me/favorites/[pokemonId].ts.html
 /coverage/src/pages/api/users/me/favorites/[pokemonId].ts.html
+/scripts/moves/
