@@ -1,144 +1,66 @@
-# 10x Astro Starter
+# 10x Poke Sky
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+10x Poke Sky to aplikacja typu Pokédex rozwijana w Astro i React. Łączy dane z publicznego PokeAPI, Supabase oraz moduły AI, aby ułatwić wyszukiwanie Pokémonów, budowanie kolekcji i eksperymentowanie z rekomendacjami.
 
-## Tech Stack
+## Najważniejsze funkcje
+- Interaktywny Pokédex z filtrowaniem po typie, regionie i generacji, sortowaniem oraz synchronizacją stanu z parametrami URL.
+- Karta Pokémona ze statystykami, zestawieniem ruchów, rozgałęzionymi ewolucjami i możliwością dodania do ulubionych (po zalogowaniu).
+- Widok ruchów z filtrowaniem po typach, klasach obrażeń, regionach oraz przedziałach mocy.
+- Wyszukiwarka łańcuchów ewolucji z timeline'em, preferencjami wizualnymi i szybkim przejściem do kart.
+- Czat AI, który na podstawie opisu próbuje wskazać pasujące Pokemony (OpenRouter/Gemini, fallback do mocków przy braku kluczy).
+- Obsługa kont użytkowników (rejestracja, logowanie, reset hasła) oraz lista ulubionych zsynchronizowana z Supabase.
+- W przygotowaniu: widok lokacji i panel ustawień – aktualnie na stronach `/locations` i `/settings` znajdują się placeholdery.
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+## Technologia
+- Astro 5 + React 19 (SSR + wyspy dla interaktywnych widoków).
+- TypeScript 5, Zustand i dedykowane hooki do zapytań HTTP oraz synchronizacji stanu z URL.
+- Tailwind CSS 4 i własne design tokens (konfiguracja w `components.json`).
+- Supabase (auth, RLS, edge functions w `supabase/functions` do cache'owania danych PokeAPI).
+- Vitest + Testing Library, Playwright i MSW do testów; ESLint oraz Prettier pilnują spójności kodu.
 
-### Testing
+## Wymagania
+- Node.js 22 (plik `.nvmrc`).
+- npm 10+.
+- Opcjonalnie Supabase CLI i Docker, jeżeli chcesz uruchomić lokalną instancję bazy.
 
-- **Unit & Integration Tests**: [Vitest](https://vitest.dev/) v3.2.4 with [React Testing Library](https://testing-library.com/react) v16.3.0
-  - @testing-library/dom - Testing static Astro components
-  - @testing-library/jest-dom v6.9.1 - Additional matchers
-  - @testing-library/user-event v14.6.1 - User interaction simulation
-  - jsdom v22.1.0 - DOM environment for tests
-  - MSW (Mock Service Worker) - API mocking
+## Szybki start
+1. `git clone <repo-url>`
+2. `cd 10x-poke-sky`
+3. `npm install`
+4. `cp .env.sample .env` i uzupełnij:
+   - `SUPABASE_URL` oraz `SUPABASE_KEY` – mogą wskazywać lokalną instancję z Supabase CLI lub pozostać testowe; są wymagane, aby middleware poprawnie inicjalizował sesję.
+   - `POKEAPI_BASE_URL` i `USE_POKEAPI_MOCK` – domyślnie korzystamy z publicznego PokeAPI; włączenie mocków kieruje zapytania do lokalnych funkcji edge.
+   - `OPENROUTER_API_KEY` / `GEMINI_API_KEY` – opcjonalne, odblokowują realne odpowiedzi w czacie AI.
+   - `PLAYWRIGHT_BASE_URL` oraz dane testowych kont – wykorzystywane w scenariuszach e2e.
+5. (Opcjonalnie) `supabase start` i `supabase db reset`, aby uruchomić lokalną bazę z migracjami z `supabase/migrations`; funkcje edge znajdują się w `supabase/functions`.
+6. `npm run dev` i otwórz `http://localhost:4321`.
 
-- **End-to-End Tests**: [Playwright](https://playwright.dev/) v1.56.0
-  - Multi-browser testing (Chromium, Firefox, WebKit)
-  - Accessibility testing (axe-core integration)
+## Przydatne skrypty
+- `npm run dev` – tryb developerski Astro.
+- `npm run build` / `npm run preview` – budowanie i podgląd produkcyjny.
+- `npm run lint` oraz `npm run lint:fix` – analiza i automatyczne poprawki zgodnie z ESLint/Prettier.
+- `npm run test` / `npm run test:coverage` – testy jednostkowe oraz raport pokrycia (Vitest + Testing Library).
+- `npm run test:e2e` – scenariusze Playwright (wymagają działającego dev servera i danych z `.env`).
+- `npm run dev:e2e` – uruchamia Astro w trybie testowym na potrzeby Playwright.
 
-## Prerequisites
-
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
-
-## Getting Started
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+## Struktura projektu
+```text
+src/
+  components/      widoki UI dla pokedexu, ewolucji, ruchów, AI i auth
+  hooks/           logika zapytań oraz synchronizacja filtrów z URL
+  lib/             warstwa domenowa (pokemon, moves, evolution, profile, api)
+  pages/           strony Astro (home, pokedex, favorites, auth, ai, etc.)
+  stores/          magazyny Zustand do zarządzania filtrami i stanem UI
+supabase/
+  migrations/      schemat bazy i polityki RLS
+  functions/       edge functions używane przez aplikację i testy
+tests/             Vitest + Playwright wraz z fixture'ami
 ```
 
-2. Install dependencies:
+## Jakość i testy
+- Komponenty i hooki mają testy w `src/**/__tests__` oraz raporty w `coverage/`.
+- Testy e2e w `tests/e2e/` obejmują podstawowe ścieżki Pokédexu i ulubionych.
+- `msw` mockuje integracje z zewnętrznymi API podczas testów.
 
-```bash
-npm install
-```
-
-3. Copy the environment template and adjust values if needed:
-
-```bash
-cp .env.sample .env
-```
-
-- `SUPABASE_URL` / `SUPABASE_KEY` – keep fake credentials locally until Supabase is provisioned.
-- `POKEAPI_BASE_URL` – defaults to the public PokeAPI (`https://pokeapi.co/api/v2`).
-- `USE_POKEAPI_MOCK` – `false` by default; set to `true` only when you want to exercise the edge functions against local fixtures.
-- `OPENROUTER_API_KEY` / `GEMINI_API_KEY` – optional for now; AI features remain mocked without real keys.
-
-4. Run the development server:
-
-```bash
-npm run dev
-```
-
-5. Build for production:
-
-```bash
-npm run build
-```
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
-- `npm run test` - Uruchom testy jednostkowe (Vitest + RTL)
-- `npm run test:coverage` - Raport pokrycia kodu
-- `npm run test:e2e` - Testy Playwright (wymaga działającego `npm run dev` oraz `npx playwright install`)
-
-## Project Structure
-
-```md
-.
-├── src/
-│ ├── layouts/ # Astro layouts
-│ ├── pages/ # Astro pages
-│ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
-│ ├── styles/ # Tailwind entrypoint + design-token notes
-│ └── assets/ # Static assets
-├── public/ # Public assets
-```
-
-## Local Development
-
-1. **Node version** – repo contains `.nvmrc` (`22.14.0`). Run `nvm use` (or switch manually) before installing dependencies.
-2. **Install packages** – `npm install`.
-3. **Configure environment** – `cp .env.sample .env` and tweak values as needed (see notes above). For live data keep `USE_POKEAPI_MOCK=false`.
-4. **Start Supabase (optional for Phase 0)** – follow `supabase/README.md` if you want the local Postgres/auth stack running.
-5. **Run the dev server** – `npm run dev`. You should see the placeholder homepage with the new design tokens applied.
-
-Useful checks:
-
-- `npm run lint` – verifies code style/ESLint.
-- `npm run test` – runs component/hook tests (jsdom).
-- `npm run test:e2e` – runs Playwright smoke test against `http://localhost:4321`.
-- `supabase functions serve pokemon-list --env-file .env` – smoke test the edge function against either mock fixtures or the live PokeAPI (toggle via `USE_POKEAPI_MOCK`).
-
-## Widok Pokédex
-
-- `/pokemon` udostępnia interaktywną listę Pokémonów z wyszukiwarką, filtrami (typ, generacja, region) i sortowaniem.
-- Stan widoku synchronizuje się z parametrami URL, co umożliwia udostępnianie linków z aktywnymi filtrami.
-- Obsługiwane są skeletony, komunikaty błędów, puste stany oraz paginacja.
-- Testy jednostkowe pokrywają krytyczne komponenty (`SearchHeader`, `FilterSidePanel`, `PokemonGrid`) i hook `usePokemonListQuery`; smoke test Playwright weryfikuje montaż widoku.
-
-## AI Development Support
-
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
-
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
-
-### Cursor IDE
-
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
-
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
-
-## License
-
+## Licencja
 MIT
