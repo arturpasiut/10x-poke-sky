@@ -1,0 +1,76 @@
+---
+import AuthLayout from "../../layouts/AuthLayout.astro";
+import ResetPasswordHandler from "../../components/auth/ResetPasswordHandler";
+
+const currentUrl = new URL(Astro.request.url);
+const code = currentUrl.searchParams.get("code");
+const token = currentUrl.searchParams.get("token");
+const type = currentUrl.searchParams.get("type");
+const error = currentUrl.searchParams.get("error");
+const errorDescription = currentUrl.searchParams.get("error_description");
+---
+
+<AuthLayout title="Weryfikacja linku – 10x Poke Sky">
+  <ResetPasswordHandler
+    client:load
+    code={code}
+    token={token}
+    type={type}
+    error={error}
+    errorDescription={errorDescription}
+  />
+</AuthLayout>
+
+<style lang="postcss" is:global>
+.auth-input {
+  border-radius: 1rem;
+  padding: 0.9rem 1.25rem;
+  background: color-mix(in srgb, var(--color-background) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+  color: var(--color-foreground);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+.auth-action {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.auth-action--primary {
+  color: white;
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+  box-shadow: 0 18px 40px -22px rgba(9, 15, 11, 0.65);
+}
+
+.auth-action--secondary {
+  color: var(--color-foreground);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+}
+
+.auth-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px -18px rgba(9, 15, 11, 0.7);
+}
+
+.auth-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+</style>
