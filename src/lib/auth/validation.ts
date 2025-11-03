@@ -47,6 +47,20 @@ export const registerSchema = z
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 
+export const resetPasswordSchema = z
+  .object({
+    password: passwordStrength,
+    confirmPassword: z
+      .string({ required_error: "Potwierdzenie hasła jest wymagane." })
+      .min(1, { message: "Potwierdzenie hasła jest wymagane." }),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Hasła muszą być identyczne.",
+  });
+
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+
 export const forgotPasswordSchema = z.object({
   email: z
     .string({ required_error: "Adres e-mail jest wymagany." })
