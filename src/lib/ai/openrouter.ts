@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { buildSystemPrompt, buildUserPrompt } from "./prompts";
+import { safeParseJson } from "./json-utils";
 import { DEFAULT_AI_MODEL_ID, resolveSupportedModelId } from "./models";
 import { runtimeConfig } from "@/lib/env";
 import type { AiIdentifyCommand } from "@/types";
@@ -122,14 +123,6 @@ const extractContent = (response: unknown): ExtractedContent | null => {
   }
 
   return null;
-};
-
-const safeParseJson = (input: string) => {
-  try {
-    return JSON.parse(input);
-  } catch {
-    return null;
-  }
 };
 
 const extractErrorMessage = (body: unknown, fallback: string): string => {
